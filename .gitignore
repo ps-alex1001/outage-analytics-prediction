@@ -1,0 +1,19 @@
+# Python environment and cache
+.venv/
+__pycache__/
+*.pyc
+
+# Node.js and Next.js
+node_modules/
+.next/
+
+# PyCharm
+.idea/
+
+# Large datasets (keep locally)
+data/
+
+# Local environment secrets
+.env
+.env.*
+!.env.example

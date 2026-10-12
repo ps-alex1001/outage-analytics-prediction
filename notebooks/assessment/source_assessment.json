@@ -1,0 +1,1792 @@
+{
+  "assessment_date": "2026-10-12",
+  "current_root": "D:\\PyCharmProjects\\Outage Analytics and Prediction",
+  "legacy_root": "D:\\PyCharmProjects\\Outage Prediction",
+  "protected_local_files": {
+    "data\\.gitignore": {
+      "bytes": 44,
+      "mtime_ns": 1791704316955135500
+    },
+    "data\\data_manifest.csv": {
+      "bytes": 19128,
+      "mtime_ns": 1791705161870847600
+    },
+    "data\\README.md": {
+      "bytes": 7728,
+      "mtime_ns": 1791705161910275100
+    },
+    "data\\boundaries\\bataan_barangays.geojson": {
+      "bytes": 4973286,
+      "mtime_ns": 1791704168747439000
+    },
+    "data\\boundaries\\README.md": {
+      "bytes": 412,
+      "mtime_ns": 1791704316976998300
+    },
+    "data\\impacts\\README.md": {
+      "bytes": 966,
+      "mtime_ns": 1791705161888041100
+    },
+    "data\\impacts\\synthetic_impact_network_nodes.csv": {
+      "bytes": 322909283,
+      "mtime_ns": 1791704190185842200
+    },
+    "data\\impacts\\synthetic_impact_tree_edges.csv": {
+      "bytes": 402255182,
+      "mtime_ns": 1791704221937723000
+    },
+    "data\\impacts\\synthetic_outages_with_infrastructure_impact.csv": {
+      "bytes": 10304437,
+      "mtime_ns": 1791704231933979000
+    },
+    "data\\impacts\\synthetic_outage_barangay_impacts.csv": {
+      "bytes": 10562521,
+      "mtime_ns": 1791704226068493800
+    },
+    "data\\impacts\\synthetic_outage_service_zone_impacts.csv": {
+      "bytes": 126684415,
+      "mtime_ns": 1791704230779992300
+    },
+    "data\\infrastructure\\README.md": {
+      "bytes": 1613,
+      "mtime_ns": 1791705161882038000
+    },
+    "data\\ml\\ml_static_barangay_context.parquet": {
+      "bytes": 43822,
+      "mtime_ns": 1791704169096259700
+    },
+    "data\\ml\\README.md": {
+      "bytes": 458,
+      "mtime_ns": 1791705161890038200
+    },
+    "data\\outages\\README.md": {
+      "bytes": 447,
+      "mtime_ns": 1791704316974049100
+    },
+    "data\\outages\\run_manifest.json": {
+      "bytes": 2702,
+      "mtime_ns": 1791704250025017100
+    },
+    "data\\outages\\synthetic_outage_events.csv": {
+      "bytes": 5549359,
+      "mtime_ns": 1791704250193475000
+    },
+    "data\\terrain\\bataan_barangay_terrain.csv": {
+      "bytes": 23483,
+      "mtime_ns": 1791704250250786300
+    },
+    "data\\terrain\\bataan_dem_utm51n.tif": {
+      "bytes": 19871500,
+      "mtime_ns": 1791704251084003800
+    },
+    "data\\terrain\\README.md": {
+      "bytes": 457,
+      "mtime_ns": 1791704316984602000
+    },
+    "data\\topology\\README.md": {
+      "bytes": 933,
+      "mtime_ns": 1791705161885038200
+    },
+    "data\\topology\\synthetic_feeders.csv": {
+      "bytes": 117011,
+      "mtime_ns": 1791704172809769600
+    },
+    "data\\topology\\synthetic_network_edges.geojson": {
+      "bytes": 131196814,
+      "mtime_ns": 1791704174709768300
+    },
+    "data\\topology\\synthetic_network_nodes.geojson": {
+      "bytes": 118806883,
+      "mtime_ns": 1791704178725806300
+    },
+    "data\\vegetation\\bataan_barangay_ndvi_yearly.csv": {
+      "bytes": 224317,
+      "mtime_ns": 1791704251228687600
+    },
+    "data\\vegetation\\bataan_ndvi_2019.tif": {
+      "bytes": 54186763,
+      "mtime_ns": 1791704233448820200
+    },
+    "data\\vegetation\\bataan_ndvi_2020.tif": {
+      "bytes": 53926402,
+      "mtime_ns": 1791704236284000800
+    },
+    "data\\vegetation\\bataan_ndvi_2021.tif": {
+      "bytes": 53977667,
+      "mtime_ns": 1791704237964868700
+    },
+    "data\\vegetation\\bataan_ndvi_2022.tif": {
+      "bytes": 54079795,
+      "mtime_ns": 1791704240050020100
+    },
+    "data\\vegetation\\bataan_ndvi_2023.tif": {
+      "bytes": 53746572,
+      "mtime_ns": 1791704242734479200
+    },
+    "data\\vegetation\\bataan_ndvi_2024.tif": {
+      "bytes": 54489332,
+      "mtime_ns": 1791704244859013900
+    },
+    "data\\vegetation\\bataan_ndvi_2025.tif": {
+      "bytes": 54237179,
+      "mtime_ns": 1791704247100256300
+    },
+    "data\\vegetation\\bataan_ndvi_2026_ytd.tif": {
+      "bytes": 54526818,
+      "mtime_ns": 1791704249722417500
+    },
+    "data\\vegetation\\README.md": {
+      "bytes": 1179,
+      "mtime_ns": 1791704316986980700
+    },
+    "data\\weather\\era5_bataan_2019_01_to_2026_06.nc": {
+      "bytes": 15343598,
+      "mtime_ns": 1790232773278645000
+    },
+    "data\\weather\\open_meteo_bataan_2019_01_to_2026_06.csv": {
+      "bytes": 92956006,
+      "mtime_ns": 1791127071769897500
+    },
+    "data\\weather\\README.md": {
+      "bytes": 0,
+      "mtime_ns": 1791789346698000000
+    },
+    "data\\topology\\integration\\observed_backbone_substation_links.csv": {
+      "bytes": 120178,
+      "mtime_ns": 1791704169117464800
+    },
+    "data\\topology\\integration\\observed_substation_feeder_links.csv": {
+      "bytes": 156086,
+      "mtime_ns": 1791704169137386600
+    },
+    "data\\infrastructure\\observed\\bataan_electrical_infrastructure_cleaned.geojson": {
+      "bytes": 13871659,
+      "mtime_ns": 1791704168988186100
+    },
+    "data\\infrastructure\\observed\\infrastructure_barangay_crosswalk.csv": {
+      "bytes": 415321,
+      "mtime_ns": 1791704169071903500
+    },
+    "data\\infrastructure\\service_zones\\synthetic_feeder_service_qc.csv": {
+      "bytes": 111043,
+      "mtime_ns": 1791704169159521800
+    },
+    "data\\infrastructure\\service_zones\\synthetic_feeder_service_zones.geojson": {
+      "bytes": 11785777,
+      "mtime_ns": 1791704169285205800
+    },
+    "data\\infrastructure\\service_zones\\synthetic_transformer_service_qc.csv": {
+      "bytes": 2710034,
+      "mtime_ns": 1791704169388921400
+    },
+    "data\\infrastructure\\service_zones\\synthetic_transformer_service_zones.geojson": {
+      "bytes": 36354848,
+      "mtime_ns": 1791704169695936800
+    },
+    "data\\infrastructure\\synthetic\\synthetic_distribution_lines.geojson": {
+      "bytes": 13199268,
+      "mtime_ns": 1791704170027004400
+    },
+    "data\\infrastructure\\synthetic\\synthetic_distribution_poles.geojson": {
+      "bytes": 74896074,
+      "mtime_ns": 1791704171682117600
+    },
+    "data\\infrastructure\\synthetic\\synthetic_distribution_transformers.geojson": {
+      "bytes": 7354463,
+      "mtime_ns": 1791704172691186200
+    }
+  },
+  "boundaries": {
+    "features": 237,
+    "columns": [
+      "region_psgc",
+      "region",
+      "province_psgc",
+      "province",
+      "municipality_psgc",
+      "municipality",
+      "barangay_psgc",
+      "barangay",
+      "correspondence_code",
+      "source_barangay_name"
+    ],
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+      }
+    },
+    "sample": [
+      {
+        "region_psgc": "0300000000",
+        "region": "Central Luzon",
+        "province_psgc": "0300800000",
+        "province": "Bataan",
+        "municipality_psgc": "0300801000",
+        "municipality": "Abucay",
+        "barangay_psgc": "0300801001",
+        "barangay": "Bangkal",
+        "correspondence_code": "030801001",
+        "source_barangay_name": "Bangkal"
+      },
+      {
+        "region_psgc": "0300000000",
+        "region": "Central Luzon",
+        "province_psgc": "0300800000",
+        "province": "Bataan",
+        "municipality_psgc": "0300801000",
+        "municipality": "Abucay",
+        "barangay_psgc": "0300801002",
+        "barangay": "Calaylayan",
+        "correspondence_code": "030801002",
+        "source_barangay_name": "Calaylayan (Pob.)"
+      }
+    ]
+  },
+  "outages": {
+    "rows": 10608,
+    "columns": [
+      "outage_id",
+      "is_synthetic",
+      "generator_version",
+      "random_seed",
+      "barangay_psgc",
+      "barangay",
+      "municipality_psgc",
+      "municipality",
+      "start_time",
+      "end_time",
+      "duration_minutes",
+      "year",
+      "month",
+      "hour",
+      "day_of_week",
+      "cause_category",
+      "severity_class",
+      "synthetic_event_propensity",
+      "synthetic_event_generation_probability",
+      "cape_j_kg",
+      "ndvi_annual_mean",
+      "ndvi_year",
+      "ndvi_period_type",
+      "ndvi_context",
+      "ndvi_source_start",
+      "ndvi_source_end_exclusive",
+      "weather_spatial_resolution",
+      "era5_latitude",
+      "era5_longitude",
+      "era5_grid_resolution_degrees",
+      "weather_hazard_score",
+      "vegetation_exposure_score",
+      "terrain_exposure_score",
+      "wind_vegetation_interaction",
+      "rain_terrain_interaction",
+      "rainfall_score",
+      "wind_score",
+      "convective_score",
+      "soil_wetness_score",
+      "precipitation_mm",
+      "wind_speed_10m_m_s",
+      "wind_gusts_10m_m_s",
+      "soil_moisture_0_to_7cm_m3_m3",
+      "soil_moisture_7_to_28cm_m3_m3",
+      "temperature_2m_c",
+      "relative_humidity_2m_pct",
+      "surface_pressure_hpa",
+      "mean_elevation_m",
+      "mean_slope_deg",
+      "p90_slope_deg",
+      "elevation_relief_p95_p05_m"
+    ],
+    "dtypes": {
+      "outage_id": "str",
+      "is_synthetic": "bool",
+      "generator_version": "str",
+      "random_seed": "int64",
+      "barangay_psgc": "string",
+      "barangay": "str",
+      "municipality_psgc": "string",
+      "municipality": "str",
+      "start_time": "str",
+      "end_time": "str",
+      "duration_minutes": "float64",
+      "year": "int64",
+      "month": "int64",
+      "hour": "int64",
+      "day_of_week": "str",
+      "cause_category": "str",
+      "severity_class": "str",
+      "synthetic_event_propensity": "float64",
+      "synthetic_event_generation_probability": "float64",
+      "cape_j_kg": "float64",
+      "ndvi_annual_mean": "float64",
+      "ndvi_year": "int64",
+      "ndvi_period_type": "str",
+      "ndvi_context": "str",
+      "ndvi_source_start": "str",
+      "ndvi_source_end_exclusive": "str",
+      "weather_spatial_resolution": "str",
+      "era5_latitude": "float64",
+      "era5_longitude": "float64",
+      "era5_grid_resolution_degrees": "float64",
+      "weather_hazard_score": "float64",
+      "vegetation_exposure_score": "float64",
+      "terrain_exposure_score": "float64",
+      "wind_vegetation_interaction": "float64",
+      "rain_terrain_interaction": "float64",
+      "rainfall_score": "float64",
+      "wind_score": "float64",
+      "convective_score": "float64",
+      "soil_wetness_score": "float64",
+      "precipitation_mm": "float64",
+      "wind_speed_10m_m_s": "float64",
+      "wind_gusts_10m_m_s": "float64",
+      "soil_moisture_0_to_7cm_m3_m3": "float64",
+      "soil_moisture_7_to_28cm_m3_m3": "float64",
+      "temperature_2m_c": "float64",
+      "relative_humidity_2m_pct": "int64",
+      "surface_pressure_hpa": "float64",
+      "mean_elevation_m": "float64",
+      "mean_slope_deg": "float64",
+      "p90_slope_deg": "float64",
+      "elevation_relief_p95_p05_m": "float64"
+    },
+    "missing": {
+      "outage_id": 0,
+      "is_synthetic": 0,
+      "generator_version": 0,
+      "random_seed": 0,
+      "barangay_psgc": 0,
+      "barangay": 0,
+      "municipality_psgc": 0,
+      "municipality": 0,
+      "start_time": 0,
+      "end_time": 0,
+      "duration_minutes": 0,
+      "year": 0,
+      "month": 0,
+      "hour": 0,
+      "day_of_week": 0,
+      "cause_category": 0,
+      "severity_class": 0,
+      "synthetic_event_propensity": 0,
+      "synthetic_event_generation_probability": 0,
+      "cape_j_kg": 0,
+      "ndvi_annual_mean": 0,
+      "ndvi_year": 0,
+      "ndvi_period_type": 0,
+      "ndvi_context": 0,
+      "ndvi_source_start": 0,
+      "ndvi_source_end_exclusive": 0,
+      "weather_spatial_resolution": 0,
+      "era5_latitude": 0,
+      "era5_longitude": 0,
+      "era5_grid_resolution_degrees": 0,
+      "weather_hazard_score": 0,
+      "vegetation_exposure_score": 0,
+      "terrain_exposure_score": 0,
+      "wind_vegetation_interaction": 0,
+      "rain_terrain_interaction": 0,
+      "rainfall_score": 0,
+      "wind_score": 0,
+      "convective_score": 0,
+      "soil_wetness_score": 0,
+      "precipitation_mm": 0,
+      "wind_speed_10m_m_s": 0,
+      "wind_gusts_10m_m_s": 0,
+      "soil_moisture_0_to_7cm_m3_m3": 0,
+      "soil_moisture_7_to_28cm_m3_m3": 0,
+      "temperature_2m_c": 0,
+      "relative_humidity_2m_pct": 0,
+      "surface_pressure_hpa": 0,
+      "mean_elevation_m": 0,
+      "mean_slope_deg": 0,
+      "p90_slope_deg": 0,
+      "elevation_relief_p95_p05_m": 0
+    },
+    "duplicate_rows": 0,
+    "duplicate_ids": 0,
+    "synthetic_values": {
+      "true": 10608
+    },
+    "first_start": "2019-01-01 08:00:00+08:00",
+    "last_start": "2026-06-30 21:00:00+08:00",
+    "last_end": "2026-06-30 22:19:00.600000+08:00",
+    "invalid_timestamps": 0,
+    "nonpositive_duration": 0,
+    "duration_max_difference_minutes": 1.6825651982799172e-11,
+    "duration_summary": {
+      "count": 10608.0,
+      "mean": 192.05423736802413,
+      "std": 156.47998742553625,
+      "min": 15.0,
+      "50%": 148.20499999999998,
+      "90%": 373.6140000000001,
+      "95%": 484.8544999999996,
+      "99%": 783.7211000000003,
+      "max": 1994.66
+    },
+    "municipalities": 12,
+    "barangays": 237,
+    "year_counts": {
+      "2019": 1464,
+      "2020": 1468,
+      "2021": 1505,
+      "2022": 1464,
+      "2023": 1435,
+      "2024": 1308,
+      "2025": 1378,
+      "2026": 586
+    },
+    "causes": {
+      "Weather / Storm": 3710,
+      "Vegetation / Tree Contact": 3310,
+      "Equipment / Technical": 2804,
+      "Other / Unknown": 784
+    },
+    "severity": {
+      "Moderate": 6737,
+      "Major": 2685,
+      "Minor": 1186
+    }
+  },
+  "manifest_columns": [
+    "file_path",
+    "sha256",
+    "size_bytes",
+    "source_path",
+    "equivalent_source_paths",
+    "category",
+    "purpose",
+    "provenance",
+    "used_by_dashboard",
+    "used_by_analysis",
+    "used_by_ml",
+    "references",
+    "historical_sha256",
+    "historical_hash_status"
+  ],
+  "notebook_source_hashes": {
+    "data\\outages\\synthetic_outage_events.csv": "4aa80e9622d46c5dbb32ea60879cd5b433ccaa2eaaa25f36665ee99860b8a3bf",
+    "data\\outages\\run_manifest.json": "ee8a0cb0beee33d84a3d4c9a96e6de4d9139630c6f67525aa763a395e073c744",
+    "data\\boundaries\\bataan_barangays.geojson": "6bcaa724a5257eb8df926abf90bc9ee3608d10b2e52a9ca0c3897cbe14d2e102",
+    "data\\data_manifest.csv": "d0ff5c09145ce1782999129cfddbab929522d0efc6fb5f26ceb1b27224cd61b5"
+  },
+  "weather": {
+    "rows": 788544,
+    "columns": [
+      "municipality",
+      "latitude",
+      "longitude",
+      "elevation_m",
+      "utc_offset_seconds",
+      "timezone",
+      "timezone_abbreviation",
+      "time",
+      "temperature_2m_c",
+      "relative_humidity_2m_pct",
+      "precipitation_mm",
+      "surface_pressure_hpa",
+      "soil_moisture_0_to_7cm_m3_m3",
+      "soil_moisture_7_to_28cm_m3_m3",
+      "wind_speed_10m_m_s",
+      "wind_gusts_10m_m_s"
+    ],
+    "missing": {
+      "municipality": 0,
+      "latitude": 0,
+      "longitude": 0,
+      "elevation_m": 0,
+      "utc_offset_seconds": 0,
+      "timezone": 0,
+      "timezone_abbreviation": 0,
+      "time": 0,
+      "temperature_2m_c": 0,
+      "relative_humidity_2m_pct": 0,
+      "precipitation_mm": 0,
+      "surface_pressure_hpa": 0,
+      "soil_moisture_0_to_7cm_m3_m3": 0,
+      "soil_moisture_7_to_28cm_m3_m3": 0,
+      "wind_speed_10m_m_s": 0,
+      "wind_gusts_10m_m_s": 0
+    },
+    "coverage": [
+      {
+        "municipality": "Abucay",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Bagac",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Balanga",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Dinalupihan",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Hermosa",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Limay",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Mariveles",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Morong",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Orani",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Orion",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Pilar",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      },
+      {
+        "municipality": "Samal",
+        "min": "2019-01-01 00:00:00",
+        "max": "2026-06-30 23:00:00",
+        "count": 65712
+      }
+    ],
+    "duplicate_municipality_time": 0,
+    "timezone_values": [
+      "Asia/Singapore"
+    ],
+    "utc_offsets": [
+      28800
+    ],
+    "sha256": "4b2329a0a59529ad1893688893779b973d543f64e5f8f7afcc6f5a6c6f66477d"
+  },
+  "terrain": {
+    "rows": 237,
+    "columns": [
+      "barangay_psgc",
+      "municipality_psgc",
+      "municipality",
+      "barangay",
+      "mean_elevation_m",
+      "median_elevation_m",
+      "elevation_p05_m",
+      "elevation_p95_m",
+      "elevation_std_m",
+      "elevation_relief_p95_p05_m",
+      "mean_slope_deg",
+      "median_slope_deg",
+      "p90_slope_deg",
+      "pct_area_slope_gt_15_deg",
+      "elevation_valid_pixels",
+      "slope_valid_pixels"
+    ],
+    "missing": {
+      "barangay_psgc": 0,
+      "municipality_psgc": 0,
+      "municipality": 0,
+      "barangay": 0,
+      "mean_elevation_m": 0,
+      "median_elevation_m": 0,
+      "elevation_p05_m": 0,
+      "elevation_p95_m": 0,
+      "elevation_std_m": 0,
+      "elevation_relief_p95_p05_m": 0,
+      "mean_slope_deg": 0,
+      "median_slope_deg": 0,
+      "p90_slope_deg": 0,
+      "pct_area_slope_gt_15_deg": 0,
+      "elevation_valid_pixels": 0,
+      "slope_valid_pixels": 0
+    },
+    "barangays": 237,
+    "sha256": "1b4f6cd28b65bb202745b6c1bc3ba323a030da70cbced28229df5c827b61a35f",
+    "duplicate_keys": 0,
+    "ranges": {
+      "mean_elevation_m": {
+        "min": 0.4,
+        "max": 572.9
+      },
+      "mean_slope_deg": {
+        "min": 0.44,
+        "max": 19.82
+      },
+      "p90_slope_deg": {
+        "min": 1.2,
+        "max": 35.09
+      }
+    }
+  },
+  "ndvi": {
+    "rows": 1896,
+    "columns": [
+      "barangay_psgc",
+      "barangay",
+      "municipality",
+      "year",
+      "period_type",
+      "mean_ndvi",
+      "median_ndvi",
+      "high_vegetation_pct",
+      "valid_coverage_pct",
+      "total_pixel_count",
+      "valid_pixel_count"
+    ],
+    "missing": {
+      "barangay_psgc": 0,
+      "barangay": 0,
+      "municipality": 0,
+      "year": 0,
+      "period_type": 0,
+      "mean_ndvi": 0,
+      "median_ndvi": 0,
+      "high_vegetation_pct": 0,
+      "valid_coverage_pct": 0,
+      "total_pixel_count": 0,
+      "valid_pixel_count": 0
+    },
+    "barangays": 237,
+    "sha256": "128adab956074eba33123af23e74c4c627aa81f67ddbe43c636c85e440aefa71",
+    "years": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+    ],
+    "period_types": {
+      "2019": [
+        "full_year"
+      ],
+      "2020": [
+        "full_year"
+      ],
+      "2021": [
+        "full_year"
+      ],
+      "2022": [
+        "full_year"
+      ],
+      "2023": [
+        "full_year"
+      ],
+      "2024": [
+        "full_year"
+      ],
+      "2025": [
+        "full_year"
+      ],
+      "2026": [
+        "year_to_date"
+      ]
+    },
+    "duplicate_keys": 0,
+    "ranges": {
+      "mean_ndvi": {
+        "min": -0.1320659816265106,
+        "max": 0.8511564135551453
+      },
+      "valid_coverage_pct": {
+        "min": 100.0,
+        "max": 100.0
+      }
+    }
+  },
+  "rasters": [
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2019.tif",
+      "bytes": 54186763,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2020.tif",
+      "bytes": 53926402,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2021.tif",
+      "bytes": 53977667,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2022.tif",
+      "bytes": 54079795,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2023.tif",
+      "bytes": 53746572,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2024.tif",
+      "bytes": 54489332,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2025.tif",
+      "bytes": 54237179,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\vegetation\\bataan_ndvi_2026_ytd.tif",
+      "bytes": 54526818,
+      "width": 4055,
+      "height": 5750,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null,
+      "descriptions": [
+        "NDVI"
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\terrain\\bataan_dem_utm51n.tif",
+      "bytes": 19871500,
+      "width": 3635,
+      "height": 3729,
+      "bands": 1,
+      "crs": "EPSG:32651",
+      "resolution": [
+        30.0,
+        30.0
+      ],
+      "nodata": -9999.0,
+      "descriptions": [
+        null
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      }
+    }
+  ],
+  "era5": {
+    "dimensions": {
+      "valid_time": 65712,
+      "latitude": 4,
+      "longitude": 3
+    },
+    "variables": {
+      "cape": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "59",
+          "GRIB_dataType": "an",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "cape",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "Convective available potential energy",
+          "GRIB_shortName": "cape",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "J kg**-1",
+          "long_name": "Convective available potential energy",
+          "units": "J kg**-1",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      },
+      "cin": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "228001",
+          "GRIB_dataType": "fc",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "cin",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "Convective inhibition",
+          "GRIB_shortName": "cin",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "J kg**-1",
+          "long_name": "Convective inhibition",
+          "units": "J kg**-1",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      },
+      "tcwv": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "137",
+          "GRIB_dataType": "an",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "lwe_thickness_of_atmosphere_mass_content_of_water_vapor",
+          "GRIB_cfVarName": "tcwv",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "Total column vertically-integrated water vapour",
+          "GRIB_shortName": "tcwv",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "kg m**-2",
+          "long_name": "Total column vertically-integrated water vapour",
+          "units": "kg m**-2",
+          "standard_name": "lwe_thickness_of_atmosphere_mass_content_of_water_vapor",
+          "GRIB_surface": 0.0
+        }
+      },
+      "totalx": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "260123",
+          "GRIB_dataType": "fc",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "totalx",
+          "GRIB_gridDefinitionDescription": "Latitude/longitude",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "Total totals index",
+          "GRIB_shortName": "totalx",
+          "GRIB_units": "K",
+          "long_name": "Total totals index",
+          "units": "K",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      },
+      "cbh": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "228023",
+          "GRIB_dataType": "fc",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "cbh",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "Cloud base height",
+          "GRIB_shortName": "cbh",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "m",
+          "long_name": "Cloud base height",
+          "units": "m",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      },
+      "t2m": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "167",
+          "GRIB_dataType": "an",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "t2m",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "2 metre temperature",
+          "GRIB_shortName": "2t",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "K",
+          "long_name": "2 metre temperature",
+          "units": "K",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      },
+      "u10": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "165",
+          "GRIB_dataType": "an",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "u10",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "10 metre U wind component",
+          "GRIB_shortName": "10u",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "m s**-1",
+          "long_name": "10 metre U wind component",
+          "units": "m s**-1",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      },
+      "v10": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "166",
+          "GRIB_dataType": "an",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "instant",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "v10",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "10 metre V wind component",
+          "GRIB_shortName": "10v",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "m s**-1",
+          "long_name": "10 metre V wind component",
+          "units": "m s**-1",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      },
+      "cp": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "143",
+          "GRIB_dataType": "fc",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "accum",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "lwe_thickness_of_convective_precipitation_amount",
+          "GRIB_cfVarName": "cp",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "Convective precipitation",
+          "GRIB_shortName": "cp",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "m",
+          "long_name": "Convective precipitation",
+          "units": "m",
+          "standard_name": "lwe_thickness_of_convective_precipitation_amount",
+          "GRIB_surface": 0.0
+        }
+      },
+      "tp": {
+        "dimensions": [
+          "valid_time",
+          "latitude",
+          "longitude"
+        ],
+        "attrs": {
+          "GRIB_paramId": "228",
+          "GRIB_dataType": "fc",
+          "GRIB_numberOfPoints": "12",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "accum",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "3",
+          "GRIB_Ny": "4",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "tp",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": 0.25,
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": 0.25,
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": 15.0,
+          "GRIB_latitudeOfLastGridPointInDegrees": 14.25,
+          "GRIB_longitudeOfFirstGridPointInDegrees": 120.25,
+          "GRIB_longitudeOfLastGridPointInDegrees": 120.75,
+          "GRIB_missingValue": 3.4028234663852886e+38,
+          "GRIB_name": "Total precipitation",
+          "GRIB_shortName": "tp",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "m",
+          "long_name": "Total precipitation",
+          "units": "m",
+          "standard_name": "unknown",
+          "GRIB_surface": 0.0
+        }
+      }
+    },
+    "coordinates": {
+      "number": {
+        "first": "0",
+        "last": "0"
+      },
+      "valid_time": {
+        "first": "2019-01-01T00:00:00.000000000",
+        "last": "2026-06-30T23:00:00.000000000"
+      },
+      "latitude": {
+        "first": "15.0",
+        "last": "14.25"
+      },
+      "longitude": {
+        "first": "120.25",
+        "last": "120.75"
+      }
+    }
+  },
+  "parquet": [
+    {
+      "path": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\data\\ml\\ml_static_barangay_context.parquet",
+      "bytes": 43822,
+      "rows": 237,
+      "row_groups": 1,
+      "schema": "barangay_psgc: large_string\nmunicipality_psgc: large_string\nbarangay: large_string\nmunicipality: large_string\nbarangay_area_km2: double\nmean_elevation_m: double\nmedian_elevation_m: double\nelevation_p05_m: double\nelevation_p95_m: double\nelevation_std_m: double\nelevation_relief_p95_p05_m: double\nmean_slope_deg: double\nmedian_slope_deg: double\np90_slope_deg: double\npct_area_slope_gt_15_deg: double\nobserved_mapped_line_length_km: double\nobserved_mapped_substation_count: int64\nsynthetic_pole_count: int64\nsynthetic_pole_count_per_km2: double\nsynthetic_transformer_count: int64\nsynthetic_transformer_count_per_km2: double\nsynthetic_distribution_line_length_km: double\nsynthetic_distribution_line_segment_count: int64\nsynthetic_feeder_count: int64\nsynthetic_service_zone_count: int64\nsynthetic_service_envelope_sum_area_km2: double\nsynthetic_feeders_with_observed_anchor_count: int64\n-- schema metadata --\npandas: '{\"index_columns\": [], \"column_indexes\": [], \"columns\": [{\"name\":' + 4022",
+      "columns": [
+        "barangay_psgc",
+        "municipality_psgc",
+        "barangay",
+        "municipality",
+        "barangay_area_km2",
+        "mean_elevation_m",
+        "median_elevation_m",
+        "elevation_p05_m",
+        "elevation_p95_m",
+        "elevation_std_m",
+        "elevation_relief_p95_p05_m",
+        "mean_slope_deg",
+        "median_slope_deg",
+        "p90_slope_deg",
+        "pct_area_slope_gt_15_deg",
+        "observed_mapped_line_length_km",
+        "observed_mapped_substation_count",
+        "synthetic_pole_count",
+        "synthetic_pole_count_per_km2",
+        "synthetic_transformer_count",
+        "synthetic_transformer_count_per_km2",
+        "synthetic_distribution_line_length_km",
+        "synthetic_distribution_line_segment_count",
+        "synthetic_feeder_count",
+        "synthetic_service_zone_count",
+        "synthetic_service_envelope_sum_area_km2",
+        "synthetic_feeders_with_observed_anchor_count"
+      ],
+      "metadata": {}
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Prediction\\data\\processed\\ml\\bataan_barangay_hour_analytical.parquet",
+      "bytes": 145700648,
+      "rows": 15571848,
+      "row_groups": 90,
+      "schema": "barangay_psgc: large_string\ntimestamp: timestamp[us, tz=Asia/Manila]\nmunicipality_psgc: large_string\nbarangay: large_string\nmunicipality: large_string\nbarangay_area_km2: float\nmean_elevation_m: float\nmedian_elevation_m: float\nelevation_p05_m: float\nelevation_p95_m: float\nelevation_std_m: float\nelevation_relief_p95_p05_m: float\nmean_slope_deg: float\nmedian_slope_deg: float\np90_slope_deg: float\npct_area_slope_gt_15_deg: float\nobserved_mapped_line_length_km: float\nobserved_mapped_substation_count: int32\nsynthetic_pole_count: int32\nsynthetic_pole_count_per_km2: float\nsynthetic_transformer_count: int32\nsynthetic_transformer_count_per_km2: float\nsynthetic_distribution_line_length_km: float\nsynthetic_distribution_line_segment_count: int32\nsynthetic_feeder_count: int32\nsynthetic_service_zone_count: int32\nsynthetic_service_envelope_sum_area_km2: float\nsynthetic_feeders_with_observed_anchor_count: int32\nyear: int16\nmonth: int16\nhour: int16\nday_of_week: int16\nday_of_year: int16\nis_weekend: bool\nhour_sin: float\nhour_cos: float\nmonth_sin: float\nmonth_cos: float\ncontext_weather_temperature_2m_c: float\ncontext_weather_relative_humidity_2m_pct: float\ncontext_weather_precipitation_mm: float\ncontext_weather_surface_pressure_hpa: float\ncontext_weather_soil_moisture_0_to_7cm_m3_m3: float\ncontext_weather_soil_moisture_7_to_28cm_m3_m3: float\ncontext_weather_wind_speed_10m_m_s: float\ncontext_weather_wind_gusts_10m_m_s: float\nweather_temperature_2m_c_lag1h: float\nweather_relative_humidity_2m_pct_lag1h: float\nweather_precipitation_mm_lag1h: float\nweather_surface_pressure_hpa_lag1h: float\nweather_soil_moisture_0_to_7cm_m3_m3_lag1h: float\nweather_soil_moisture_7_to_28cm_m3_m3_lag1h: float\nweather_wind_speed_10m_m_s_lag1h: float\nweather_wind_gusts_10m_m_s_lag1h: float\ncontext_era5_cape: float\ncontext_era5_cin: float\ncontext_era5_tcwv: float\ncontext_era5_totalx: float\ncontext_era5_cbh: float\ncontext_era5_t2m: float\ncontext_era5_u10: float\ncontext_era5_v10: float\ncontext_era5_cp: float\ncontext_era5_tp: float\nera5_cape_j_kg_lag1h: float\nera5_cin_j_kg_lag1h: float\nera5_total_column_water_vapour_kg_m2_lag1h: float\nera5_total_totals_index_k_lag1h: float\nera5_cloud_base_height_m_lag1h: float\ncontext_ndvi_mean_ndvi: float\ncontext_ndvi_median_ndvi: float\ncontext_ndvi_high_vegetation_pct: float\ncontext_ndvi_valid_coverage_pct: float\ncontext_ndvi_total_pixel_count: float\ncontext_ndvi_valid_pixel_count: float\ncontext_ndvi_source_year: float\ncontext_ndvi_previous_full_year_mean_ndvi: float\ncontext_ndvi_previous_full_year_median_ndvi: float\ncontext_ndvi_previous_full_year_high_vegetation_pct: float\ncontext_ndvi_previous_full_year_valid_coverage_pct: float\ncontext_ndvi_previous_full_year_total_pixel_count: float\ncontext_ndvi_previous_full_year_valid_pixel_count: float\ncontext_ndvi_previous_source_year: float\noutage_event_count: uint16\noutage_occurred: uint8\noutcome_duration_minutes_sum: float\noutcome_duration_minutes_mean: float\noutcome_duration_minutes_max: float\noutcome_outage_ids_json: large_string\noutcome_affected_feeder_count_event_sum: float\noutcome_affected_transformer_count_event_sum: float\noutcome_affected_service_zone_count_event_sum: float\noutcome_affected_barangay_count_event_sum: float\noutcome_affected_municipality_count_event_sum: float\noutcome_affected_tree_line_length_m_event_sum: float\noutcome_affected_service_envelope_area_m2_event_sum: float\noutcome_affected_network_node_count_event_sum: float\noutcome_affected_pole_count_event_sum: float\noutcome_affected_tree_edge_count_event_sum: float\noutcome_transformers_without_service_zone_count_event_sum: float\noutcome_cause_equipment_technical_event_count: int32\noutcome_cause_other_unknown_event_count: int32\noutcome_cause_vegetation_tree_contact_event_count: int32\noutcome_cause_weather_storm_event_count: int32\n-- schema metadata --\npandas: '{\"index_columns\": [], \"column_indexes\": [], \"columns\": [{\"name\":' + 16350\nml_generator_version: '1.0.0'\nsemantics: 'SYNTHETIC outage labels. Not PENELCO history. No model traini' + 73",
+      "columns": [
+        "barangay_psgc",
+        "timestamp",
+        "municipality_psgc",
+        "barangay",
+        "municipality",
+        "barangay_area_km2",
+        "mean_elevation_m",
+        "median_elevation_m",
+        "elevation_p05_m",
+        "elevation_p95_m",
+        "elevation_std_m",
+        "elevation_relief_p95_p05_m",
+        "mean_slope_deg",
+        "median_slope_deg",
+        "p90_slope_deg",
+        "pct_area_slope_gt_15_deg",
+        "observed_mapped_line_length_km",
+        "observed_mapped_substation_count",
+        "synthetic_pole_count",
+        "synthetic_pole_count_per_km2",
+        "synthetic_transformer_count",
+        "synthetic_transformer_count_per_km2",
+        "synthetic_distribution_line_length_km",
+        "synthetic_distribution_line_segment_count",
+        "synthetic_feeder_count",
+        "synthetic_service_zone_count",
+        "synthetic_service_envelope_sum_area_km2",
+        "synthetic_feeders_with_observed_anchor_count",
+        "year",
+        "month",
+        "hour",
+        "day_of_week",
+        "day_of_year",
+        "is_weekend",
+        "hour_sin",
+        "hour_cos",
+        "month_sin",
+        "month_cos",
+        "context_weather_temperature_2m_c",
+        "context_weather_relative_humidity_2m_pct",
+        "context_weather_precipitation_mm",
+        "context_weather_surface_pressure_hpa",
+        "context_weather_soil_moisture_0_to_7cm_m3_m3",
+        "context_weather_soil_moisture_7_to_28cm_m3_m3",
+        "context_weather_wind_speed_10m_m_s",
+        "context_weather_wind_gusts_10m_m_s",
+        "weather_temperature_2m_c_lag1h",
+        "weather_relative_humidity_2m_pct_lag1h",
+        "weather_precipitation_mm_lag1h",
+        "weather_surface_pressure_hpa_lag1h",
+        "weather_soil_moisture_0_to_7cm_m3_m3_lag1h",
+        "weather_soil_moisture_7_to_28cm_m3_m3_lag1h",
+        "weather_wind_speed_10m_m_s_lag1h",
+        "weather_wind_gusts_10m_m_s_lag1h",
+        "context_era5_cape",
+        "context_era5_cin",
+        "context_era5_tcwv",
+        "context_era5_totalx",
+        "context_era5_cbh",
+        "context_era5_t2m",
+        "context_era5_u10",
+        "context_era5_v10",
+        "context_era5_cp",
+        "context_era5_tp",
+        "era5_cape_j_kg_lag1h",
+        "era5_cin_j_kg_lag1h",
+        "era5_total_column_water_vapour_kg_m2_lag1h",
+        "era5_total_totals_index_k_lag1h",
+        "era5_cloud_base_height_m_lag1h",
+        "context_ndvi_mean_ndvi",
+        "context_ndvi_median_ndvi",
+        "context_ndvi_high_vegetation_pct",
+        "context_ndvi_valid_coverage_pct",
+        "context_ndvi_total_pixel_count",
+        "context_ndvi_valid_pixel_count",
+        "context_ndvi_source_year",
+        "context_ndvi_previous_full_year_mean_ndvi",
+        "context_ndvi_previous_full_year_median_ndvi",
+        "context_ndvi_previous_full_year_high_vegetation_pct",
+        "context_ndvi_previous_full_year_valid_coverage_pct",
+        "context_ndvi_previous_full_year_total_pixel_count",
+        "context_ndvi_previous_full_year_valid_pixel_count",
+        "context_ndvi_previous_source_year",
+        "outage_event_count",
+        "outage_occurred",
+        "outcome_duration_minutes_sum",
+        "outcome_duration_minutes_mean",
+        "outcome_duration_minutes_max",
+        "outcome_outage_ids_json",
+        "outcome_affected_feeder_count_event_sum",
+        "outcome_affected_transformer_count_event_sum",
+        "outcome_affected_service_zone_count_event_sum",
+        "outcome_affected_barangay_count_event_sum",
+        "outcome_affected_municipality_count_event_sum",
+        "outcome_affected_tree_line_length_m_event_sum",
+        "outcome_affected_service_envelope_area_m2_event_sum",
+        "outcome_affected_network_node_count_event_sum",
+        "outcome_affected_pole_count_event_sum",
+        "outcome_affected_tree_edge_count_event_sum",
+        "outcome_transformers_without_service_zone_count_event_sum",
+        "outcome_cause_equipment_technical_event_count",
+        "outcome_cause_other_unknown_event_count",
+        "outcome_cause_vegetation_tree_contact_event_count",
+        "outcome_cause_weather_storm_event_count"
+      ],
+      "metadata": {
+        "ml_generator_version": "1.0.0",
+        "semantics": "SYNTHETIC outage labels. Not PENELCO history. No model training. Hour is interval start; lagged weather; static network retrospective."
+      },
+      "sample": [
+        {
+          "barangay_psgc": "0300801001",
+          "timestamp": "2019-01-01 08:00:00+08:00",
+          "outage_occurred": "0",
+          "outage_event_count": "0"
+        },
+        {
+          "barangay_psgc": "0300801002",
+          "timestamp": "2019-01-01 08:00:00+08:00",
+          "outage_occurred": "0",
+          "outage_event_count": "0"
+        },
+        {
+          "barangay_psgc": "0300801003",
+          "timestamp": "2019-01-01 08:00:00+08:00",
+          "outage_occurred": "0",
+          "outage_event_count": "0"
+        }
+      ]
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Prediction\\data\\processed\\ml\\bataan_barangay_hour_occurrence.parquet",
+      "bytes": 60609333,
+      "rows": 15571848,
+      "row_groups": 90,
+      "schema": "barangay_psgc: large_string\ntimestamp: timestamp[us, tz=Asia/Manila]\nmunicipality_psgc: large_string\nbarangay_area_km2: float\nmean_elevation_m: float\nmedian_elevation_m: float\nelevation_p05_m: float\nelevation_p95_m: float\nelevation_std_m: float\nelevation_relief_p95_p05_m: float\nmean_slope_deg: float\nmedian_slope_deg: float\np90_slope_deg: float\npct_area_slope_gt_15_deg: float\nobserved_mapped_line_length_km: float\nobserved_mapped_substation_count: int32\nsynthetic_pole_count: int32\nsynthetic_pole_count_per_km2: float\nsynthetic_transformer_count: int32\nsynthetic_transformer_count_per_km2: float\nsynthetic_distribution_line_length_km: float\nsynthetic_distribution_line_segment_count: int32\nsynthetic_feeder_count: int32\nsynthetic_service_zone_count: int32\nsynthetic_service_envelope_sum_area_km2: float\nsynthetic_feeders_with_observed_anchor_count: int32\nyear: int16\nmonth: int16\nhour: int16\nday_of_week: int16\nday_of_year: int16\nis_weekend: bool\nhour_sin: float\nhour_cos: float\nmonth_sin: float\nmonth_cos: float\nweather_temperature_2m_c_lag1h: float\nweather_relative_humidity_2m_pct_lag1h: float\nweather_precipitation_mm_lag1h: float\nweather_surface_pressure_hpa_lag1h: float\nweather_soil_moisture_0_to_7cm_m3_m3_lag1h: float\nweather_soil_moisture_7_to_28cm_m3_m3_lag1h: float\nweather_wind_speed_10m_m_s_lag1h: float\nweather_wind_gusts_10m_m_s_lag1h: float\nera5_cape_j_kg_lag1h: float\nera5_cin_j_kg_lag1h: float\nera5_total_column_water_vapour_kg_m2_lag1h: float\nera5_total_totals_index_k_lag1h: float\nera5_cloud_base_height_m_lag1h: float\noutage_event_count: uint16\noutage_occurred: uint8\n-- schema metadata --\npandas: '{\"index_columns\": [], \"column_indexes\": [], \"columns\": [{\"name\":' + 7505\nml_generator_version: '1.0.0'\nsemantics: 'SYNTHETIC outage labels. Not PENELCO history. No model traini' + 73",
+      "columns": [
+        "barangay_psgc",
+        "timestamp",
+        "municipality_psgc",
+        "barangay_area_km2",
+        "mean_elevation_m",
+        "median_elevation_m",
+        "elevation_p05_m",
+        "elevation_p95_m",
+        "elevation_std_m",
+        "elevation_relief_p95_p05_m",
+        "mean_slope_deg",
+        "median_slope_deg",
+        "p90_slope_deg",
+        "pct_area_slope_gt_15_deg",
+        "observed_mapped_line_length_km",
+        "observed_mapped_substation_count",
+        "synthetic_pole_count",
+        "synthetic_pole_count_per_km2",
+        "synthetic_transformer_count",
+        "synthetic_transformer_count_per_km2",
+        "synthetic_distribution_line_length_km",
+        "synthetic_distribution_line_segment_count",
+        "synthetic_feeder_count",
+        "synthetic_service_zone_count",
+        "synthetic_service_envelope_sum_area_km2",
+        "synthetic_feeders_with_observed_anchor_count",
+        "year",
+        "month",
+        "hour",
+        "day_of_week",
+        "day_of_year",
+        "is_weekend",
+        "hour_sin",
+        "hour_cos",
+        "month_sin",
+        "month_cos",
+        "weather_temperature_2m_c_lag1h",
+        "weather_relative_humidity_2m_pct_lag1h",
+        "weather_precipitation_mm_lag1h",
+        "weather_surface_pressure_hpa_lag1h",
+        "weather_soil_moisture_0_to_7cm_m3_m3_lag1h",
+        "weather_soil_moisture_7_to_28cm_m3_m3_lag1h",
+        "weather_wind_speed_10m_m_s_lag1h",
+        "weather_wind_gusts_10m_m_s_lag1h",
+        "era5_cape_j_kg_lag1h",
+        "era5_cin_j_kg_lag1h",
+        "era5_total_column_water_vapour_kg_m2_lag1h",
+        "era5_total_totals_index_k_lag1h",
+        "era5_cloud_base_height_m_lag1h",
+        "outage_event_count",
+        "outage_occurred"
+      ],
+      "metadata": {
+        "ml_generator_version": "1.0.0",
+        "semantics": "SYNTHETIC outage labels. Not PENELCO history. No model training. Hour is interval start; lagged weather; static network retrospective."
+      },
+      "sample": [
+        {
+          "barangay_psgc": "0300801001",
+          "timestamp": "2019-01-01 08:00:00+08:00",
+          "outage_occurred": "0",
+          "outage_event_count": "0"
+        },
+        {
+          "barangay_psgc": "0300801002",
+          "timestamp": "2019-01-01 08:00:00+08:00",
+          "outage_occurred": "0",
+          "outage_event_count": "0"
+        },
+        {
+          "barangay_psgc": "0300801003",
+          "timestamp": "2019-01-01 08:00:00+08:00",
+          "outage_occurred": "0",
+          "outage_event_count": "0"
+        }
+      ]
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Prediction\\data\\processed\\ml\\ml_outage_event_relationships.parquet",
+      "bytes": 1661348,
+      "rows": 10608,
+      "row_groups": 1,
+      "schema": "outage_id: large_string\nis_synthetic: bool\ngenerator_version: large_string\nrandom_seed: int64\nbarangay_psgc: large_string\nbarangay: large_string\nmunicipality_psgc: large_string\nmunicipality: large_string\nstart_time: large_string\nend_time: large_string\nduration_minutes: double\nyear: int64\nmonth: int64\nhour: int64\nday_of_week: large_string\ncause_category: large_string\nseverity_class: large_string\nsynthetic_event_propensity: double\nsynthetic_event_generation_probability: double\ncape_j_kg: double\nndvi_annual_mean: double\nndvi_year: int64\nndvi_period_type: large_string\nndvi_context: large_string\nndvi_source_start: large_string\nndvi_source_end_exclusive: large_string\nweather_spatial_resolution: large_string\nera5_latitude: double\nera5_longitude: double\nera5_grid_resolution_degrees: double\nweather_hazard_score: double\nvegetation_exposure_score: double\nterrain_exposure_score: double\nwind_vegetation_interaction: double\nrain_terrain_interaction: double\nrainfall_score: double\nwind_score: double\nconvective_score: double\nsoil_wetness_score: double\nprecipitation_mm: double\nwind_speed_10m_m_s: double\nwind_gusts_10m_m_s: double\nsoil_moisture_0_to_7cm_m3_m3: double\nsoil_moisture_7_to_28cm_m3_m3: double\ntemperature_2m_c: double\nrelative_humidity_2m_pct: int64\nsurface_pressure_hpa: double\nmean_elevation_m: double\nmean_slope_deg: double\np90_slope_deg: double\nelevation_relief_p95_p05_m: double\nsource_assignment_is_synthetic: bool\nimpact_generator_version: large_string\nimpact_random_seed: int64\nassignment_method: large_string\npropagation_method: large_string\ndeterministic_key_method: large_string\nsource_feeder_id: large_string\nsource_substation_id: large_string\nsource_anchor_substation_id: large_string\nassumed_impacted_substation_id: large_string\nbackbone_substation_assumption_method: large_string\nsource_relationship_id: large_string\nsource_relationship_requires_review: bool\nsource_asset_id: large_string\nsource_asset_type: large_string\nsource_asset_is_synthetic: bool\nsource_geography_basis: large_string\nsource_geometry_distance_to_event_barangay_m: double\nsource_candidate_count: int64\nsource_assignment_status: large_string\nsource_geography_fallback: bool\nimpact_set_id: large_string\naffected_feeder_count: int64\naffected_transformer_count: int64\naffected_service_zone_count: int64\naffected_barangay_count: int64\naffected_municipality_count: int64\naffected_tree_line_length_m: double\naffected_service_envelope_area_m2: double\naffected_network_node_count: int64\naffected_pole_count: int64\naffected_tree_edge_count: int64\ntransformers_without_service_zone_count: int64\nimpact_scope_class: large_string\noriginal_barangay_has_affected_service_envelope: bool\ntimestamp: timestamp[us, tz=Asia/Manila]\n-- schema metadata --\npandas: '{\"index_columns\": [], \"column_indexes\": [], \"columns\": [{\"name\":' + 12159",
+      "columns": [
+        "outage_id",
+        "is_synthetic",
+        "generator_version",
+        "random_seed",
+        "barangay_psgc",
+        "barangay",
+        "municipality_psgc",
+        "municipality",
+        "start_time",
+        "end_time",
+        "duration_minutes",
+        "year",
+        "month",
+        "hour",
+        "day_of_week",
+        "cause_category",
+        "severity_class",
+        "synthetic_event_propensity",
+        "synthetic_event_generation_probability",
+        "cape_j_kg",
+        "ndvi_annual_mean",
+        "ndvi_year",
+        "ndvi_period_type",
+        "ndvi_context",
+        "ndvi_source_start",
+        "ndvi_source_end_exclusive",
+        "weather_spatial_resolution",
+        "era5_latitude",
+        "era5_longitude",
+        "era5_grid_resolution_degrees",
+        "weather_hazard_score",
+        "vegetation_exposure_score",
+        "terrain_exposure_score",
+        "wind_vegetation_interaction",
+        "rain_terrain_interaction",
+        "rainfall_score",
+        "wind_score",
+        "convective_score",
+        "soil_wetness_score",
+        "precipitation_mm",
+        "wind_speed_10m_m_s",
+        "wind_gusts_10m_m_s",
+        "soil_moisture_0_to_7cm_m3_m3",
+        "soil_moisture_7_to_28cm_m3_m3",
+        "temperature_2m_c",
+        "relative_humidity_2m_pct",
+        "surface_pressure_hpa",
+        "mean_elevation_m",
+        "mean_slope_deg",
+        "p90_slope_deg",
+        "elevation_relief_p95_p05_m",
+        "source_assignment_is_synthetic",
+        "impact_generator_version",
+        "impact_random_seed",
+        "assignment_method",
+        "propagation_method",
+        "deterministic_key_method",
+        "source_feeder_id",
+        "source_substation_id",
+        "source_anchor_substation_id",
+        "assumed_impacted_substation_id",
+        "backbone_substation_assumption_method",
+        "source_relationship_id",
+        "source_relationship_requires_review",
+        "source_asset_id",
+        "source_asset_type",
+        "source_asset_is_synthetic",
+        "source_geography_basis",
+        "source_geometry_distance_to_event_barangay_m",
+        "source_candidate_count",
+        "source_assignment_status",
+        "source_geography_fallback",
+        "impact_set_id",
+        "affected_feeder_count",
+        "affected_transformer_count",
+        "affected_service_zone_count",
+        "affected_barangay_count",
+        "affected_municipality_count",
+        "affected_tree_line_length_m",
+        "affected_service_envelope_area_m2",
+        "affected_network_node_count",
+        "affected_pole_count",
+        "affected_tree_edge_count",
+        "transformers_without_service_zone_count",
+        "impact_scope_class",
+        "original_barangay_has_affected_service_envelope",
+        "timestamp"
+      ],
+      "metadata": {}
+    },
+    {
+      "path": "D:\\PyCharmProjects\\Outage Prediction\\data\\processed\\ml\\ml_static_barangay_context.parquet",
+      "bytes": 43822,
+      "rows": 237,
+      "row_groups": 1,
+      "schema": "barangay_psgc: large_string\nmunicipality_psgc: large_string\nbarangay: large_string\nmunicipality: large_string\nbarangay_area_km2: double\nmean_elevation_m: double\nmedian_elevation_m: double\nelevation_p05_m: double\nelevation_p95_m: double\nelevation_std_m: double\nelevation_relief_p95_p05_m: double\nmean_slope_deg: double\nmedian_slope_deg: double\np90_slope_deg: double\npct_area_slope_gt_15_deg: double\nobserved_mapped_line_length_km: double\nobserved_mapped_substation_count: int64\nsynthetic_pole_count: int64\nsynthetic_pole_count_per_km2: double\nsynthetic_transformer_count: int64\nsynthetic_transformer_count_per_km2: double\nsynthetic_distribution_line_length_km: double\nsynthetic_distribution_line_segment_count: int64\nsynthetic_feeder_count: int64\nsynthetic_service_zone_count: int64\nsynthetic_service_envelope_sum_area_km2: double\nsynthetic_feeders_with_observed_anchor_count: int64\n-- schema metadata --\npandas: '{\"index_columns\": [], \"column_indexes\": [], \"columns\": [{\"name\":' + 4022",
+      "columns": [
+        "barangay_psgc",
+        "municipality_psgc",
+        "barangay",
+        "municipality",
+        "barangay_area_km2",
+        "mean_elevation_m",
+        "median_elevation_m",
+        "elevation_p05_m",
+        "elevation_p95_m",
+        "elevation_std_m",
+        "elevation_relief_p95_p05_m",
+        "mean_slope_deg",
+        "median_slope_deg",
+        "p90_slope_deg",
+        "pct_area_slope_gt_15_deg",
+        "observed_mapped_line_length_km",
+        "observed_mapped_substation_count",
+        "synthetic_pole_count",
+        "synthetic_pole_count_per_km2",
+        "synthetic_transformer_count",
+        "synthetic_transformer_count_per_km2",
+        "synthetic_distribution_line_length_km",
+        "synthetic_distribution_line_segment_count",
+        "synthetic_feeder_count",
+        "synthetic_service_zone_count",
+        "synthetic_service_envelope_sum_area_km2",
+        "synthetic_feeders_with_observed_anchor_count"
+      ],
+      "metadata": {}
+    }
+  ],
+  "legacy_ml_reported_summary": {
+    "start": "2019-01-01 08:00:00+08:00",
+    "end": "2026-06-30 23:00:00+08:00",
+    "rows": 15571848,
+    "positive": 10608,
+    "negative": 15561240,
+    "positive_rate": 0.0006812293569780542,
+    "hours": 65704,
+    "barangays": 237,
+    "municipalities": 12,
+    "outputs": {
+      "analytical": {
+        "rows": 15571848,
+        "positive_hours": 10608,
+        "event_count": 10608,
+        "columns": 104,
+        "row_groups": 90,
+        "bytes": 145700648,
+        "parquet_roundtrip_passed": true
+      },
+      "occurrence": {
+        "rows": 15571848,
+        "positive_hours": 10608,
+        "event_count": 10608,
+        "columns": 51,
+        "row_groups": 90,
+        "bytes": 60609333,
+        "parquet_roundtrip_passed": true
+      }
+    }
+  },
+  "scope_note": "Panel row counts verified from Parquet footers; positive counts and full-panel QA are prior report claims, not independently rescanned in this assessment."
+}
