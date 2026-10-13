@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-13",
+  "contract_json_valid": true,
+  "unique_historical_candidates": 12,
+  "documented_pandas_example_executed": true,
+  "checks": [
+    "independent manual-window sum",
+    "wind mean and gust maximum",
+    "warm-up null",
+    "missing timestamp preserved as null",
+    "future perturbation leaves prior issue unchanged",
+    "separate-location calculations",
+    "40-row read-only source example agrees with direct sum"
+  ],
+  "not_evaluated": [
+    "full-source rolling features",
+    "model performance",
+    "historical real-time availability",
+    "forecast vintage compatibility"
+  ]
+}

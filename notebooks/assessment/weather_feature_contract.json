@@ -1,0 +1,191 @@
+{
+  "schema_version": "weather-window-candidates/0.1.0",
+  "updated_local_date": "2026-10-13",
+  "status": "draft_computation_specification",
+  "documentation": "weather_feature_specification.md",
+  "ml_selected_features": [],
+  "selection_status": "Pending chronological baseline comparisons and source availability audit; no model fitted",
+  "scope": "Synthetic outage demonstration; no claim of operational PENELCO predictive skill",
+  "source": {
+    "local_path": "data/weather/open_meteo_bataan_2019_01_to_2026_06.csv",
+    "source_timezone": "Asia/Singapore",
+    "utc_offset_seconds": 28800,
+    "display_timezone": "Asia/Manila",
+    "timestamp_normalization": "Localize naive source clocks to their recorded zone, then convert to UTC; do not localize UTC as Manila",
+    "precipitation_semantics": "Hourly preceding-interval total precipitation used as rainfall proxy; confirm original provider/model",
+    "gust_semantics": "Maximum over supplied hourly gust values; historical/forecast temporal meanings not yet reconciled",
+    "available_at_present_in_local_export": false,
+    "forecast_vintage_present_in_local_export": false
+  },
+  "grouping": {
+    "history_keys": ["location_id", "provider_id", "model_id", "source_version"],
+    "forecast_keys": ["location_id", "provider_id", "model_id", "forecast_run_id"],
+    "location_identity": "Verified municipal point or ERA5 grid cell; never mix grains or roll across locations",
+    "barangay_join": "Compute once per weather location, then join using verified PSGC-to-weather-location mapping"
+  },
+  "alignment": {
+    "step_hours": 1,
+    "historical_reconstruction_lag_hours": 1,
+    "historical_cutoff": "c = issue_time - 1h",
+    "historical_availability_status": "retrospective_reconstruction_assumed_lag",
+    "operational_gate": "Every input available_at <= issue_time, required historic interval ends <= fixed cutoff; missing required hours yield null",
+    "trailing_window": "Valid-time labels in (c - W hours, c], precipitation intervals collectively (c - W hours, c]",
+    "center": false,
+    "closed": "right",
+    "issue_time_policy": "Hourly-aligned for this contract; off-hour interval adapters require a new explicit specification",
+    "forecast_gate": "Run initialization and actual publication/availability no later than issue; retain original vintage and valid times"
+  },
+  "missingness": {
+    "duplicates": "Reject duplicate location/source/valid-time keys; diagnose before calculation",
+    "cadence": "Reindex within each group to hourly valid-time grid; leave missing hours null",
+    "window_policy": "All expected hourly values required for sums, means, maxima and decay; no zero-fill, interpolation, future backfill or rescaling partial windows",
+    "initial_history": "Warm-up produces null, never artificial zeros",
+    "antecedent_policy": "Direct disjoint 48-hour window can be valid when recent 24 hours are missing; parent-sum subtraction requires both parents complete",
+    "pressure_policy": "Two finite endpoints required, intermediate hours are not constituents of endpoint difference",
+    "snapshot_policy": "Require value at exact cutoff, otherwise null; no unbounded carry-forward",
+    "model_imputation": "Fit only on training; retain coverage flags; evaluate deployment-compatible missingness"
+  },
+  "historical_candidates": [
+    {
+      "names": ["rain_sum_6h_mm", "rain_sum_24h_mm", "rain_sum_72h_mm"],
+      "source_column": "precipitation_mm",
+      "windows_hours": [6, 24, 72],
+      "operation": "sum",
+      "formula": "sum(j=0..W-1, p[c-j hours])",
+      "unit": "mm",
+      "expected_samples": "W",
+      "purpose": "Recent storm accumulation and multiday rainfall context",
+      "uses": ["descriptive_analytics", "event_timeline", "ml_candidate", "history_in_forecast_view"],
+      "risk": "Nested windows redundant; realized future rainfall and event-end windows prohibited"
+    },
+    {
+      "names": ["wind_mean_6h_m_s", "wind_mean_24h_m_s"],
+      "source_column": "wind_speed_10m_m_s",
+      "windows_hours": [6, 24],
+      "operation": "mean",
+      "formula": "sum(j=0..W-1, u[c-j hours]) / W",
+      "unit": "m/s",
+      "expected_samples": "W",
+      "purpose": "Sustained scalar wind exposure at hourly sampling resolution",
+      "uses": ["descriptive_analytics", "event_timeline", "ml_candidate", "history_in_forecast_view"],
+      "risk": "Not a vector mean or continuous-time average; centered windows leak future samples"
+    },
+    {
+      "names": ["gust_max_6h_m_s", "gust_max_24h_m_s"],
+      "source_column": "wind_gusts_10m_m_s",
+      "windows_hours": [6, 24],
+      "operation": "max",
+      "formula": "max(j=0..W-1, g[c-j hours])",
+      "unit": "m/s",
+      "expected_samples": "W",
+      "purpose": "Largest supplied hourly gust in trailing window",
+      "uses": ["descriptive_analytics", "event_timeline", "ml_candidate", "history_in_forecast_view"],
+      "risk": "Product-dependent gust semantics; partial windows underestimate peaks; real future gusts leak"
+    },
+    {
+      "names": ["antecedent_rain_24to72h_mm"],
+      "source_column": "precipitation_mm",
+      "operation": "disjoint_sum",
+      "formula": "sum(j=24..71, p[c-j hours])",
+      "window_start_offset_hours": -72,
+      "window_end_offset_hours": -24,
+      "unit": "mm",
+      "expected_samples": 48,
+      "purpose": "Earlier wetness distinct from most recent 24h rainfall",
+      "uses": ["descriptive_analytics", "event_timeline", "ml_candidate", "history_in_forecast_view"],
+      "risk": "Exactly dependent on R72-R24 when both parent sums complete; not a measured saturation index"
+    },
+    {
+      "names": ["rain_hourly_max_24h_mm"],
+      "source_column": "precipitation_mm",
+      "windows_hours": [24],
+      "operation": "max",
+      "formula": "max(j=0..23, p[c-j hours])",
+      "unit": "mm per one-hour interval",
+      "expected_samples": 24,
+      "purpose": "Hourly-resolution intensity proxy",
+      "uses": ["descriptive_analytics", "event_timeline", "ml_candidate"],
+      "risk": "Not a subhourly peak or rainfall rate unless explicitly divided by 1h"
+    },
+    {
+      "names": ["soil_moisture_7to28cm_latest_m3_m3"],
+      "source_column": "soil_moisture_7_to_28cm_m3_m3",
+      "operation": "exact_cutoff_snapshot",
+      "formula": "s[c]",
+      "unit": "m3/m3",
+      "expected_samples": 1,
+      "purpose": "Modeled deeper-layer wetness context",
+      "uses": ["descriptive_analytics", "event_timeline", "ml_candidate"],
+      "risk": "Release timing and forecast support unverified; not actual local soil saturation"
+    },
+    {
+      "names": ["pressure_change_3h_hpa"],
+      "source_column": "surface_pressure_hpa",
+      "operation": "endpoint_difference",
+      "formula": "pressure[c] - pressure[c-3h]",
+      "unit": "hPa",
+      "expected_samples": 2,
+      "purpose": "Exploratory signed pressure tendency",
+      "uses": ["descriptive_analytics", "event_timeline", "ml_candidate"],
+      "risk": "Not validated storm detection; incompatible pressure definitions and future endpoints prohibited"
+    },
+    {
+      "names": ["rain_decay_168h_half48h_mm"],
+      "source_column": "precipitation_mm",
+      "operation": "finite_decay_weighted_sum",
+      "formula": "sum(j=0..167, 2^(-j/48) * p[c-j hours])",
+      "unit": "mm",
+      "expected_samples": 168,
+      "trial_half_life_hours": 48,
+      "purpose": "Optional rainfall-memory sensitivity candidate",
+      "uses": ["descriptive_analytics", "ml_candidate"],
+      "risk": "Uncalibrated parameters; ewm.mean is not this sum; tune without final test"
+    }
+  ],
+  "forecast_candidates": [
+    {
+      "name_template": "forecast_precipitation_next{H}h_mm",
+      "horizons_hours": [24, 48, 72],
+      "formula": "sum(k=1..H, p_forecast[issue_time+k hours]) from one eligible published vintage",
+      "unit": "mm",
+      "expected_samples": "H",
+      "valid_interval": "(issue_time, issue_time+H hours]",
+      "uses": ["forecast_visualization", "ml_candidate_only_with_vintage_backtest"],
+      "risk": "No realized future weather; no later revisions; nested totals must not be added together"
+    },
+    {
+      "name_template": "forecast_gust_max_next{H}h_m_s",
+      "horizons_hours": [24, 48, 72],
+      "formula": "max(k=1..H, g_forecast[issue_time+k hours]) from one eligible published vintage",
+      "unit": "m/s",
+      "expected_samples": "H",
+      "valid_interval": "(issue_time, issue_time+H hours]",
+      "uses": ["forecast_visualization", "ml_candidate_only_with_vintage_backtest"],
+      "risk": "Missing leads yield null; source interval semantics must match training"
+    }
+  ],
+  "summary_record_fields": [
+    "schema_version", "location_id", "provider_id", "model_id", "source_version",
+    "issue_time", "cutoff_time", "feature_name", "value", "unit",
+    "time_support_kind", "window_start", "window_end", "window_closed",
+    "expected_samples", "valid_samples", "coverage_fraction",
+    "forecast_run_id", "run_initialized_at", "published_at", "available_at",
+    "availability_status", "freshness_age_hours", "input_provenance", "null_reason"
+  ],
+  "null_reasons": ["insufficient_history", "missing_hours", "not_available_at_issue", "source_semantics_unverified"],
+  "evaluation_gate": {
+    "baseline_families": ["training_prevalence", "training_only_calendar_location_frequency", "calendar_static_environment", "same_model_lagged_raw_weather"],
+    "ablation_families": ["rainfall", "wind_gust", "antecedent_wetness"],
+    "metrics": ["average_precision", "precision", "recall", "brier_score", "reliability_plot", "alert_burden"],
+    "split_policy": "Chronological; purge outcome windows crossing boundaries; validation-only choices; final frozen test",
+    "selection_policy": "Retain smallest stable useful available set; identical eligible evaluation rows; no automatic inclusion"
+  },
+  "references": [
+    "https://open-meteo.com/en/docs/historical-weather-api",
+    "https://open-meteo.com/en/docs",
+    "https://confluence.ecmwf.int/pages/viewpage.action?pageId=111150607",
+    "https://open-meteo.com/en/docs/single-runs-api",
+    "https://open-meteo.com/en/docs/historical-forecast-api",
+    "https://www.usgs.gov/publications/wetting-and-drying-soil-response-precipitation-data-analysis-modeling-and-forecasting"
+  ]
+}
