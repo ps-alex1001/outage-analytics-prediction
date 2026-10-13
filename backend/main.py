@@ -18,6 +18,31 @@ def read_root():
 
 DATA_PATH = (Path(__file__).parent.parent / 'data' / 'outages' /
              'synthetic_outage_events.csv')
+OUTAGES_DF = pd.read_csv(
+    DATA_PATH,
+    dtype={
+        "municipality_psgc": "string",
+        "barangay_psgc": "string",
+    },
+).drop_duplicates(subset=["outage_id"])
+
+def filter_outages(
+    year: int | None = None,
+    municipality_psgc: str | None = None,
+    barangay_psgc: str | None = None,
+):
+    df = OUTAGES_DF
+
+    if year is not None:
+        df = df[df["year"] == year]
+
+    if municipality_psgc:
+        df = df[df["municipality_psgc"] == municipality_psgc]
+
+    if barangay_psgc:
+        df = df[df["barangay_psgc"] == barangay_psgc]
+
+    return df
 
 @app.get('/api/outages/summary')
 def get_outage_summary(year: int | None = None):
@@ -36,9 +61,13 @@ def get_overview_kpis(
         municipality_psgc: str | None = None,
         barangay_psgc: str | None = None,
 ):
-    df = pd.read_csv(DATA_PATH, dtype={'municipality_psgc': 'string', 'barangay_psgc': 'string'})
-    df = df.drop_duplicates(subset=['outage_id'])
-    source_df = df
+    df = filter_outages(
+        year=year,
+        municipality_psgc=municipality_psgc,
+        barangay_psgc=barangay_psgc,
+    )
+
+    source_df = OUTAGES_DF
 
     # Apply filters
     if year is not None:
@@ -150,4 +179,47 @@ def get_overview_kpis(
             "barangay_psgc": barangay_psgc,
         },
         "comparison": comparison,
+    }
+
+@app.get("/api/overview/causes")
+def get_cause_distribution(
+    year: int | None = None,
+    municipality_psgc: str | None = None,
+    barangay_psgc: str | None = None,
+):
+    df = filter_outages(
+        year=year,
+        municipality_psgc=municipality_psgc,
+        barangay_psgc=barangay_psgc,
+    )
+
+    source_df = OUTAGES_DF
+
+    if year is not None:
+        df = df[df["year"] == year]
+
+    if municipality_psgc:
+        df = df[df["municipality_psgc"] == municipality_psgc]
+
+    if barangay_psgc:
+        df = df[df["barangay_psgc"] == barangay_psgc]
+
+    causes = (
+        df["cause_category"]
+        .fillna("Other / Unknown")
+        .value_counts()
+    )
+
+    total = int(causes.sum())
+
+    return {
+        "total_events": total,
+        "causes": [
+            {
+                "name": name,
+                "value": int(count),
+                "percentage": round(count / total * 100, 2),
+            }
+            for name, count in causes.items()
+        ],
     }
