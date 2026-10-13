@@ -62,12 +62,12 @@ def get_outage_summary(year: int | None = None):
 
 @app.get("/api/overview/trends")
 def get_overview_trends(
-    year: Annotated[int | None, Query(ge=1, le=9999)] = None,
+    year: int | None = None,
     municipality_psgc: str | None = None,
     barangay_psgc: str | None = None,
     cause_category: str | None = None,
 ):
-    granularity = "annual" if year is None else "monthly"
+    granularity = "monthly"
     if OUTAGES_DF.empty:
         return {"granularity": granularity, "points": []}
 
@@ -79,15 +79,23 @@ def get_overview_trends(
     first_year, first_month = map(int, coverage.iloc[0])
     last_year, last_month = map(int, coverage.iloc[-1])
     if year is None:
-        periods = range(first_year, last_year + 1)
-        group_column = "year"
+        periods = pd.period_range(
+            start=f"{first_year}-{first_month:02d}",
+            end=f"{last_year}-{last_month:02d}",
+            freq="M",
+        ).strftime("%Y-%m").tolist()
+
     else:
         if year < first_year or year > last_year:
             return {"granularity": granularity, "points": []}
+
         first = first_month if year == first_year else 1
         last = last_month if year == last_year else 12
-        periods = range(first, last + 1)
-        group_column = "month"
+
+        periods = [
+            f"{year:04d}-{month:02d}"
+            for month in range(first, last + 1)
+        ]
 
     df = filter_outages(
         year=year,
@@ -98,17 +106,29 @@ def get_overview_trends(
     # Match KPI duration semantics: sum known event durations, and average
     # known durations only. These are event hours, not customer outage hours.
     durations = pd.to_numeric(df["duration_minutes"], errors="coerce")
-    aggregated = df.assign(duration_minutes=durations).groupby(group_column).agg(
-        total_outages=("outage_id", "nunique"),
-        total_minutes=("duration_minutes", "sum"),
-        average_minutes=("duration_minutes", "mean"),
-    ).reindex(periods)
+    aggregated = (
+        df.assign(
+            duration_minutes=durations,
+            period=(
+                    df["year"].astype(str)
+                    + "-"
+                    + df["month"].astype(str).str.zfill(2)
+            ),
+        )
+        .groupby("period")
+        .agg(
+            total_outages=("outage_id", "nunique"),
+            total_minutes=("duration_minutes", "sum"),
+            average_minutes=("duration_minutes", "mean"),
+        )
+        .reindex(periods)
+    )
 
     points = []
     for period, row in aggregated.iterrows():
         average = row["average_minutes"]
         points.append({
-            "period": str(period) if year is None else f"{year:04d}-{period:02d}",
+            "period": str(period),
             "total_outages": (
                 int(row["total_outages"]) if pd.notna(row["total_outages"]) else 0
             ),

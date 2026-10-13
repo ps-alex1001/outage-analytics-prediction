@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import CauseDistribution from "@/components/overview/cause-distribution";
+import OutageTrends from "@/components/overview/outage-trends";
 
 type TopLocation ={
       name: string;
@@ -147,7 +148,7 @@ export default function OverviewPage() {
       )}
 
        {/*KPI Cards */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-muted-foreground">
             Total Outages
@@ -243,11 +244,11 @@ export default function OverviewPage() {
           />
         </div>
 
-        <div className="rounded-xl border bg-card p-4 lg:col-span-8 xl:col-span-9">
-          <h2 className="font-semibold">Outage Trends</h2>
-          <p className="text-sm text-muted-foreground">
-            Annual and monthly trends will appear here.
-          </p>
+        <div className="min-w-0 lg:col-span-8 xl:col-span-9">
+          <OutageTrends
+              year={year}
+              selectedCause={selectedCause}
+          />
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
