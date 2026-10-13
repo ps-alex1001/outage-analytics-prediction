@@ -1,7 +1,8 @@
 from pathlib import Path
+from typing import Annotated
 
 import pandas as pd
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -58,6 +59,68 @@ def get_outage_summary(year: int | None = None):
         'selected_year': year,
         'data_type' : 'synthetic',
     }
+
+@app.get("/api/overview/trends")
+def get_overview_trends(
+    year: Annotated[int | None, Query(ge=1, le=9999)] = None,
+    municipality_psgc: str | None = None,
+    barangay_psgc: str | None = None,
+    cause_category: str | None = None,
+):
+    granularity = "annual" if year is None else "monthly"
+    if OUTAGES_DF.empty:
+        return {"granularity": granularity, "points": []}
+
+    # Coverage is global, independent of filters. In the current dataset it
+    # runs from January 2019 through June 2026, not through December 2026.
+    coverage = OUTAGES_DF[["year", "month"]].drop_duplicates().sort_values(
+        ["year", "month"]
+    )
+    first_year, first_month = map(int, coverage.iloc[0])
+    last_year, last_month = map(int, coverage.iloc[-1])
+    if year is None:
+        periods = range(first_year, last_year + 1)
+        group_column = "year"
+    else:
+        if year < first_year or year > last_year:
+            return {"granularity": granularity, "points": []}
+        first = first_month if year == first_year else 1
+        last = last_month if year == last_year else 12
+        periods = range(first, last + 1)
+        group_column = "month"
+
+    df = filter_outages(
+        year=year,
+        municipality_psgc=municipality_psgc,
+        barangay_psgc=barangay_psgc,
+        cause_category=cause_category,
+    ).drop_duplicates(subset=["outage_id"])
+    # Match KPI duration semantics: sum known event durations, and average
+    # known durations only. These are event hours, not customer outage hours.
+    durations = pd.to_numeric(df["duration_minutes"], errors="coerce")
+    aggregated = df.assign(duration_minutes=durations).groupby(group_column).agg(
+        total_outages=("outage_id", "nunique"),
+        total_minutes=("duration_minutes", "sum"),
+        average_minutes=("duration_minutes", "mean"),
+    ).reindex(periods)
+
+    points = []
+    for period, row in aggregated.iterrows():
+        average = row["average_minutes"]
+        points.append({
+            "period": str(period) if year is None else f"{year:04d}-{period:02d}",
+            "total_outages": (
+                int(row["total_outages"]) if pd.notna(row["total_outages"]) else 0
+            ),
+            "total_duration_hours": (
+                round(float(row["total_minutes"]) / 60, 2)
+                if pd.notna(row["total_minutes"]) else 0.0
+            ),
+            "average_duration_minutes": (
+                round(float(average), 2) if pd.notna(average) else None
+            ),
+        })
+    return {"granularity": granularity, "points": points}
 
 @app.get('/api/overview/kpis')
 def get_overview_kpis(
