@@ -58,6 +58,7 @@ export function AppSidebar() {
                       <SidebarMenuButton
                         isActive={isActive}
                         tooltip={item.title}
+                        className="data-active:underline data-active:underline-offset-4"
                         render={
                           <Link
                             href={item.href}

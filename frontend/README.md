@@ -26,7 +26,7 @@ Open http://localhost:3000.
 - `src/app/forecast/page.tsx`: Outage Forecasting (`/forecast`).
 - `src/app/scenario/page.tsx`: Scenario Simulator (`/scenario`), marked planned.
 - `src/app/globals.css`: neutral colors and semantic CSS variables for future
-  themes. Dark mode and colorblind-friendly mode are left for the next task.
+  themes, including dark appearance and the independent colorblind palette.
 - `src/components/ui/`, `src/hooks/use-mobile.ts`, `src/lib/utils.ts`:
   official shadcn components and supporting utilities. The mobile hook uses
   React's `useSyncExternalStore` to follow the browser breakpoint and comply
@@ -49,6 +49,40 @@ npx shadcn@latest add sidebar --yes
 
 Only the sidebar and its required primitives were installed; no dashboard block
 with example charts or analytics was added.
+
+## Appearance and visualization colors
+
+The header has Light, Dark, and System appearance options (default: System)
+and an independent colorblind-friendly checkbox. `next-themes` manages the
+`light`/`dark` class on `<html>` and persists `bataan-appearance` in localStorage.
+`src/components/theme-provider.tsx` separately restores and persists
+`bataan-colorblind`, reflected in `data-colorblind="true"` on `<html>`. Both
+preferences survive navigation and reloads. Controls wait for hydration before
+enabling, and inline initialization restores palettes before first paint.
+
+`src/app/globals.css` is the source of truth for all colors:
+
+- shadcn semantic variables style the dashboard in light and dark appearance.
+- `--chart-1` through `--chart-5` define series colors.
+- `--viz-background`, `--viz-text`, `--viz-grid` style future chart surfaces.
+- `--map-background`, `--map-boundary`, `--map-low`, `--map-medium`,
+  `--map-high`, and `--map-no-data` style future map layers.
+
+The default visualization palette is neutral. Colorblind mode uses
+[Okabe–Ito hues](https://jfly.uni-koeln.de/color/) adjusted for background
+contrast. Navigation includes an underline and `aria-current` for the selected
+route; the checkbox and explicit On/Off text communicate its state without
+depending on color.
+
+Future client-side ECharts/MapLibre components should import
+`getVisualizationColors` from `@/lib/visualization-theme` and call it after
+mounting. It returns resolved hex colors instead of CSS `var(...)` expressions,
+which canvas and map color parsers cannot resolve themselves. Re-read colors
+when `useTheme().resolvedTheme` or `useColorblindMode().colorblind` changes;
+update the existing chart options or map paint properties rather than recreating
+the visualization. For future charts and maps, always pair colors with clear
+labels, different marker shapes, line dashes, or fill patterns, including a
+distinct no-data label. No chart or map library is installed yet.
 
 ## Checks
 

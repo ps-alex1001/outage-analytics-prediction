@@ -34,6 +34,11 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -71,6 +76,99 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Hex colors also work in canvas and MapLibre's color parser. */
+  --chart-1: #262626;
+  --chart-2: #525252;
+  --chart-3: #737373;
+  --chart-4: #404040;
+  --chart-5: #171717;
+  --viz-background: #ffffff;
+  --viz-text: #171717;
+  --viz-grid: #e5e5e5;
+  --map-background: var(--viz-background);
+  --map-boundary: #737373;
+  --map-low: #737373;
+  --map-medium: #525252;
+  --map-high: #262626;
+  --map-no-data: #d4d4d4;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.922 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --chart-1: #fafafa;
+  --chart-2: #d4d4d4;
+  --chart-3: #a3a3a3;
+  --chart-4: #e5e5e5;
+  --chart-5: #bfbfbf;
+  --viz-background: #171717;
+  --viz-text: #fafafa;
+  --viz-grid: #404040;
+  --map-boundary: #a3a3a3;
+  --map-low: #a3a3a3;
+  --map-medium: #d4d4d4;
+  --map-high: #fafafa;
+  --map-no-data: #525252;
+}
+
+/* Okabe–Ito hues, adjusted for contrast on light/dark backgrounds.
+   Future visualizations must also use labels, symbols, dashes, or patterns. */
+:root[data-colorblind="true"] {
+  --primary: #0072b2;
+  --primary-foreground: #ffffff;
+  --ring: #0072b2;
+  --sidebar-primary: #0072b2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-ring: #0072b2;
+  --destructive: #a44200;
+  --chart-1: #0072b2;
+  --chart-2: #b36b00;
+  --chart-3: #008060;
+  --chart-4: #a44200;
+  --chart-5: #995a80;
+  --map-low: var(--chart-1);
+  --map-medium: var(--chart-2);
+  --map-high: var(--chart-4);
+}
+
+:root.dark[data-colorblind="true"] {
+  --primary: #56b4e9;
+  --primary-foreground: #171717;
+  --ring: #56b4e9;
+  --sidebar-primary: #56b4e9;
+  --sidebar-primary-foreground: #171717;
+  --sidebar-ring: #56b4e9;
+  --destructive: #e69f00;
+  --chart-1: #56b4e9;
+  --chart-2: #e69f00;
+  --chart-3: #009e73;
+  --chart-4: #d55e00;
+  --chart-5: #cc79a7;
 }
 
 @layer base {

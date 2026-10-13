@@ -2,21 +2,27 @@
 
 The first deliverable is [01_synthetic_outage_eda.ipynb](01_synthetic_outage_eda.ipynb). Its saved tables and plots allow review before rerunning. The [source inventory](assessment/dataset_inventory.md) records current and legacy source paths, schemas, sizes, provenance, concerns and intended uses. No dataset or application was modified.
 
-## Proposed sequence — only lesson 01 exists
+## Notebook sequence — lessons 01 and 02 completed
 
 | Phase | Proposed notebook | What you learn / decision it supports |
 |---|---|---|
 | A | **01_synthetic_outage_eda.ipynb** | Event schema, synthetic provenance, missingness/duplicates, local timestamps, durations, geographic keys, exposure-adjusted temporal and geographic comparisons. |
-| A | 02_weather_coverage_and_event_context.ipynb | Municipal vs gridded weather, UTC/Manila alignment, coverage/missingness/units, accumulation intervals, bounded event-weather windows; distinguish historical context from forecast availability. |
+| A | **[02_weather_coverage_and_event_context.ipynb](02_weather_coverage_and_event_context.ipynb)** | One actual synthetic event and its municipal weather point; UTC+8 clocks, complete hourly windows, rain 6/24h, mean wind 6h and maximum supplied gust 6h; manual checks, shaded timelines and retrospective/prediction-time limits. Broader 72h/antecedent investigations remain later work. |
 | A | 03_vegetation_terrain_and_simulated_associations.ipynb | Static elevation/slope vs annual NDVI, raster/summary compatibility, NDVI observation/publication windows, non-event comparison exposure; descriptive relationships with method, sample size, dependence, confounding and simulator caveats. |
-| B | 04_existing_panel_and_feature_availability_audit.ipynb | Selective Parquet/SQL inspection of existing panels; grain, zero vs unknown, class balance, target/feature roles, geography joins; remove out-of-scope infrastructure, generator scores, outcomes and unavailable annual NDVI. |
+| B | 04_existing_panel_and_feature_availability_audit.ipynb | Selective Parquet/SQL inspection of existing panels; grain, zero vs unknown, class balance, target/feature roles, geography joins; audit candidate weather windows and availability; remove out-of-scope infrastructure, generator scores, outcomes and unavailable annual NDVI. |
 | B | 05_forecast_horizons_and_temporal_validation_design.ipynb | Explicit forecast issue time and 24/48/72-hour targets; hourly vs daily choice, non-overlapping or purged windows, chronological/geographic evaluation, lag/rolling feature availability, historical/forecast input compatibility. Design small examples before any approved large materialization. |
 | C | 06_naive_and_frequency_baselines.ipynb | Training-period-only prevalence, seasonal/local frequency baselines, imbalance, precision/recall and PR-AUC; why accuracy is misleading; compare against simple defaults. |
-| C | 07_logistic_and_tree_experiments.ipynb | Empirical model comparison, train-only preprocessing, imbalance choices, validation-selected thresholds, feature contributions and geographic limitations; preserve untouched final test. |
+| C | 07_logistic_and_tree_experiments.ipynb | Empirical model comparison; compare raw lagged weather with rain/wind/antecedent window families, ablate candidates and retain useful features only. Train-only preprocessing, imbalance choices, validation-selected thresholds and geographic limitations; preserve untouched final test. |
 | C | 08_calibration_and_forecast_compatibility.ipynb | Reliability plots, Brier score, held-out probability calibration, final test evaluation once choices are frozen; verify actual Open-Meteo forecast schema, units, issue/lead times and missingness before integration. |
-| D | 09_model_artifact_and_api_contract.ipynb | Only after evaluation gates: reproducible model/preprocessing artifact, precise fields/units/horizon/probability meaning, example FastAPI request/response contract and small dashboard summaries. No FastAPI or Next.js implementation. |
+| D | 09_model_artifact_and_api_contract.ipynb | Only after evaluation gates: reproducible model/preprocessing artifact, evaluated feature whitelist, precise fields/units/windows/availability/horizon/probability meaning, example FastAPI request/response contract and small dashboard/timeline/forecast summaries. No FastAPI or Next.js implementation. |
 
-Each future lesson will have objectives, source introduction, concept explanation, small code cells, interpretation, checks, exercises and a summary. Notebook 02 begins only after feedback on 01. Each phase transition requires your approval. This is a proposed sequence, not authorization to start modeling.
+Each future lesson will have objectives, source introduction, concept explanation, small code cells, interpretation, checks, exercises and a summary. Work stops after Notebook 02 for your review. Each phase transition requires your approval. The remaining sequence is proposed, not authorization to start modeling.
+
+## Weather-window requirements
+
+The [weather-feature specification](assessment/weather_feature_specification.md) records formulas, units, exact window boundaries, location grouping, incomplete-window behavior, leakage risks and the four uses: descriptive analytics, event timelines, ML and forecast visualization. Its [draft JSON computation contract](assessment/weather_feature_contract.json) can guide later FastAPI implementation without implementing the application.
+
+Rainfall history, wind means, gust maxima and antecedent-wetness indicators are candidates for investigation. No weather feature has yet been selected for ML. Selection requires chronological baseline comparisons and ablation, coverage/calibration checks and demonstrated issue-time availability. Retrospective weather and issued forecast vintages remain distinct. The existing first notebook and source files are preserved.
 
 ## Run in the uv-managed PyCharm environment
 
