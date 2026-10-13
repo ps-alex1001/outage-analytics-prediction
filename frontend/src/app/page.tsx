@@ -53,6 +53,7 @@ function DeltaBadge({
 
 export default function OverviewPage() {
   const [year, setYear] = useState("all");
+  const [selectedCause, setSelectedCause] = useState<string | null>(null);
   const [data, setData] = useState<OverviewKpis | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +71,10 @@ export default function OverviewPage() {
 
         if (year !== "all") {
           params.set("year", year);
+        }
+
+        if (selectedCause) {
+          params.set("cause_category", selectedCause);
         }
 
         const url = `http://127.0.0.1:8000/api/overview/kpis?${params}`;
@@ -101,7 +106,7 @@ export default function OverviewPage() {
     loadKpis();
 
     return () => controller.abort();
-  }, [year]);
+  }, [year, selectedCause]);
 
   const format = (value: number | null | undefined) =>
     value == null ? "—" : value.toLocaleString();
@@ -231,7 +236,11 @@ export default function OverviewPage() {
       </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div className="lg:col-span-4 xl:col-span-3">
-          <CauseDistribution year={year}/>
+          <CauseDistribution
+              year={year}
+              selectedCause={selectedCause}
+              onCauseChange={setSelectedCause}
+          />
         </div>
 
         <div className="rounded-xl border bg-card p-4 lg:col-span-8 xl:col-span-9">

@@ -1,11 +1,9 @@
-
-"use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
+import type { EChartsType } from "echarts";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
   ssr: false,
@@ -19,7 +17,19 @@ type Cause = {
 
 type Colors = ReturnType<typeof getVisualizationColors>;
 
-export default function CauseDistribution({ year }: { year: string }) {
+type CauseDistributionProps = {
+  year: string;
+  selectedCause: string | null;
+  onCauseChange: (cause: string | null) => void;
+};
+
+
+export default function CauseDistribution({
+  year,
+  selectedCause,
+  onCauseChange,
+}: CauseDistributionProps) {
+
   const { resolvedTheme } = useTheme();
   const { colorblind } = useColorblindMode();
 
@@ -27,7 +37,27 @@ export default function CauseDistribution({ year }: { year: string }) {
   const [causes, setCauses] = useState<Cause[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const chartRef = useRef<EChartsType | null>(null);
 
+useEffect(() => {
+  const chart = chartRef.current;
+  if (!chart) return;
+
+  // Reset previously highlighted slices.
+  chart.dispatchAction({
+    type: "downplay",
+    seriesIndex: 0,
+  });
+
+  // Keep the selected slice enlarged.
+  if (selectedCause) {
+    chart.dispatchAction({
+      type: "highlight",
+      seriesIndex: 0,
+      name: selectedCause,
+    });
+  }
+}, [selectedCause, causes, colors]);
   // Refresh chart colors when appearance settings change.
   useEffect(() => {
     setColors(getVisualizationColors());
@@ -72,7 +102,8 @@ export default function CauseDistribution({ year }: { year: string }) {
     return () => controller.abort();
   }, [year]);
 
-  const topCause = causes[0];
+  const displayedCause =
+    causes.find((cause) => cause.name === selectedCause) ?? causes[0];
 
   const options = {
     color: colors?.chart.series,
@@ -83,20 +114,46 @@ export default function CauseDistribution({ year }: { year: string }) {
     series: [
       {
         type: "pie",
-        radius: ["68%", "95%"],
+        radius: ["60%", "80%"],
         center: ["50%", "50%"],
         label: { show: false },
         data: causes.map((cause) => ({
           name: cause.name,
           value: cause.value,
+          itemStyle: {
+            opacity:
+                selectedCause && selectedCause !== cause.name
+                    ? 0.25
+                    : 1,
+          },
         })),
+        emphasis: {
+          scale: true,
+          scaleSize: 10,
+},
       },
     ],
   };
 
+  function selectCause(name: string) {
+  onCauseChange(selectedCause === name ? null : name);
+}
+
   return (
     <section className="rounded-xl border bg-card p-4">
-      <h2 className="font-semibold">Outage Cause Distribution</h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-semibold">Outage Cause Distribution</h2>
+
+        {selectedCause && (
+            <button
+                type="button"
+                onClick={() => onCauseChange(null)}
+                className="shrink-0 rounded-md border px-2 py-1 text-xs hover:bg-muted"
+            >
+              Clear Cause ×
+            </button>
+        )}
+      </div>
 
       {loading ? (
         <p className="mt-8 text-sm">Loading...</p>
@@ -112,17 +169,36 @@ export default function CauseDistribution({ year }: { year: string }) {
         <>
           <div className="relative h-52">
             <ReactECharts
-              option={options}
-              notMerge
-              style={{ height: "100%", width: "100%" }}
+                option={options}
+                notMerge
+                style={{height: "100%", width: "100%"}}
+                onEvents={{
+                  click: (params: { name?: string }) => {
+                    if (params.name) {
+                      selectCause(params.name);
+                    }
+                  },
+                }}
+                onChartReady={(chart: EChartsType) => {
+                  chartRef.current = chart;
+
+                  if (selectedCause) {
+                    chart.dispatchAction({
+                      type: "highlight",
+                      seriesIndex: 0,
+                      name: selectedCause,
+                    });
+                  }
+                }}
             />
 
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-2xl font-bold">
-                {topCause.percentage.toFixed(1)}%
+                {displayedCause.percentage.toFixed(1)}%
               </span>
-              <span className="mt-1 max-w-32 text-center text-xs leading-tight text-muted-foreground">
-                {topCause.name}
+
+              <span className="mt-1 max-w-28 text-center text-xs leading-tight text-muted-foreground">
+                {displayedCause.name}
               </span>
             </div>
           </div>

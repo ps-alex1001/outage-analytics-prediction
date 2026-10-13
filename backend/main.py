@@ -27,9 +27,10 @@ OUTAGES_DF = pd.read_csv(
 ).drop_duplicates(subset=["outage_id"])
 
 def filter_outages(
-    year: int | None = None,
-    municipality_psgc: str | None = None,
-    barangay_psgc: str | None = None,
+        year: int | None = None,
+        municipality_psgc: str | None = None,
+        barangay_psgc: str | None = None,
+        cause_category: str | None = None,
 ):
     df = OUTAGES_DF
 
@@ -41,6 +42,9 @@ def filter_outages(
 
     if barangay_psgc:
         df = df[df["barangay_psgc"] == barangay_psgc]
+
+    if cause_category:
+        df = df[df["cause_category"] == cause_category]
 
     return df
 
@@ -60,11 +64,13 @@ def get_overview_kpis(
         year: int | None = None,
         municipality_psgc: str | None = None,
         barangay_psgc: str | None = None,
+        cause_category: str | None = None,
 ):
     df = filter_outages(
         year=year,
         municipality_psgc=municipality_psgc,
         barangay_psgc=barangay_psgc,
+        cause_category=cause_category,
     )
 
     source_df = OUTAGES_DF
@@ -109,6 +115,11 @@ def get_overview_kpis(
         if barangay_psgc:
             previous = previous[
                 previous["barangay_psgc"] == barangay_psgc
+                ]
+
+        if cause_category:
+            previous = previous[
+                previous["cause_category"] == cause_category
                 ]
 
         previous_durations = pd.to_numeric(
