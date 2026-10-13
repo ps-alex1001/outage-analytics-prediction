@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import CauseDistribution from "@/components/overview/cause-distribution";
 
 type TopLocation ={
       name: string;
@@ -228,7 +229,18 @@ export default function OverviewPage() {
           )}
         </div>
       </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="lg:col-span-4 xl:col-span-3">
+          <CauseDistribution year={year}/>
+        </div>
 
+        <div className="rounded-xl border bg-card p-4 lg:col-span-8 xl:col-span-9">
+          <h2 className="font-semibold">Outage Trends</h2>
+          <p className="text-sm text-muted-foreground">
+            Annual and monthly trends will appear here.
+          </p>
+        </div>
+      </div>
       <p className="text-xs text-muted-foreground">
         Research demonstration using synthetically generated outage events.
         Figures are not verified PENELCO operational records.
