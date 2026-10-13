@@ -1,0 +1,54 @@
+"use client";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+export default function Home() {
+  const [year, setYear] = useState(2026);
+  const [totalOutages, setTotalOutages] = useState<number | null>(null);
+
+  useEffect(() => {
+  setTotalOutages(null);
+
+  fetch(`http://127.0.0.1:8000/api/outages/summary?year=${year}`)
+    .then((response) => {
+      if (!response.ok) throw new Error("API request failed");
+      return response.json();
+    })
+    .then((data) => setTotalOutages(data.total_outages))
+    .catch((error) => console.error(error));
+}, [year]);
+
+  return (
+    <main className="p-8">
+        <h1 className="max-w-xlg text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+          Bataan Outage Analytics and Forecasting
+        </h1>
+        <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+          Analyze and forecast power outages in Bataan.
+        </p>
+        <label htmlFor="year">Select Year:</label>
+
+        <select
+          id = 'year'
+          value = {year}
+          onChange={(e) => setYear(Number(e.target.value))}
+          className="border p-2 ml-2"
+        >
+          {[2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026].map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </select>
+
+
+        <div className="mt-6 rounded-lg border p-6">
+            <h2 className="text-sm">Total Outages</h2>
+
+            <p className="text-3xl font-bold">
+                {totalOutages === null ? "Loading..." : totalOutages.toLocaleString()}
+            </p>
+        </div>
+    </main>
+  );
+}

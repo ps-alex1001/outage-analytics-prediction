@@ -3,6 +3,7 @@ name = "outage-analytics-and-prediction"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
+    "fastapi>=0.143.0",
     "h5netcdf>=1.8.1",
     "h5py>=3.16.0",
     "ipykernel>=7.4.0",
@@ -14,5 +15,6 @@ dependencies = [
     "pandas>=3.0.6",
     "pyarrow>=26.0.0",
     "rasterio>=1.5.2",
+    "uvicorn[standard]>=0.54.0",
     "xarray>=2026.9.0",
 ]
