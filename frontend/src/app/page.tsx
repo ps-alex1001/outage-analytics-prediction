@@ -1,7 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import CauseDistribution from "@/components/overview/cause-distribution";
 import OutageTrends from "@/components/overview/outage-trends";
+import OutageMap, {
+  type SelectedArea,
+} from "@/components/overview/outage-map";
+
+const MemoOutageTrends = memo(OutageTrends);
 
 type TopLocation ={
       name: string;
@@ -58,6 +63,8 @@ export default function OverviewPage() {
   const [data, setData] = useState<OverviewKpis | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedArea, setSelectedArea] =
+      useState<SelectedArea | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -235,8 +242,9 @@ export default function OverviewPage() {
           )}
         </div>
       </div>
+      {/* Row 2: Donut and Trends */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-        <div className="lg:col-span-4 xl:col-span-3">
+        <div className="min-w-0 lg:col-span-4 xl:col-span-3">
           <CauseDistribution
               year={year}
               selectedCause={selectedCause}
@@ -245,12 +253,76 @@ export default function OverviewPage() {
         </div>
 
         <div className="min-w-0 lg:col-span-8 xl:col-span-9">
-          <OutageTrends
+          <MemoOutageTrends
               year={year}
               selectedCause={selectedCause}
           />
         </div>
       </div>
+
+      {/* Row 3: Geographic analysis */}
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+
+        {/* Map: 50% */}
+        <div className="min-w-0 xl:col-span-2">
+          <OutageMap
+              year={year}
+              selectedCause={selectedCause}
+              selectedArea={selectedArea}
+              onAreaSelect={setSelectedArea}
+          />
+        </div>
+
+        {/* Rankings / Selected Location: 25% */}
+        <div className="flex min-w-0 flex-col rounded-xl border bg-card p-4">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <h2 className="font-semibold">
+              {selectedArea ? "Selected Location" : "Top 5 Barangays"}
+            </h2>
+
+            {selectedArea && (
+                <button
+                    type="button"
+                    onClick={() => setSelectedArea(null)}
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Clear
+                </button>
+            )}
+          </div>
+
+          {selectedArea ? (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">
+                  {selectedArea.name}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {selectedArea.level === "municipality"
+                      ? "Municipality / City"
+                      : `Barangay · ${selectedArea.municipality ?? "Bataan"}`}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Location statistics will appear here.
+                </p>
+              </div>
+          ) : (
+              <p className="text-sm text-muted-foreground">
+                Top barangay rankings will appear here.
+              </p>
+          )}
+        </div>
+
+        {/* Longest Events: 25% */}
+        <div className="min-w-0 rounded-xl border bg-card p-4">
+          <h2 className="font-semibold">Longest Events</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {selectedArea
+                ? `Longest simulated outages in ${selectedArea.name}`
+                : "Longest simulated outages across Bataan"}
+          </p>
+        </div>
+      </div>
+
       <p className="text-xs text-muted-foreground">
         Research demonstration using synthetically generated outage events.
         Figures are not verified PENELCO operational records.

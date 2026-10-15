@@ -88,10 +88,10 @@
   --viz-grid: #e5e5e5;
   --map-background: var(--viz-background);
   --map-boundary: #737373;
-  --map-low: #737373;
-  --map-medium: #525252;
-  --map-high: #262626;
-  --map-no-data: #d4d4d4;
+  --map-no-data: #f5f5f5;
+  --map-low: #fff3b0;
+  --map-medium: #f77f38;
+  --map-high: #b91c32;
 }
 
 .dark {

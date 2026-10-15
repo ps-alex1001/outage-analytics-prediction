@@ -1,8 +1,8 @@
 from pathlib import Path
-from typing import Annotated
-
+import json
+from typing import Literal
 import pandas as pd
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -26,6 +26,27 @@ OUTAGES_DF = pd.read_csv(
         "barangay_psgc": "string",
     },
 ).drop_duplicates(subset=["outage_id"])
+
+BOUNDARY_PATH = (
+    DATA_PATH.parent.parent
+    / "boundaries"
+    / "bataan_barangays.geojson"
+)
+
+with BOUNDARY_PATH.open(encoding="utf-8") as file:
+    boundaries = json.load(file)
+
+MUNICIPALITY_PATH = (
+    BOUNDARY_PATH.parent / "bataan_municipalities.geojson"
+)
+
+with MUNICIPALITY_PATH.open(encoding="utf-8") as file:
+    municipality_boundaries = json.load(file)
+
+BOUNDARY_PROPERTIES = [
+    feature["properties"]
+    for feature in boundaries["features"]
+]
 
 def filter_outages(
         year: int | None = None,
@@ -317,3 +338,89 @@ def get_cause_distribution(
             for name, count in causes.items()
         ],
     }
+
+
+@app.get("/api/overview/geography")
+def get_overview_geography(
+    year: int | None = None,
+    cause_category: str | None = None,
+):
+    df = filter_outages(
+        year=year,
+        cause_category=cause_category,
+    ).copy()
+
+    df["duration_minutes"] = pd.to_numeric(
+        df["duration_minutes"],
+        errors="coerce",
+    )
+
+    # Aggregate outage metrics by geographic code.
+    def summarize(column):
+        return df.groupby(column).agg(
+            events=("outage_id", "nunique"),
+            minutes=("duration_minutes", "sum"),
+        )
+
+    by_municipality = summarize("municipality_psgc")
+    by_barangay = summarize("barangay_psgc")
+
+    # Return zero values for areas without outages.
+    def get_metrics(grouped, code):
+        if code not in grouped.index:
+            return {
+                "total_outages": 0,
+                "total_duration_hours": 0.0,
+            }
+
+        row = grouped.loc[code]
+
+        return {
+            "total_outages": int(row["events"]),
+            "total_duration_hours": round(
+                float(row["minutes"]) / 60, 2
+            ),
+        }
+
+    # Unique municipality identifiers from the GeoJSON.
+    municipalities = {
+        p["municipality_psgc"]: p["municipality"]
+        for p in BOUNDARY_PROPERTIES
+    }
+
+    municipality_results = [
+        {
+            "municipality_psgc": code,
+            "municipality": name,
+            **get_metrics(by_municipality, code),
+        }
+        for code, name in sorted(municipalities.items())
+    ]
+
+    barangay_results = [
+        {
+            "barangay_psgc": p["barangay_psgc"],
+            "barangay": p["barangay"],
+            "municipality_psgc": p["municipality_psgc"],
+            "municipality": p["municipality"],
+            **get_metrics(
+                by_barangay,
+                p["barangay_psgc"],
+            ),
+        }
+        for p in BOUNDARY_PROPERTIES
+    ]
+
+    return {
+        "municipalities": municipality_results,
+        "barangays": barangay_results,
+    }
+
+@app.get("/api/overview/boundaries")
+def get_overview_boundaries(
+    level: Literal["municipality", "barangay"] = "barangay",
+):
+    if level == "municipality":
+        return municipality_boundaries
+
+    return boundaries

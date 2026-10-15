@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
