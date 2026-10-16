@@ -424,3 +424,42 @@ def get_overview_boundaries(
         return municipality_boundaries
 
     return boundaries
+
+
+@app.get("/api/overview/longest-events")
+def get_longest_events(
+    year: int | None = None,
+    cause_category: str | None = None,
+    municipality_psgc: str | None = None,
+    barangay_psgc: str | None = None,
+):
+    df = filter_outages(
+        year=year,
+        cause_category=cause_category,
+        municipality_psgc=municipality_psgc,
+        barangay_psgc=barangay_psgc,
+    )
+
+    top_events = (
+        df.dropna(subset=["duration_minutes"])
+        .sort_values(
+            ["duration_minutes", "start_time", "outage_id"],
+            ascending=[False, False, True],
+        )
+        .head(8)
+    )
+
+    return {
+        "total_matching_events": int(len(df)),
+        "has_more": len(df) > 8,
+        "events": [
+            {
+                "outage_id": str(row.outage_id),
+                "start_time": str(row.start_time),
+                "barangay": str(row.barangay),
+                "municipality": str(row.municipality),
+                "duration_minutes": float(row.duration_minutes),
+            }
+            for row in top_events.itertuples(index=False)
+        ],
+    }

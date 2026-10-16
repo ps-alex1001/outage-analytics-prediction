@@ -8,6 +8,7 @@ import OutageMap, {
 } from "@/components/overview/outage-map";
 import TopLocations from "@/components/overview/top-locations";
 import SelectedLocation from "@/components/overview/selected-location";
+import LongestEvents from "@/components/overview/longest-events";
 
 const MemoOutageTrends = memo(OutageTrends);
 
@@ -319,12 +320,11 @@ export default function OverviewPage() {
 
                 {/* Longest Events: 25% */}
                 <div className="min-w-0 rounded-xl border bg-card p-4">
-                    <h2 className="font-semibold">Longest Events</h2>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        {selectedArea
-                            ? `Longest simulated outages in ${selectedArea.name}`
-                            : "Longest simulated outages across Bataan"}
-                    </p>
+                    <LongestEvents
+                        year={year}
+                        selectedCause={selectedCause}
+                        selectedArea={selectedArea}
+                    />
                 </div>
             </div>
 
