@@ -1,12 +1,13 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, PointerEvent } from "react";
-import { useRouter } from "next/navigation";
 import * as maplibregl from "maplibre-gl";
 import { useTheme } from "next-themes";
 import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
 
-type BoundaryLevel = "municipality" | "barangay";
+export type BoundaryLevel = "municipality" | "barangay";
 type Handle = "min" | "max";
 
 type GeographicRow = {
@@ -45,33 +46,59 @@ export type SelectedArea = {
   municipalityPsgc: string | null;
 };
 
+type BoundaryFeature = {
+  properties: Record<string, string>;
+  geometry: {
+    coordinates: unknown;
+  };
+};
+
+// Defers style mutations until MapLibre has finished loading the active style.
+function applyWhenStyleReady(map: maplibregl.Map, update: () => void): () => void {
+  const run = () => {
+    if (map.isStyleLoaded()) update();
+  };
+
+  if (map.isStyleLoaded()) run();
+  else map.once("idle", run);
+
+  return () => map.off("idle", run);
+}
+
 export default function OutageMap({
   year,
   selectedCause,
   selectedArea,
   onAreaSelect,
+  level,
+  onLevelChange,
 }: {
   year: string;
   selectedCause: string | null;
   selectedArea: SelectedArea | null;
   onAreaSelect: (area: SelectedArea | null) => void;
+  level: BoundaryLevel;
+  onLevelChange: (level: BoundaryLevel) => void;
 }) {
-  const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const hoverPopupRef = useRef<maplibregl.Popup | null>(null);
-  const detailPopupRef = useRef<maplibregl.Popup | null>(null);
   const requestId = useRef(0);
   const dragHandleRef = useRef<Handle | null>(null);
+  const boundaryFeaturesRef = useRef<
+      Partial<Record<BoundaryLevel, BoundaryFeature[]>>
+  >({});
 
-  const [level, setLevel] = useState<BoundaryLevel>("municipality");
+  const provinceBoundsRef =
+      useRef<maplibregl.LngLatBounds | null>(null);
+
+  const lastSelectionRef = useRef<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [switching, setSwitching] = useState(false);
   const [geographicData, setGeographicData] = useState<GeographicData | null>(null);
   const [range, setRange] = useState<Range>({ min: 0, max: 0 });
   const [legendHover, setLegendHover] = useState<number | null>(null);
   const [hoveredCode, setHoveredCode] = useState<string | null>(null);
-  const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const { resolvedTheme } = useTheme();
@@ -149,6 +176,7 @@ export default function OutageMap({
     if (!containerRef.current) return;
     const controller = new AbortController();
     const colors = getVisualizationColors();
+    setMapReady(false);
 
     maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
@@ -179,6 +207,7 @@ export default function OutageMap({
         if (!response.ok) throw new Error("Unable to load boundaries");
         const geojson = await response.json();
         if (controller.signal.aborted) return;
+        boundaryFeaturesRef.current.municipality = geojson.features;
 
         map.addSource(SOURCE_ID, { type: "geojson", data: geojson });
         map.addLayer({
@@ -223,6 +252,7 @@ export default function OutageMap({
         for (const feature of geojson.features) {
           extendBounds(feature.geometry?.coordinates);
         }
+        provinceBoundsRef.current = bounds;
         requestAnimationFrame(() => {
           if (controller.signal.aborted || bounds.isEmpty()) return;
           map.resize();
@@ -231,21 +261,103 @@ export default function OutageMap({
             map.fitBounds(bounds, { padding: 25, duration: 0 });
           }
         });
-        setMapReady(true);
+        map.once("idle", () => {
+          if (!controller.signal.aborted) setMapReady(true);
+        });
       } catch {
         if (!controller.signal.aborted) setError("Unable to load map boundaries.");
       }
     });
 
+
     return () => {
       controller.abort();
       requestId.current += 1;
       hoverPopupRef.current?.remove();
-      // detailPopupRef.current?.remove();
       map.remove();
       mapRef.current = null;
     };
   }, []);
+
+  // Smoothly navigate to the selected geographic area.
+  useEffect(() => {
+    const map = mapRef.current;
+
+    if (!map || !mapReady || switching) return;
+
+    const selectionKey = selectedArea
+        ? `${selectedArea.level}:${selectedArea.code}`
+        : null;
+
+    // Avoid repeating the same camera transition.
+    if (selectionKey === lastSelectionRef.current) return;
+
+    // Clear selection: return to the province-wide view.
+    if (!selectedArea) {
+      lastSelectionRef.current = null;
+
+      const provinceBounds = provinceBoundsRef.current;
+
+      if (provinceBounds && !provinceBounds.isEmpty()) {
+        map.fitBounds(provinceBounds, {
+          padding: 25,
+          duration: 700,
+        });
+      }
+
+      return;
+    }
+
+    // Wait until the map displays the selected geographic level.
+    if (selectedArea.level !== level) return;
+
+    const features = boundaryFeaturesRef.current[level];
+
+    if (!features) return;
+
+    const codeKey =
+        level === "municipality"
+            ? "municipality_psgc"
+            : "barangay_psgc";
+
+    const feature = features.find(
+        (item) =>
+            String(item.properties?.[codeKey]) === selectedArea.code
+    );
+
+    if (!feature) return;
+
+    const bounds = new maplibregl.LngLatBounds();
+
+    // Support both Polygon and MultiPolygon coordinates.
+    function extendCoordinates(value: unknown): void {
+      if (!Array.isArray(value)) return;
+
+      if (
+          typeof value[0] === "number" &&
+          typeof value[1] === "number"
+      ) {
+        bounds.extend([value[0], value[1]]);
+        return;
+      }
+
+      for (const child of value) {
+        extendCoordinates(child);
+      }
+    }
+
+    extendCoordinates(feature.geometry.coordinates);
+
+    if (bounds.isEmpty()) return;
+
+    lastSelectionRef.current = selectionKey;
+
+    map.fitBounds(bounds, {
+      padding: 50,
+      maxZoom: level === "barangay" ? 13 : 11,
+      duration: 700,
+    });
+  }, [selectedArea, level, mapReady, switching]);
 
   async function changeLevel(nextLevel: BoundaryLevel) {
     if (!mapReady || switching || nextLevel === level) return;
@@ -254,10 +366,7 @@ export default function OutageMap({
     setError(null);
     setLegendHover(null);
     setHoveredCode(null);
-    setLevel(nextLevel);
-    onAreaSelect(null);
     hoverPopupRef.current?.remove();
-    // detailPopupRef.current?.remove();
 
     try {
       const response = await fetch(
@@ -272,8 +381,12 @@ export default function OutageMap({
         | undefined;
       if (!source) throw new Error("Map source missing");
       await source.setData(geojson);
+
       if (requestId.current !== currentRequest) return;
-      setLevel(nextLevel);
+      boundaryFeaturesRef.current[nextLevel] = geojson.features;
+
+      onLevelChange(nextLevel);
+      onAreaSelect(null);
     } catch {
       if (requestId.current === currentRequest) {
         setError("Unable to switch geographic boundaries.");
@@ -294,73 +407,77 @@ export default function OutageMap({
       maplibregl.ExpressionSpecification;
   }, [currentRows, codeKey]);
 
-  // Repaint colors only when statistics, level, or theme changes.
+  // Repaint when MapLibre is actually ready; this also protects route remounts.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    const colors = getVisualizationColors();
 
-    map.setPaintProperty("background", "background-color", colors.map.background);
-    map.setPaintProperty(OUTLINE_LAYER, "line-color", colors.map.boundary);
-    map.setPaintProperty(HIGHLIGHT_LAYER, "line-color", colors.map.high);
+    return applyWhenStyleReady(map, () => {
+      if (!map.getLayer(FILL_LAYER)) return;
+      const colors = getVisualizationColors();
 
-    if (!geographicData || maxOutages === 0) {
-      map.setPaintProperty(FILL_LAYER, "fill-color", colors.map.noData);
-      map.setPaintProperty(FILL_LAYER, "fill-opacity", 0.92);
-      return;
-    }
+      map.setPaintProperty("background", "background-color", colors.map.background);
+      map.setPaintProperty(OUTLINE_LAYER, "line-color", colors.map.boundary);
+      map.setPaintProperty(HIGHLIGHT_LAYER, "line-color", colors.map.high);
 
-    const fillExpression = [
-      "interpolate", ["linear"], countExpression,
-      0, colors.map.noData,
-      maxOutages * 0.15, colors.map.low,
-      maxOutages * 0.55, colors.map.medium,
-      maxOutages, colors.map.high,
-    ] as maplibregl.ExpressionSpecification;
+      if (!geographicData || maxOutages === 0) {
+        map.setPaintProperty(FILL_LAYER, "fill-color", colors.map.noData);
+        map.setPaintProperty(FILL_LAYER, "fill-opacity", 0.92);
+        return;
+      }
 
-    map.setPaintProperty(FILL_LAYER, "fill-color", fillExpression);
+      const fillExpression = [
+        "interpolate", ["linear"], countExpression,
+        0, colors.map.noData,
+        maxOutages * 0.15, colors.map.low,
+        maxOutages * 0.55, colors.map.medium,
+        maxOutages, colors.map.high,
+      ] as maplibregl.ExpressionSpecification;
+
+      map.setPaintProperty(FILL_LAYER, "fill-color", fillExpression);
+    });
   }, [mapReady, geographicData, maxOutages, countExpression,
     resolvedTheme, colorblind]);
 
-  // Dragging the handles only updates opacity, not the color scale or map data.
+  // Dragging handles changes opacity; delayed updates avoid style-loading errors.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !geographicData || maxOutages === 0) return;
 
-    const opacityExpression = [
-      "case",
-      ["all", [">=", countExpression, range.min], ["<=", countExpression, range.max]],
-      0.92,
-      0.16,
-    ] as maplibregl.ExpressionSpecification;
+    return applyWhenStyleReady(map, () => {
+      if (!map.getLayer(FILL_LAYER)) return;
+      const opacityExpression = [
+        "case",
+        ["all", [">=", countExpression, range.min], ["<=", countExpression, range.max]],
+        0.92,
+        0.16,
+      ] as maplibregl.ExpressionSpecification;
 
-    map.setPaintProperty(FILL_LAYER, "fill-opacity", opacityExpression);
+      map.setPaintProperty(FILL_LAYER, "fill-opacity", opacityExpression);
+    });
   }, [mapReady, geographicData, maxOutages, countExpression, range.min, range.max]);
 
-  // Use a separate outline layer for selection; no geometry reload is needed.
+  // Keep the chosen polygon outlined alongside any hovered matching areas.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady || !map.getLayer(HIGHLIGHT_LAYER)) return;
+    if (!map || !mapReady) return;
 
-    const selectedCode =
-        selectedArea?.level === level
-            ? selectedArea.code
-            : null;
+    return applyWhenStyleReady(map, () => {
+      if (!map.getLayer(HIGHLIGHT_LAYER)) return;
+      const selectedCode = selectedArea?.level === level ? selectedArea.code : null;
+      const codes = Array.from(new Set([
+        ...(legendMatch?.codes ?? []),
+        ...(selectedCode ? [selectedCode] : []),
+        ...(hoveredCode ? [hoveredCode] : []),
+      ]));
 
-    const codes =
-        legendMatch?.codes ??
-        (hoveredCode
-            ? [hoveredCode]
-            : selectedCode
-                ? [selectedCode]
-                : []);
+      map.setFilter(HIGHLIGHT_LAYER, [
+        "in", ["get", codeKey], ["literal", codes],
+      ]);
+    });
+  }, [mapReady, level, codeKey, legendMatch, hoveredCode, selectedArea]);
 
-    map.setFilter(HIGHLIGHT_LAYER, [
-      "in", ["get", codeKey], ["literal", codes],
-    ]);
-  }, [mapReady, level, codeKey, legendMatch, hoveredCode, selectedCode]);
-
-  // Hover: small tooltip. Click: persistent popup with an Explore link.
+  // Hover: small tooltip. Click: select the area and update companion cards.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !geographicData) return;
