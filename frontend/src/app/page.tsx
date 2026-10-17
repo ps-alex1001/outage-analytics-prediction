@@ -9,6 +9,7 @@ import OutageMap, {
 import TopLocations from "@/components/overview/top-locations";
 import SelectedLocation from "@/components/overview/selected-location";
 import LongestEvents from "@/components/overview/longest-events";
+import OutageTiming from "@/components/overview/outage-timing";
 
 const MemoOutageTrends = memo(OutageTrends);
 
@@ -327,6 +328,12 @@ export default function OverviewPage() {
                     />
                 </div>
             </div>
+
+            {/* Row 4: Outage Timing Patterns */}
+            <OutageTiming
+                year={year}
+                selectedCause={selectedCause}
+            />
 
             <p className="text-xs text-muted-foreground">
                 Research demonstration using synthetically generated outage events.

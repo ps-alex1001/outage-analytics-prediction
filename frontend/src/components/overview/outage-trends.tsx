@@ -193,7 +193,7 @@ export default function OutageTrends({
         type: "line",
         data: values,
         smooth: false,
-        symbol: "circle",
+        symbol: "none",
         symbolSize: 7,
         lineStyle: {
           width: 3,
@@ -201,25 +201,6 @@ export default function OutageTrends({
         },
         itemStyle: {
           color: lineColor,
-        },
-
-        // Dashed horizontal reference line.
-        markLine: {
-          silent: true,
-          symbol: "none",
-          lineStyle: {
-            type: "dashed",
-            color: lineColor,
-            width: 2,
-          },
-          label: {
-            formatter: "Period avg.",
-            position: "insideEndTop",
-            color: colors?.chart.text,
-          },
-          data: [
-            { yAxis: periodAverage },
-          ],
         },
       },
     ],
