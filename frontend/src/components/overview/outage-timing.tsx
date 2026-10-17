@@ -7,9 +7,11 @@ import type { EChartsOption } from "echarts";
 import { useTheme } from "next-themes";
 import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
+import { TimingSkeleton } from "./loading-skeletons";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
   ssr: false,
+  loading: () => <TimingSkeleton />,
 });
 
 const API = "http://127.0.0.1:8000";
@@ -319,7 +321,7 @@ export default function OutageTiming({ year, selectedCause }: Props) {
   };
 
   return (
-    <section aria-busy={loading} className="min-w-0 rounded-xl border bg-card p-4">
+    <section aria-busy={loading || !visual} className="min-w-0 rounded-xl border bg-card p-4">
       <div className="mb-2">
         <h2 className="font-semibold">Outage Timing Patterns</h2>
       </div>
@@ -330,9 +332,7 @@ export default function OutageTiming({ year, selectedCause }: Props) {
             Unable to load timing statistics.
           </p>
         ) : !data || !visual ? (
-          <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
-            Loading timing patterns...
-          </p>
+          <TimingSkeleton />
         ) : (
           <div className="relative min-w-180" style={{ height: CHART_HEIGHT }}>
             <ReactECharts

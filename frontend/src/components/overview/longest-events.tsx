@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import type { SelectedArea } from "./outage-map";
+import { EventsSkeleton } from "./loading-skeletons";
 
 type OutageEvent = {
   outage_id: string;
@@ -103,7 +104,7 @@ export default function LongestEvents({
   }, [year, selectedCause, selectedArea]);
 
   return (
-    <div className="flex h-full min-w-0 flex-col">
+    <div aria-busy={loading} className="flex h-full min-w-0 flex-col">
       <h2 className="font-semibold">Longest Outages</h2>
 
       <p className="mt-1 truncate text-xs text-muted-foreground" title={selectedArea ? `Within ${selectedArea.name}` : "Across Bataan"}>
@@ -113,9 +114,7 @@ export default function LongestEvents({
       </p>
 
       {loading ? (
-        <p className="mt-4 text-sm text-muted-foreground">
-          Loading events...
-        </p>
+        <EventsSkeleton />
       ) : error ? (
         <p className="mt-4 text-sm text-destructive">
           Unable to load events.
@@ -145,7 +144,7 @@ export default function LongestEvents({
                     key={event.outage_id}
                     className="border-b last:border-0"
                   >
-                    <td className="py-3 pr-2">
+                    <td className="py-2 pr-2">
                       <p
                         className="truncate font-medium"
                         title={`${event.barangay}, ${event.municipality}`}
@@ -157,7 +156,7 @@ export default function LongestEvents({
                       </p>
                     </td>
 
-                    <td className="py-3 text-right align-top font-semibold tabular-nums">
+                    <td className="py-2 text-right align-top font-semibold tabular-nums">
                       {formatDuration(event.duration_minutes)}
                     </td>
                   </tr>

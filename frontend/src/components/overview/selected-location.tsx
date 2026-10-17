@@ -7,9 +7,12 @@ import {useColorblindMode} from "@/components/theme-provider";
 import {getVisualizationColors} from "@/lib/visualization-theme";
 import type {SelectedArea} from "./outage-map";
 import Link from "next/link";
+import { LocationSkeleton } from "./loading-skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
     ssr: false,
+    loading: () => <Skeleton className="mx-auto mt-4 size-24 rounded-full" />,
 });
 
 type AreaRow = {
@@ -197,9 +200,7 @@ export default function SelectedLocation({
     }
 
     if (!data) {
-        return <p className="text-sm text-muted-foreground">
-            Loading location statistics...
-        </p>;
+        return <LocationSkeleton />;
     }
 
     const isMunicipality = selectedArea.level === "municipality";
@@ -383,9 +384,15 @@ export default function SelectedLocation({
                         />
                     </div>
                 </div>
+            ) : causeLoading ? (
+                <div role="status" aria-label="Loading leading outage cause" className="space-y-2 border-t pt-3">
+                    <p className="text-xs text-muted-foreground">Leading outage cause</p>
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-1.5 w-full" />
+                </div>
             ) : (
                 <p className="border-t pt-3 text-xs text-muted-foreground">
-                    {causeLoading ? "Loading leading cause..." : "Cause breakdown unavailable for this selection."}
+                    Cause breakdown unavailable for this selection.
                 </p>
             )}
 

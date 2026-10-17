@@ -4,6 +4,8 @@ import * as maplibregl from "maplibre-gl";
 import { useTheme } from "next-themes";
 import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
+import { MapSkeleton } from "./loading-skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type BoundaryLevel = "municipality" | "barangay";
 type Handle = "min" | "max";
@@ -98,6 +100,7 @@ export default function OutageMap({
   const [legendHover, setLegendHover] = useState<number | null>(null);
   const [hoveredCode, setHoveredCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [statisticsError, setStatisticsError] = useState<string | null>(null);
 
   const { resolvedTheme } = useTheme();
   const { colorblind } = useColorblindMode();
@@ -140,6 +143,7 @@ export default function OutageMap({
     if (selectedCause) params.set("cause_category", selectedCause);
 
     setGeographicData(null);
+    setStatisticsError(null);
 
     async function loadGeography() {
       try {
@@ -150,11 +154,11 @@ export default function OutageMap({
         const result: GeographicData = await response.json();
         if (!controller.signal.aborted) {
           setGeographicData(result);
-          setError(null);
+          setStatisticsError(null);
         }
       } catch {
         if (!controller.signal.aborted) {
-          setError("Unable to load geographic statistics.");
+          setStatisticsError("Unable to load geographic statistics.");
         }
       }
     }
@@ -618,8 +622,10 @@ export default function OutageMap({
   const minPct = maxOutages ? (range.min / maxOutages) * 100 : 0;
   const maxPct = maxOutages ? (range.max / maxOutages) * 100 : 100;
 
+  const loading = !error && !statisticsError && (!mapReady || switching || !geographicData);
+
   return (
-    <section className="flex h-full w-full min-w-0 flex-col rounded-xl border bg-card p-4">
+    <section aria-busy={loading} className="flex h-full w-full min-w-0 flex-col rounded-xl border bg-card p-4">
       <div className="mb-4 flex shrink-0 flex-wrap items-center justify-between gap-3">
         <h2 className="font-semibold">Geographic Outage Distribution</h2>
         <div role="group" aria-label="Geographic level" className="flex rounded-md border p-1">
@@ -640,9 +646,21 @@ export default function OutageMap({
         </div>
       </div>
 
-      <div ref={containerRef} className="h-[430px] w-full shrink-0 overflow-hidden rounded-lg" />
+      <div className="relative h-[350px] w-full shrink-0 overflow-hidden rounded-lg">
+        <div ref={containerRef} aria-hidden={loading} inert={loading} className="h-full w-full" />
+        {loading && <MapSkeleton />}
+      </div>
 
-      <div className="mt-4 min-h-0 flex-1 space-y-2 overflow-y-auto">
+      <div className="relative mt-4 min-h-0 flex-1 overflow-y-auto">
+        {loading && (
+          <div role="status" aria-label="Loading map legend" className="absolute inset-0 space-y-2">
+            <div className="flex h-4 justify-between gap-4"><Skeleton className="h-3 w-40" /><Skeleton className="h-3 w-24" /></div>
+            <div className="flex h-8 items-center"><Skeleton className="h-4 w-full" /></div>
+            <div className="flex h-4 justify-between"><Skeleton className="h-3 w-5" /><Skeleton className="h-3 w-16" /></div>
+            <div className="flex min-h-6 items-center justify-between gap-4"><Skeleton className="h-3 w-4/5" /><Skeleton className="h-6 w-12" /></div>
+          </div>
+        )}
+        <div aria-hidden={loading} inert={loading} className={`space-y-2 ${loading ? "invisible" : ""}`}>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Simulated outage frequency</span>
           <span>{range.min.toLocaleString()}–{range.max.toLocaleString()} events</span>
@@ -711,9 +729,10 @@ export default function OutageMap({
             Reset
           </button>
         </div>
+        </div>
       </div>
 
-      {error && <p role="alert" className="mt-2 text-sm text-destructive">{error}</p>}
+      {(error || statisticsError) && <p role="alert" className="mt-2 text-sm text-destructive">{error || statisticsError}</p>}
     </section>
   );
 }

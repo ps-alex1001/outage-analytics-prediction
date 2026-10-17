@@ -10,6 +10,7 @@ import TopLocations from "@/components/overview/top-locations";
 import SelectedLocation from "@/components/overview/selected-location";
 import LongestEvents from "@/components/overview/longest-events";
 import OutageTiming from "@/components/overview/outage-timing";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MemoOutageTrends = memo(OutageTrends);
 
@@ -53,7 +54,7 @@ function DeltaBadge({
 
     return (
         <span
-            className={`mt-2 inline-flex rounded-md px-2 py-1 text-xs font-medium ${colors}`}
+            className={`mt-1 inline-flex rounded-md px-2 py-1 text-xs font-medium ${colors}`}
         >
       {lower ? "↓" : higher ? "↑" : "→"}
             {" "}
@@ -162,13 +163,15 @@ export default function OverviewPage() {
 
             {/*KPI Cards */}
             <div aria-busy={loading} className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
+                {loading && <span role="status" className="sr-only">Loading overview statistics</span>}
+                <div className="h-28 min-w-0 rounded-xl border bg-card px-4 py-3">
                     <p className="text-sm text-muted-foreground">
                         Total Outages
                     </p>
-                    <h2 className="mt-3 whitespace-nowrap text-xl font-bold tabular-nums 2xl:text-2xl">
-                        {loading ? "Loading..." : format(data?.total_outages)}
+                    <h2 className="mt-2 truncate text-xl leading-7 font-bold tabular-nums 2xl:text-2xl">
+                        {loading ? <Skeleton as="span" className="h-7 w-24" /> : format(data?.total_outages)}
                     </h2>
+                    {loading && year !== "all" && <Skeleton className="mt-1 h-5 w-16" />}
                     {!loading && data?.comparison && (
                         <DeltaBadge
                             value={data.comparison.outages_change_pct}
@@ -176,16 +179,17 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
+                <div className="h-28 min-w-0 rounded-xl border bg-card px-4 py-3">
                     <p className="text-sm text-muted-foreground">
                         Total Event-Duration
                     </p>
-                    <h2 className="mt-3 whitespace-nowrap text-xl font-bold tabular-nums 2xl:text-2xl">
-                        {loading ? "Loading..." : format(data?.total_duration_hours)}
+                    <h2 className="mt-2 truncate text-xl leading-7 font-bold tabular-nums 2xl:text-2xl">
+                        {loading ? <Skeleton as="span" className="h-7 w-36 max-w-full" /> : format(data?.total_duration_hours)}
                         {!loading && data && (
                             <span className="ml-1 text-sm font-normal">hrs</span>
                         )}
                     </h2>
+                    {loading && year !== "all" && <Skeleton className="mt-1 h-5 w-16" />}
                     {!loading && data?.comparison && (
                         <DeltaBadge
                             value={data.comparison.duration_change_pct}
@@ -193,16 +197,17 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
+                <div className="h-28 min-w-0 rounded-xl border bg-card px-4 py-3">
                     <p className="text-sm text-muted-foreground">
                         Average Duration
                     </p>
-                    <h2 className="mt-3 whitespace-nowrap text-xl font-bold tabular-nums 2xl:text-2xl">
-                        {loading ? "Loading..." : format(data?.average_duration_minutes)}
+                    <h2 className="mt-2 truncate text-xl leading-7 font-bold tabular-nums 2xl:text-2xl">
+                        {loading ? <Skeleton as="span" className="h-7 w-28" /> : format(data?.average_duration_minutes)}
                         {!loading && data && (
                             <span className="ml-1 text-sm font-normal">min</span>
                         )}
                     </h2>
+                    {loading && year !== "all" && <Skeleton className="mt-1 h-5 w-16" />}
                     {!loading && data?.comparison && (
                         <DeltaBadge
                             value={data.comparison.average_change_pct}
@@ -210,16 +215,17 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
+                <div className="h-28 min-w-0 rounded-xl border bg-card px-4 py-3">
                     <p className="text-sm text-muted-foreground">
                         Top Municipality
                     </p>
-                    <h2 className="mt-3 line-clamp-2 text-xl font-bold" title={data?.top_municipality?.name}>
-                        {loading ? "Loading..." : data?.top_municipality?.name ?? "—"}
+                    <h2 className="mt-2 truncate text-xl leading-7 font-bold" title={data?.top_municipality?.name}>
+                        {loading ? <Skeleton as="span" className="h-7 w-3/4" /> : data?.top_municipality?.name ?? "—"}
                     </h2>
+                    {loading && <Skeleton className="mt-1 h-4 w-4/5" />}
 
                     {!loading && data?.top_municipality && (
-                        <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+                        <div className="mt-1 space-y-1 text-sm text-muted-foreground">
                             <p className="truncate" title={`${format(data.top_municipality.events)} outages · ${data.top_municipality.percentage}%`}>
                                 {format(data.top_municipality.events)} outages
                                 {" · "}
@@ -229,16 +235,17 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
+                <div className="h-28 min-w-0 rounded-xl border bg-card px-4 py-3">
                     <p className="text-sm text-muted-foreground">
                         Top Barangay
                     </p>
-                    <h2 className="mt-3 line-clamp-2 text-xl font-bold" title={data?.top_barangay ? `${data.top_barangay.name}, ${data.top_barangay.municipality}` : undefined}>
-                        {loading ? "Loading..." : data?.top_barangay ? `${data.top_barangay.name}, ${data.top_barangay.municipality}` : "—"}
+                    <h2 className="mt-2 truncate text-xl leading-7 font-bold" title={data?.top_barangay ? `${data.top_barangay.name}, ${data.top_barangay.municipality}` : undefined}>
+                        {loading ? <Skeleton as="span" className="h-7 w-5/6" /> : data?.top_barangay ? `${data.top_barangay.name}, ${data.top_barangay.municipality}` : "—"}
                     </h2>
+                    {loading && <Skeleton className="mt-1 h-4 w-4/5" />}
 
                     {!loading && data?.top_barangay && (
-                        <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+                        <div className="mt-1 space-y-1 text-sm text-muted-foreground">
                             <p className="truncate" title={`${format(data.top_barangay.events)} outages · ${data.top_barangay.percentage}%`}>
                                 {format(data.top_barangay.events)} outages
                                 {" · "}
@@ -249,8 +256,8 @@ export default function OverviewPage() {
                 </div>
             </div>
             {/* Row 2: Donut and Trends */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-                <div className="min-w-0 lg:col-span-4 xl:col-span-3">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+                <div className="min-w-0 xl:col-span-4">
                     <CauseDistribution
                         year={year}
                         selectedCause={selectedCause}
@@ -258,7 +265,7 @@ export default function OverviewPage() {
                     />
                 </div>
 
-                <div className="min-w-0 lg:col-span-8 xl:col-span-9">
+                <div className="min-w-0 xl:col-span-8">
                     <MemoOutageTrends
                         year={year}
                         selectedCause={selectedCause}
@@ -270,7 +277,7 @@ export default function OverviewPage() {
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
 
                 {/* Map: 50% */}
-                <div className="h-[680px] min-w-0 xl:col-span-2">
+                <div className="h-[600px] min-w-0 xl:col-span-2">
                     <OutageMap
                         year={year}
                         selectedCause={selectedCause}
@@ -282,7 +289,7 @@ export default function OverviewPage() {
                 </div>
 
                 {/* Rankings / Selected Location: 25% */}
-                <div className="flex h-[680px] min-w-0 flex-col rounded-xl border bg-card p-4">
+                <div className="flex h-[600px] min-w-0 flex-col rounded-xl border bg-card p-4">
                     <div className="mb-3 flex shrink-0 items-center justify-between gap-2">
                         <h2 className="font-semibold">
                             {selectedArea
@@ -322,7 +329,7 @@ export default function OverviewPage() {
                 </div>
 
                 {/* Longest Events: 25% */}
-                <div className="h-[680px] min-w-0 rounded-xl border bg-card p-4">
+                <div className="h-[600px] min-w-0 rounded-xl border bg-card p-4">
                     <LongestEvents
                         year={year}
                         selectedCause={selectedCause}
