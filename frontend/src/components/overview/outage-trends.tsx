@@ -207,7 +207,7 @@ export default function OutageTrends({
   };
 
   return (
-    <section className="h-full rounded-xl border bg-card p-4">
+    <section aria-busy={loading} className="h-full rounded-xl border bg-card p-4">
       {/* Chart heading and metric toggle */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -240,20 +240,20 @@ export default function OutageTrends({
       </div>
 
       {/* Chart content */}
-      <div className="mt-4">
+      <div className="mt-4 h-[320px]">
         {loading ? (
-          <p className="py-20 text-center text-sm">
+          <p className="flex h-full items-center justify-center text-sm">
             Loading trends...
           </p>
         ) : error ? (
           <p
             role="alert"
-            className="py-20 text-center text-sm text-destructive"
+            className="flex h-full items-center justify-center text-sm text-destructive"
           >
             {error}
           </p>
         ) : !colors || points.length === 0 ? (
-          <p className="py-20 text-center text-sm text-muted-foreground">
+          <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
             No trend data available.
           </p>
         ) : (
@@ -265,11 +265,9 @@ export default function OutageTrends({
         )}
       </div>
 
-      {(year === "all" || year === "2026") && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          2026 contains January–June data only.
-        </p>
-      )}
+      <p className="mt-2 min-h-4 text-xs text-muted-foreground">
+        {(year === "all" || year === "2026") && "2026 contains January–June data only."}
+      </p>
     </section>
   );
 }

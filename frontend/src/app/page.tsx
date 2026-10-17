@@ -161,12 +161,12 @@ export default function OverviewPage() {
             )}
 
             {/*KPI Cards */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                <div className="rounded-xl border bg-card p-4">
+            <div aria-busy={loading} className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
                     <p className="text-sm text-muted-foreground">
                         Total Outages
                     </p>
-                    <h2 className="mt-3 text-2xl font-bold">
+                    <h2 className="mt-3 whitespace-nowrap text-xl font-bold tabular-nums 2xl:text-2xl">
                         {loading ? "Loading..." : format(data?.total_outages)}
                     </h2>
                     {!loading && data?.comparison && (
@@ -176,11 +176,11 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="rounded-xl border bg-card p-4">
+                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
                     <p className="text-sm text-muted-foreground">
                         Total Event-Duration
                     </p>
-                    <h2 className="mt-3 text-2xl font-bold">
+                    <h2 className="mt-3 whitespace-nowrap text-xl font-bold tabular-nums 2xl:text-2xl">
                         {loading ? "Loading..." : format(data?.total_duration_hours)}
                         {!loading && data && (
                             <span className="ml-1 text-sm font-normal">hrs</span>
@@ -193,11 +193,11 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="rounded-xl border bg-card p-4">
+                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
                     <p className="text-sm text-muted-foreground">
                         Average Duration
                     </p>
-                    <h2 className="mt-3 text-2xl font-bold">
+                    <h2 className="mt-3 whitespace-nowrap text-xl font-bold tabular-nums 2xl:text-2xl">
                         {loading ? "Loading..." : format(data?.average_duration_minutes)}
                         {!loading && data && (
                             <span className="ml-1 text-sm font-normal">min</span>
@@ -210,17 +210,17 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="rounded-xl border bg-card p-4">
+                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
                     <p className="text-sm text-muted-foreground">
                         Top Municipality
                     </p>
-                    <h2 className="mt-3 text-xl font-bold">
+                    <h2 className="mt-3 line-clamp-2 text-xl font-bold" title={data?.top_municipality?.name}>
                         {loading ? "Loading..." : data?.top_municipality?.name ?? "—"}
                     </h2>
 
                     {!loading && data?.top_municipality && (
                         <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-                            <p>
+                            <p className="truncate" title={`${format(data.top_municipality.events)} outages · ${data.top_municipality.percentage}%`}>
                                 {format(data.top_municipality.events)} outages
                                 {" · "}
                                 {data.top_municipality.percentage}%
@@ -229,17 +229,17 @@ export default function OverviewPage() {
                     )}
                 </div>
 
-                <div className="rounded-xl border bg-card p-4">
+                <div className="h-40 min-w-0 rounded-xl border bg-card p-4">
                     <p className="text-sm text-muted-foreground">
                         Top Barangay
                     </p>
-                    <h2 className="mt-3 text-xl font-bold">
+                    <h2 className="mt-3 line-clamp-2 text-xl font-bold" title={data?.top_barangay ? `${data.top_barangay.name}, ${data.top_barangay.municipality}` : undefined}>
                         {loading ? "Loading..." : data?.top_barangay ? `${data.top_barangay.name}, ${data.top_barangay.municipality}` : "—"}
                     </h2>
 
                     {!loading && data?.top_barangay && (
                         <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-                            <p>
+                            <p className="truncate" title={`${format(data.top_barangay.events)} outages · ${data.top_barangay.percentage}%`}>
                                 {format(data.top_barangay.events)} outages
                                 {" · "}
                                 {data.top_barangay.percentage}%
@@ -270,7 +270,7 @@ export default function OverviewPage() {
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
 
                 {/* Map: 50% */}
-                <div className="min-w-0 xl:col-span-2">
+                <div className="h-[680px] min-w-0 xl:col-span-2">
                     <OutageMap
                         year={year}
                         selectedCause={selectedCause}
@@ -282,8 +282,8 @@ export default function OverviewPage() {
                 </div>
 
                 {/* Rankings / Selected Location: 25% */}
-                <div className="flex min-w-0 flex-col rounded-xl border bg-card p-4">
-                    <div className="mb-3 flex items-center justify-between gap-2">
+                <div className="flex h-[680px] min-w-0 flex-col rounded-xl border bg-card p-4">
+                    <div className="mb-3 flex shrink-0 items-center justify-between gap-2">
                         <h2 className="font-semibold">
                             {selectedArea
                                 ? "Selected Location"
@@ -303,24 +303,26 @@ export default function OverviewPage() {
                         )}
                     </div>
 
-                  {selectedArea ? (
-                      <SelectedLocation
-                          selectedArea={selectedArea}
-                          year={year}
-                          selectedCause={selectedCause}
-                      />
-                  ) : (
-                      <TopLocations
-                          year={year}
-                          selectedCause={selectedCause}
-                          level={level}
-                          onAreaSelect={setSelectedArea}
-                      />
-                  )}
+                  <div className="min-h-0 flex-1 overflow-y-auto">
+                    {selectedArea ? (
+                        <SelectedLocation
+                            selectedArea={selectedArea}
+                            year={year}
+                            selectedCause={selectedCause}
+                        />
+                    ) : (
+                        <TopLocations
+                            year={year}
+                            selectedCause={selectedCause}
+                            level={level}
+                            onAreaSelect={setSelectedArea}
+                        />
+                    )}
+                  </div>
                 </div>
 
                 {/* Longest Events: 25% */}
-                <div className="min-w-0 rounded-xl border bg-card p-4">
+                <div className="h-[680px] min-w-0 rounded-xl border bg-card p-4">
                     <LongestEvents
                         year={year}
                         selectedCause={selectedCause}

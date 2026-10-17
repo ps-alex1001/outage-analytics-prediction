@@ -619,8 +619,8 @@ export default function OutageMap({
   const maxPct = maxOutages ? (range.max / maxOutages) * 100 : 100;
 
   return (
-    <section className="w-full min-w-0 rounded-xl border bg-card p-4">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <section className="flex h-full w-full min-w-0 flex-col rounded-xl border bg-card p-4">
+      <div className="mb-4 flex shrink-0 flex-wrap items-center justify-between gap-3">
         <h2 className="font-semibold">Geographic Outage Distribution</h2>
         <div role="group" aria-label="Geographic level" className="flex rounded-md border p-1">
           {(["municipality", "barangay"] as const).map((value) => (
@@ -640,9 +640,9 @@ export default function OutageMap({
         </div>
       </div>
 
-      <div ref={containerRef} className="h-[430px] w-full overflow-hidden rounded-lg" />
+      <div ref={containerRef} className="h-[430px] w-full shrink-0 overflow-hidden rounded-lg" />
 
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 min-h-0 flex-1 space-y-2 overflow-y-auto">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Simulated outage frequency</span>
           <span>{range.min.toLocaleString()}–{range.max.toLocaleString()} events</span>

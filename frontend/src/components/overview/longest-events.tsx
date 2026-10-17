@@ -106,7 +106,7 @@ export default function LongestEvents({
     <div className="flex h-full min-w-0 flex-col">
       <h2 className="font-semibold">Longest Outages</h2>
 
-      <p className="mt-1 text-xs text-muted-foreground">
+      <p className="mt-1 truncate text-xs text-muted-foreground" title={selectedArea ? `Within ${selectedArea.name}` : "Across Bataan"}>
         {selectedArea
           ? `Within ${selectedArea.name}`
           : "Across Bataan"}
@@ -126,7 +126,7 @@ export default function LongestEvents({
         </p>
       ) : (
         <>
-          <div className="mt-4 flex-1">
+          <div className="mt-4 min-h-0 flex-1 overflow-y-auto">
             <table className="w-full table-fixed text-left text-xs">
               <thead>
                 <tr className="border-b text-muted-foreground">
