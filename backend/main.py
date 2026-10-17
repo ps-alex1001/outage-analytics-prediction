@@ -463,3 +463,65 @@ def get_longest_events(
             for row in top_events.itertuples(index=False)
         ],
     }
+
+
+@app.get("/api/overview/timing")
+def get_overview_timing(
+    year: int | None = None,
+    cause_category: str | None = None,
+):
+    df = filter_outages(
+        year=year,
+        cause_category=cause_category,
+    )
+
+    # Interpret event start timestamps as local Bataan time.
+    starts = pd.to_datetime(df["start_time"], errors="coerce")
+
+    valid = starts.notna()
+
+    timing = pd.DataFrame({
+        "weekday": starts.loc[valid].dt.dayofweek,
+        "hour": starts.loc[valid].dt.hour,
+    })
+
+    counts = timing.groupby(["weekday", "hour"]).size()
+
+    weekdays = [
+        "Monday", "Tuesday", "Wednesday", "Thursday",
+        "Friday", "Saturday", "Sunday",
+    ]
+
+    cells = [
+        {
+            "weekday": day,
+            "hour": hour,
+            "count": int(counts.get((day, hour), 0)),
+        }
+        for day in range(7)
+        for hour in range(24)
+    ]
+
+    days = [
+        {
+            "weekday": day,
+            "name": weekdays[day],
+            "count": sum(
+                cell["count"]
+                for cell in cells
+                if cell["weekday"] == day
+            ),
+        }
+        for day in range(7)
+    ]
+
+    return {
+        "days": days,
+        "cells": cells,
+        "max_count": max(
+            (cell["count"] for cell in cells),
+            default=0,
+        ),
+        "total_events": int(valid.sum()),
+        "invalid_timestamp_count": int((~valid).sum()),
+    }
