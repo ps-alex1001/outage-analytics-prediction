@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { RankingsSkeleton } from "./loading-skeletons";
 import type {
   BoundaryLevel,
   SelectedArea,
@@ -110,9 +111,7 @@ export default function TopLocations({
   }
 
   if (!data) {
-    return <p className="text-sm text-muted-foreground">
-      Loading rankings...
-    </p>;
+    return <RankingsSkeleton rows={level === "municipality" ? 12 : 10} />;
   }
 
 
@@ -138,7 +137,7 @@ export default function TopLocations({
                         }
                         type="button"
                         onClick={() => selectLocation(row)}
-                        className="w-full rounded-md px-2 py-1.5 text-left transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                        className="w-full rounded-md px-2 py-1 text-left transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                     >
                         <div className="flex min-w-0 items-center justify-between gap-2">
             <span

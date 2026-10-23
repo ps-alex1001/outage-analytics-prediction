@@ -6,9 +6,11 @@ import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
+import { TrendSkeleton } from "./loading-skeletons";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
   ssr: false,
+  loading: () => <TrendSkeleton />,
 });
 
 type TrendPoint = {
@@ -207,9 +209,9 @@ export default function OutageTrends({
   };
 
   return (
-    <section className="h-full rounded-xl border bg-card p-4">
+    <section aria-busy={loading || !colors} className="flex h-[434px] min-w-0 flex-col rounded-xl border bg-card p-4">
       {/* Chart heading and metric toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex min-h-10 shrink-0 flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold">Outage Trends</h2>
           <p className="text-xs text-muted-foreground">
@@ -240,36 +242,34 @@ export default function OutageTrends({
       </div>
 
       {/* Chart content */}
-      <div className="mt-4">
+      <div className="mt-4 min-h-0 flex-1">
         {loading ? (
-          <p className="py-20 text-center text-sm">
-            Loading trends...
-          </p>
+          <TrendSkeleton />
         ) : error ? (
           <p
             role="alert"
-            className="py-20 text-center text-sm text-destructive"
+            className="flex h-full items-center justify-center text-sm text-destructive"
           >
             {error}
           </p>
-        ) : !colors || points.length === 0 ? (
-          <p className="py-20 text-center text-sm text-muted-foreground">
+        ) : !colors ? (
+          <TrendSkeleton />
+        ) : points.length === 0 ? (
+          <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
             No trend data available.
           </p>
         ) : (
           <ReactECharts
             option={option}
             notMerge
-            style={{ height: 320, width: "100%" }}
+            style={{ height: "100%", width: "100%" }}
           />
         )}
       </div>
 
-      {(year === "all" || year === "2026") && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          2026 contains January–June data only.
-        </p>
-      )}
+      <p className="mt-2 min-h-4 shrink-0 text-xs text-muted-foreground">
+        {(year === "all" || year === "2026") && "2026 contains January–June data only."}
+      </p>
     </section>
   );
 }

@@ -3,10 +3,12 @@ import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
-import type { EChartsType } from "echarts";
+import type { EChartsOption, EChartsType } from "echarts";
+import { DonutChartSkeleton, DonutSkeleton } from "./loading-skeletons";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
   ssr: false,
+  loading: () => <DonutChartSkeleton />,
 });
 
 type Cause = {
@@ -41,7 +43,7 @@ export default function CauseDistribution({
 
 useEffect(() => {
   const chart = chartRef.current;
-  if (!chart) return;
+  if (!chart || chart.isDisposed()) return;
 
   // Reset previously highlighted slices.
   chart.dispatchAction({
@@ -105,7 +107,7 @@ useEffect(() => {
   const displayedCause =
     causes.find((cause) => cause.name === selectedCause) ?? causes[0];
 
-  const options = {
+  const options: EChartsOption = {
     color: colors?.chart.series,
     tooltip: {
       trigger: "item",
@@ -114,9 +116,38 @@ useEffect(() => {
     series: [
       {
         type: "pie",
-        radius: ["60%", "80%"],
+        radius: ["42%", "74%"],
         center: ["50%", "50%"],
-        label: { show: false },
+        padAngle: 2,
+        itemStyle: {
+          borderRadius: 5,
+          borderColor: colors?.chart.background,
+          borderWidth: 2,
+        },
+        avoidLabelOverlap: true,
+        label: {
+          show: true,
+          position: "outside",
+          alignTo: "edge",
+          edgeDistance: 8,
+          distanceToLabelLine: 5,
+          color: colors?.chart.text,
+          fontSize: 12,
+          lineHeight: 17,
+          overflow: "break",
+          formatter: (params) => {
+            const cause = causes[params.dataIndex];
+            return `${params.name}\n${cause.percentage.toFixed(1)}%`;
+          },
+        },
+        labelLine: {
+          show: true,
+          length: 16,
+          length2: 12,
+          smooth: 0.15,
+          lineStyle: { width: 1.2 },
+        },
+        labelLayout: { moveOverlap: "shiftY", hideOverlap: true },
         data: causes.map((cause) => ({
           name: cause.name,
           value: cause.value,
@@ -129,10 +160,25 @@ useEffect(() => {
         })),
         emphasis: {
           scale: true,
-          scaleSize: 10,
+          scaleSize: 6,
 },
       },
     ],
+    media: [{
+      query: { maxWidth: 620 },
+      option: {
+        series: [{ radius: ["40%", "68%"] }],
+      },
+    }, {
+      query: { maxWidth: 480 },
+      option: {
+        series: [{
+          radius: ["34%", "60%"],
+          label: { fontSize: 11, lineHeight: 15, edgeDistance: 2 },
+          labelLine: { length: 10, length2: 6 },
+        }],
+      },
+    }],
   };
 
   function selectCause(name: string) {
@@ -140,8 +186,8 @@ useEffect(() => {
 }
 
   return (
-    <section className="rounded-xl border bg-card p-4">
-      <div className="flex items-center justify-between gap-2">
+    <section aria-busy={loading || !colors} className="flex h-[434px] min-w-0 flex-col rounded-xl border bg-card p-4">
+      <div className="flex min-h-10 shrink-0 items-center justify-between gap-2">
         <h2 className="font-semibold">Outage Cause Distribution</h2>
 
         {selectedCause && (
@@ -155,80 +201,66 @@ useEffect(() => {
         )}
       </div>
 
-      {loading ? (
-        <p className="mt-8 text-sm">Loading...</p>
-      ) : error ? (
-        <p role="alert" className="mt-8 text-sm text-destructive">
-          {error}
-        </p>
-      ) : causes.length === 0 ? (
-        <p className="mt-8 text-sm text-muted-foreground">
-          No outages in the selected period.
-        </p>
-      ) : colors ? (
-        <>
-          <div className="relative h-52">
-            <ReactECharts
-                option={options}
-                notMerge
-                style={{height: "100%", width: "100%"}}
-                onEvents={{
-                  click: (params: { name?: string }) => {
-                    if (params.name) {
-                      selectCause(params.name);
-                    }
-                  },
-                }}
-                onChartReady={(chart: EChartsType) => {
-                  chartRef.current = chart;
-
-                  if (selectedCause) {
-                    chart.dispatchAction({
-                      type: "highlight",
-                      seriesIndex: 0,
-                      name: selectedCause,
-                    });
-                  }
-                }}
-            />
-
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold">
-                {displayedCause.percentage.toFixed(1)}%
-              </span>
-
-              <span className="mt-1 max-w-28 text-center text-xs leading-tight text-muted-foreground">
-                {displayedCause.name}
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            {causes.map((cause, index) => (
-              <div
-                key={cause.name}
-                className="flex items-center gap-2 text-xs"
-              >
-                <span
-                  className="h-3 w-3 shrink-0 rounded-sm"
-                  style={{
-                    backgroundColor:
-                      colors.chart.series[index % colors.chart.series.length],
+      <div className="min-h-0 flex-1">
+        {loading ? (
+          <DonutSkeleton />
+        ) : error ? (
+          <p role="alert" className="mt-8 text-sm text-destructive">
+            {error}
+          </p>
+        ) : causes.length === 0 ? (
+          <p className="mt-8 text-sm text-muted-foreground">
+            No outages in the selected period.
+          </p>
+        ) : colors ? (
+          <>
+            <div className="relative h-full">
+              <ReactECharts
+                  option={options}
+                  notMerge
+                  opts={{ renderer: "svg" }}
+                  style={{height: "100%", width: "100%"}}
+                  onEvents={{
+                    click: (params: { name?: string }) => {
+                      if (params.name) {
+                        selectCause(params.name);
+                      }
+                    },
                   }}
-                />
+                  onChartReady={(chart: EChartsType) => {
+                    chartRef.current = chart;
 
-                <span className="min-w-0 flex-1">{cause.name}</span>
+                    if (selectedCause) {
+                      chart.dispatchAction({
+                        type: "highlight",
+                        seriesIndex: 0,
+                        name: selectedCause,
+                      });
+                    }
+                  }}
+              />
 
-                <span className="font-medium">
-                  {cause.percentage.toFixed(1)}%
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-bold">
+                  {displayedCause.percentage.toFixed(1)}%
+                </span>
+
+                <span className="mt-1 max-w-28 text-center text-xs leading-tight text-muted-foreground">
+                  {displayedCause.name}
                 </span>
               </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        <p className="mt-8 text-sm">Preparing chart...</p>
-      )}
+            </div>
+
+            <ul className="sr-only" aria-label="Outage causes">
+              {causes.map((cause) => (
+                <li key={cause.name}>{cause.name}: {cause.percentage.toFixed(1)}%</li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <DonutSkeleton />
+        )}
+      </div>
     </section>
   );
 }

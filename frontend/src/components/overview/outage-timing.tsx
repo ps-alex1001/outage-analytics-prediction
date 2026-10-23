@@ -7,9 +7,11 @@ import type { EChartsOption } from "echarts";
 import { useTheme } from "next-themes";
 import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
+import { TimingSkeleton } from "./loading-skeletons";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
   ssr: false,
+  loading: () => <TimingSkeleton />,
 });
 
 const API = "http://127.0.0.1:8000";
@@ -319,75 +321,71 @@ export default function OutageTiming({ year, selectedCause }: Props) {
   };
 
   return (
-    <section className="min-w-0 rounded-xl border bg-card p-4">
+    <section aria-busy={loading || !visual} className="min-w-0 rounded-xl border bg-card p-4">
       <div className="mb-2">
         <h2 className="font-semibold">Outage Timing Patterns</h2>
       </div>
 
-      {error ? (
-        <p role="alert" className="py-8 text-sm text-destructive">
-          Unable to load timing statistics.
-        </p>
-      ) : !data || !visual ? (
-        <p className="py-8 text-sm text-muted-foreground">
-          Loading timing patterns...
-        </p>
-      ) : (
-        <>
-          <div className="w-full overflow-x-auto">
-            <div className="relative min-w-180">
-              <ReactECharts
-                option={option}
-                notMerge
-                style={{ height: CHART_HEIGHT, width: "100%" }}
-              />
+      <div className="h-[360px] w-full overflow-x-auto">
+        {error ? (
+          <p role="alert" className="flex h-full items-center justify-center text-sm text-destructive">
+            Unable to load timing statistics.
+          </p>
+        ) : !data || !visual ? (
+          <TimingSkeleton />
+        ) : (
+          <div className="relative min-w-180" style={{ height: CHART_HEIGHT }}>
+            <ReactECharts
+              option={option}
+              notMerge
+              style={{ height: CHART_HEIGHT, width: "100%" }}
+            />
 
-              {/* CSS overlays follow the exact same category-grid geometry.
-                  They do not intercept ECharts hover events. */}
-              <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-                {hotspots.map((cell) => {
-                  const hotspotStyle: CSSProperties & {
-                    "--hotspot-glow": string;
-                  } = {
-                    left: `${HEATMAP_LEFT + ((cell.hour + 0.5) / 24) * HEATMAP_WIDTH}%`,
-                    top: GRID_TOP + ((cell.weekday + 0.5) / 7) * HEATMAP_HEIGHT,
-                    width: `calc(${HEATMAP_WIDTH / 24}% - 1.2px)`,
-                    height: HEATMAP_HEIGHT / 7 - 1.2,
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: colorblind
-                      ? "rgba(195, 235, 255, 0.20)"
-                      : "rgba(255, 247, 188, 0.20)",
-                    borderColor: colorblind ? "#d6f5ff" : "#fff6c7",
-                    "--hotspot-glow": colorblind
-                      ? "rgba(115, 206, 255, 0.90)"
-                      : "rgba(255, 238, 145, 0.95)",
-                  };
+            {/* CSS overlays follow the exact same category-grid geometry.
+                They do not intercept ECharts hover events. */}
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+              {hotspots.map((cell) => {
+                const hotspotStyle: CSSProperties & {
+                  "--hotspot-glow": string;
+                } = {
+                  left: `${HEATMAP_LEFT + ((cell.hour + 0.5) / 24) * HEATMAP_WIDTH}%`,
+                  top: GRID_TOP + ((cell.weekday + 0.5) / 7) * HEATMAP_HEIGHT,
+                  width: `calc(${HEATMAP_WIDTH / 24}% - 1.2px)`,
+                  height: HEATMAP_HEIGHT / 7 - 1.2,
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: colorblind
+                    ? "rgba(195, 235, 255, 0.20)"
+                    : "rgba(255, 247, 188, 0.20)",
+                  borderColor: colorblind ? "#d6f5ff" : "#fff6c7",
+                  "--hotspot-glow": colorblind
+                    ? "rgba(115, 206, 255, 0.90)"
+                    : "rgba(255, 238, 145, 0.95)",
+                };
 
-                  return (
-                    <div
-                      key={`${cell.weekday}-${cell.hour}`}
-                      className="outage-timing-hotspot absolute rounded-[2px] border-2"
-                      style={hotspotStyle}
-                    />
-                  );
-                })}
-              </div>
+                return (
+                  <div
+                    key={`${cell.weekday}-${cell.hour}`}
+                    className="outage-timing-hotspot absolute rounded-[2px] border-2"
+                    style={hotspotStyle}
+                  />
+                );
+              })}
             </div>
           </div>
+        )}
+      </div>
 
-          <div className="mt-2 ml-[80%] flex items-center gap-3 text-xs text-muted-foreground">
-            <span>Fewer</span>
-            <div
-              className="h-2.5 w-44 rounded-sm"
-              style={{
-                background:
-                  "linear-gradient(to right, var(--map-no-data), var(--map-low), var(--map-medium), var(--map-high))",
-              }}
-            />
-            <span>More</span>
-          </div>
-        </>
-      )}
+      <div aria-hidden={!data || !visual} className={`mt-2 flex h-4 items-center justify-end gap-3 text-xs text-muted-foreground ${!data || !visual ? "invisible" : ""}`}>
+        <span>Fewer</span>
+        <div
+          className="h-2.5 w-44 rounded-sm"
+          style={{
+            background:
+              "linear-gradient(to right, var(--map-no-data), var(--map-low), var(--map-medium), var(--map-high))",
+          }}
+        />
+        <span>More</span>
+      </div>
 
       <style>{`
         @keyframes outageTimingHotspotBreathe {

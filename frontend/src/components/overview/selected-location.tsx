@@ -1,16 +1,13 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import dynamic from "next/dynamic";
 import {useTheme} from "next-themes";
 import {useColorblindMode} from "@/components/theme-provider";
 import {getVisualizationColors} from "@/lib/visualization-theme";
 import type {SelectedArea} from "./outage-map";
 import Link from "next/link";
-
-const ReactECharts = dynamic(() => import("echarts-for-react"), {
-    ssr: false,
-});
+import { LocationSkeleton } from "./loading-skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type AreaRow = {
     municipality_psgc?: string;
@@ -197,9 +194,7 @@ export default function SelectedLocation({
     }
 
     if (!data) {
-        return <p className="text-sm text-muted-foreground">
-            Loading location statistics...
-        </p>;
+        return <LocationSkeleton />;
     }
 
     const isMunicipality = selectedArea.level === "municipality";
@@ -239,38 +234,6 @@ export default function SelectedLocation({
         ? (selectedRow.total_duration_hours * 60) / outages
         : null;
 
-    const option = {
-        animationDuration: 350,
-        tooltip: {
-            trigger: "item",
-            formatter: "{b}: {c} events ({d}%)",
-        },
-        series: [
-            {
-                type: "pie",
-                radius: ["55%", "76%"],
-                center: ["50%", "50%"],
-                selectedMode: "single",
-                selectedOffset: 6,
-                label: {show: false},
-                labelLine: {show: false},
-                data: [
-                    {
-                        name: selectedArea.name,
-                        value: outages,
-                        selected: outages > 0,
-                        itemStyle: {color: colors.selected},
-                    },
-                    {
-                        name: "Other areas",
-                        value: remainder,
-                        itemStyle: {color: colors.remainder},
-                    },
-                ],
-            },
-        ],
-    };
-
     const exploreParams = new URLSearchParams();
 
     if (year !== "all") {
@@ -289,7 +252,7 @@ export default function SelectedLocation({
     const exploreHref = `/spatial?${exploreParams.toString()}`;
 
     return (
-        <div className="flex h-full flex-col gap-3">
+        <div className="flex h-full flex-col gap-3 [container-type:inline-size]">
             <div>
                 <h3 className="text-lg font-semibold leading-tight">
                     {selectedArea.name}
@@ -301,14 +264,32 @@ export default function SelectedLocation({
                 </p>
             </div>
 
-            <div className="grid grid-cols-[115px_minmax(0,1fr)] items-center gap-2">
-                <div className="relative h-[125px]">
+            <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-center gap-3">
+                <div className="relative aspect-square w-full max-w-44">
                     {parentCount > 0 ? (
-                        <ReactECharts
-                            option={option}
-                            notMerge
-                            style={{height: 125, width: "100%"}}
-                        />
+                        <svg
+                            viewBox="0 0 160 160"
+                            role="img"
+                            aria-label={`${selectedArea.name}: ${share.toFixed(1)}% of ${isMunicipality ? "Bataan" : "the municipality"}`}
+                            className="size-full"
+                        >
+                            <title>{`${selectedArea.name}: ${outages.toLocaleString()} events (${share.toFixed(1)}%). Other areas: ${remainder.toLocaleString()} events.`}</title>
+                            <circle cx="80" cy="80" r="66" fill="none" stroke={colors.remainder} strokeWidth="16" />
+                            {share > 0 && (
+                                <circle
+                                    cx="80"
+                                    cy="80"
+                                    r="66"
+                                    fill="none"
+                                    stroke={colors.selected}
+                                    strokeWidth="16"
+                                    strokeLinecap="round"
+                                    pathLength="100"
+                                    strokeDasharray={`${Math.min(100, share)} 100`}
+                                    transform="rotate(-90 80 80)"
+                                />
+                            )}
+                        </svg>
                     ) : (
                         <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
                             No events
@@ -316,25 +297,23 @@ export default function SelectedLocation({
                     )}
 
                     {parentCount > 0 && (
-                        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-base font-bold tabular-nums">
-                {share.toFixed(1)}%
-              </span>
+                        <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1">
+                            <span className="text-[clamp(1rem,6cqi,1.5rem)] leading-none font-bold tabular-nums">
+                                {share.toFixed(1)}%
+                            </span>
+                            <span className="max-w-20 text-center text-[clamp(0.625rem,3.5cqi,0.75rem)] leading-tight text-muted-foreground">
+                                {isMunicipality ? "of Bataan" : "of municipality"}
+                            </span>
                         </div>
                     )}
                 </div>
 
                 <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                         Outages
                     </p>
-                    <p className="text-2xl font-bold tabular-nums">
+                    <p className="mt-1 whitespace-nowrap text-[clamp(1.5rem,11cqi,3rem)] leading-none font-bold tracking-tight tabular-nums">
                         {outages.toLocaleString()}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                        {isMunicipality
-                            ? "Share of Bataan"
-                            : "Share of municipality"}
                     </p>
                 </div>
             </div>
@@ -383,9 +362,15 @@ export default function SelectedLocation({
                         />
                     </div>
                 </div>
+            ) : causeLoading ? (
+                <div role="status" aria-label="Loading leading outage cause" className="space-y-2 border-t pt-3">
+                    <p className="text-xs text-muted-foreground">Leading outage cause</p>
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-1.5 w-full" />
+                </div>
             ) : (
                 <p className="border-t pt-3 text-xs text-muted-foreground">
-                    {causeLoading ? "Loading leading cause..." : "Cause breakdown unavailable for this selection."}
+                    Cause breakdown unavailable for this selection.
                 </p>
             )}
 
