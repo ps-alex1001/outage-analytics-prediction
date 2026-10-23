@@ -116,12 +116,12 @@ export function LocationSkeleton() {
     <SkeletonState label="Loading selected location statistics" className="h-full">
       <div className="flex h-full flex-col gap-3">
         <div className="space-y-2"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-3 w-1/2" /></div>
-        <div className="grid h-[125px] grid-cols-[115px_minmax(0,1fr)] items-center gap-2">
-          <div className="relative mx-auto size-24">
+        <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-center gap-3">
+          <div className="relative aspect-square w-full max-w-44">
             <Skeleton className="size-full rounded-full" />
-            <div className="absolute inset-5 rounded-full bg-card" />
+            <div className="absolute inset-[15%] rounded-full bg-card" />
           </div>
-          <div className="space-y-2"><Skeleton className="h-3 w-16" /><Skeleton className="h-7 w-20" /><Skeleton className="h-3 w-24 max-w-full" /></div>
+          <div className="min-w-0 space-y-2"><Skeleton className="h-4 w-16 max-w-full" /><Skeleton className="h-10 w-28 max-w-full" /></div>
         </div>
         <div className="space-y-2 border-t pt-3"><Skeleton className="h-3 w-2/3" /><Skeleton className="h-6 w-24" /></div>
         <div className="space-y-2 border-t pt-3"><Skeleton className="h-3 w-1/2" /><Skeleton className="h-4 w-3/4" /><Skeleton className="h-1.5 w-full" /></div>
