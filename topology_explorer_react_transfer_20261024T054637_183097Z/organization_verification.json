@@ -1,0 +1,346 @@
+{
+  "moved_files": [
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/active_connections.graphml",
+      "to": "data/topology/audit/active_connections.graphml",
+      "sha256": "f93c2cd5e709531060315c15e64da58f8ca43303cc7e6fa18ebbd09fa8b528db"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/consolidation_independent_validation.json",
+      "to": "data/topology/audit/consolidation_independent_validation.json",
+      "sha256": "16ca691f8a9a7dd797f32e232f2e0ef7bcafbda4704f73609bbb3e56382b4de9"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/feeder_consolidation.csv",
+      "to": "data/topology/audit/feeder_consolidation.csv",
+      "sha256": "0549c15eb2e7db3ae1220e682422c90d7d8938c456057070c64cc05097cc3f39"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/portable_consolidation_validation.json",
+      "to": "data/topology/audit/portable_consolidation_validation.json",
+      "sha256": "c085c98adc69593a044f8991ffb25c06a5a2a19d49ea23dd0cd410bb4d0c257f"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/reported_feeders_active.csv",
+      "to": "data/topology/audit/reported_feeders_active.csv",
+      "sha256": "005ba864e5eadba2aa30abc5ecbcc2957941e64174831514e8314bdf611cf329"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/reported_substations.csv",
+      "to": "data/topology/audit/reported_substations.csv",
+      "sha256": "2d8fc893616f07a561b512381416ac58d585ce64544a49fdea29240a9664539e"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/transformer_feeder_transfers.csv",
+      "to": "data/topology/audit/transformer_feeder_transfers.csv",
+      "sha256": "a615716d7fc0aade829b9c9daa24fe5f26329f83e7d99a8f53deecde93d3acf9"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/audit/validation.json",
+      "to": "data/topology/audit/validation.json",
+      "sha256": "0bdbd4184d8162bcb45d1d45579979cbd232704dc4662f7031c8718b2731afad"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/previews/balanga_consolidated_feeders.jpg",
+      "to": "data/topology/previews/balanga_consolidated_feeders.jpg",
+      "sha256": "b193871c13c87308c359208e9df4d5c5b3a027231d02193b84e6351f403948fb"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/previews/balanga_feeder_choices.jpg",
+      "to": "data/topology/previews/balanga_feeder_choices.jpg",
+      "sha256": "9891ef4d1de2a09c937ec560bea76ac923e1c4bf667e55a7d2678679073064d3"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/active_tree.json",
+      "to": "data/topology/react_data/active_tree.json",
+      "sha256": "7e44ba0ae51a38c1874f9ac8aca3e74de410d815ce6096a29baa9645cd5ae5c9"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/barangay_labels.geojson",
+      "to": "data/topology/react_data/barangay_labels.geojson",
+      "sha256": "7d56e4e5865c626b71dff5abedbabd6ad0f826df9055a3cea885bb2b758f6899"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/barangays.geojson",
+      "to": "data/topology/react_data/barangays.geojson",
+      "sha256": "3a9d36ae81f4ac824cad6caf3deaec5f0958229d175df1968cc23350ca0e3e20"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/dataset_info.json",
+      "to": "data/topology/react_data/dataset_info.json",
+      "sha256": "4db4b5e11d0d8ae75d4bc1738ca839fd656a878dcea4d833fc10d2183f5f150a"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/feeders.json",
+      "to": "data/topology/react_data/feeders.json",
+      "sha256": "1c7d7df12a76c53b5fb75500a434df7adfa509ec7bdeaa62055c6a6dc40abe1d"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/municipalities.geojson",
+      "to": "data/topology/react_data/municipalities.geojson",
+      "sha256": "51115b24697f105772bd770c1652bc1ce3a24ee08839f8d4dbb5d9ba73350d70"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/municipality_labels.geojson",
+      "to": "data/topology/react_data/municipality_labels.geojson",
+      "sha256": "121ae3f0ecb22be404f03aa6d1d6a36301f382c164be5271b7d1c62a9efe6860"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/network_edges.geojson",
+      "to": "data/topology/react_data/network_edges.geojson",
+      "sha256": "fd09cafe5ea33cecf69d1bd147b9c4133f96ea62aa09140a87594d9e77e09789"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/network_nodes.geojson",
+      "to": "data/topology/react_data/network_nodes.geojson",
+      "sha256": "27b66857bdb3b025885bd937f0c545fe93a6f4669f44c80f41cd6bc170ec30dd"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/reported_feeders_active.json",
+      "to": "data/topology/react_data/reported_feeders_active.json",
+      "sha256": "b6d6fe98c5b1fd2f441f4159d0492575e55031192538c4ce6dbc2cf621adcac0"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/reported_substations.json",
+      "to": "data/topology/react_data/reported_substations.json",
+      "sha256": "f8b55431a66b27cda484ab37b8409c30a9ea93830344080192d359033b27e514"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/style.json",
+      "to": "data/topology/react_data/style.json",
+      "sha256": "fa4a169223d14c699c77585a73e69058f3de420460fdf84664bc8c3ba340b888"
+    },
+    {
+      "from": "topology_explorer_react_transfer_20261024T054637_183097Z/react_data/substations.geojson",
+      "to": "data/topology/react_data/substations.geojson",
+      "sha256": "933805c82ea6ec83d2c92c0553bdbaea3328280d4214822d82272d5a9841a1e2"
+    }
+  ],
+  "existing_topology_files_unchanged": 6,
+  "application_and_reference_files_unchanged": 53,
+  "parsed_files": {
+    "react_data/active_tree.json": {
+      "readable": true
+    },
+    "react_data/barangays.geojson": {
+      "readable": true,
+      "features": 237
+    },
+    "react_data/barangay_labels.geojson": {
+      "readable": true,
+      "features": 237
+    },
+    "react_data/dataset_info.json": {
+      "readable": true
+    },
+    "react_data/feeders.json": {
+      "readable": true
+    },
+    "react_data/municipalities.geojson": {
+      "readable": true,
+      "features": 12
+    },
+    "react_data/municipality_labels.geojson": {
+      "readable": true,
+      "features": 12
+    },
+    "react_data/network_edges.geojson": {
+      "readable": true,
+      "features": 92850
+    },
+    "react_data/network_nodes.geojson": {
+      "readable": true,
+      "features": 87960
+    },
+    "react_data/reported_feeders_active.json": {
+      "readable": true
+    },
+    "react_data/reported_substations.json": {
+      "readable": true
+    },
+    "react_data/style.json": {
+      "readable": true
+    },
+    "react_data/substations.geojson": {
+      "readable": true,
+      "features": 38
+    },
+    "audit/consolidation_independent_validation.json": {
+      "readable": true
+    },
+    "audit/portable_consolidation_validation.json": {
+      "readable": true
+    },
+    "audit/validation.json": {
+      "readable": true
+    }
+  },
+  "inventory_and_checksum_targets_verified": 51,
+  "missing_relocated_targets": [],
+  "notes": [
+    "Historical source paths in the reference manifest/summary and inventory provenance are not portable runtime dependencies.",
+    "data/ is Git-ignored; no serving route or dashboard page was added.",
+    "The moved_files hashes describe the original relocation; checksums.json now describes the user-requested connected-station subset. Original reference and audit records were preserved."
+  ],
+  "streamlit_reference": {
+    "python_syntax": "passed",
+    "entry_point_dataset_targets": "all present",
+    "runtime_launch": "not run: streamlit, geopandas and plotly are not installed",
+    "unavailable_historical_summary_paths": {}
+  },
+  "javascript_helper": {
+    "all_feeder_counts_verified": 32,
+    "balanga_transformers": [
+      467,
+      574
+    ],
+    "single_transformer_selection": "passed",
+    "filter_network": "passed",
+    "nodes": 87960,
+    "active_edges": 87910
+  },
+  "backend_smoke": {
+    "import": "passed",
+    "root_endpoint": "passed",
+    "outage_summary_total": 10608,
+    "boundary_loads": "passed"
+  },
+  "final_inventory_check": {
+    "checksum_entries_verified": 51,
+    "inventory_entries_verified": 50,
+    "missing_runtime_references": []
+  },
+  "post_organization_station_filter": {
+    "policy": "Remove mapped substations without active modeled feeder connections from the visualization dataset",
+    "removed_station_count": 20,
+    "retained_station_count": 18,
+    "removed_stations": [
+      {
+        "asset_id": "observed-osm:way/98318337",
+        "name": null
+      },
+      {
+        "asset_id": "observed-osm:way/98318338",
+        "name": "Morong Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/330751276",
+        "name": null
+      },
+      {
+        "asset_id": "observed-osm:way/479894807",
+        "name": "Bataan Combined Cycle Power Plant (BCCPP) Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/520432597",
+        "name": "JSI Subic Solar Farm Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/615643343",
+        "name": "Balsik EHV Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/627757674",
+        "name": "Lamao Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/694409064",
+        "name": null
+      },
+      {
+        "asset_id": "observed-osm:way/852393053",
+        "name": "Mariveles EHV Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/972710221",
+        "name": null
+      },
+      {
+        "asset_id": "observed-osm:way/1059958729",
+        "name": null
+      },
+      {
+        "asset_id": "observed-osm:way/1137123964",
+        "name": null
+      },
+      {
+        "asset_id": "observed-osm:way/1137123972",
+        "name": "Mariveles Solar PV Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/1175537217",
+        "name": "Hermosa Industrial Park Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/1183710169",
+        "name": "Cubi Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/1211839431",
+        "name": "Morong Load-End Substation"
+      },
+      {
+        "asset_id": "observed-osm:way/1347514303",
+        "name": null
+      },
+      {
+        "asset_id": "observed-osm:way/1363991752",
+        "name": "Bataan Cable Terminal"
+      },
+      {
+        "asset_id": "observed-osm:way/1443737774",
+        "name": "SM Powerhouse"
+      },
+      {
+        "asset_id": "observed-osm:node/2697123354",
+        "name": "PENELCO Balanga"
+      }
+    ],
+    "removed_isolated_modeled_station_nodes": [
+      "supply:observed-osm:way/627757674",
+      "supply:observed-osm:way/98318338"
+    ],
+    "removed_inactive_candidate_edges": [
+      "local-station-lead-34dcf55683420c80219898ad",
+      "local-station-lead-38b4b488cfd4b616bdfbf0a5",
+      "local-station-lead-b3876c690a7ee4113310513b"
+    ],
+    "active_connectivity_unchanged": true,
+    "unaffected_asset_checksums": {
+      "active_tree.json": "7e44ba0ae51a38c1874f9ac8aca3e74de410d815ce6096a29baa9645cd5ae5c9",
+      "feeders.json": "1c7d7df12a76c53b5fb75500a434df7adfa509ec7bdeaa62055c6a6dc40abe1d",
+      "barangays.geojson": "3a9d36ae81f4ac824cad6caf3deaec5f0958229d175df1968cc23350ca0e3e20",
+      "barangay_labels.geojson": "7d56e4e5865c626b71dff5abedbabd6ad0f826df9055a3cea885bb2b758f6899",
+      "municipalities.geojson": "51115b24697f105772bd770c1652bc1ce3a24ee08839f8d4dbb5d9ba73350d70",
+      "municipality_labels.geojson": "121ae3f0ecb22be404f03aa6d1d6a36301f382c164be5271b7d1c62a9efe6860",
+      "style.json": "fa4a169223d14c699c77585a73e69058f3de420460fdf84664bc8c3ba340b888",
+      "reported_substations.json": "f8b55431a66b27cda484ab37b8409c30a9ea93830344080192d359033b27e514",
+      "reported_feeders_active.json": "b6d6fe98c5b1fd2f441f4159d0492575e55031192538c4ce6dbc2cf621adcac0"
+    },
+    "remaining_counts": {
+      "nodes": 87958,
+      "edges": 92847,
+      "active_edges": 87910,
+      "transformers": 7828,
+      "connected_transformers": 7747,
+      "unresolved_transformers": 81,
+      "mapped_substations": 18,
+      "modeled_station_candidates": 18,
+      "substations_with_active_feeders": 18,
+      "active_feeders": 32
+    },
+    "original_streamlit_reference_and_audit_preserved": true,
+    "verification": {
+      "backend_tests": "7 passed",
+      "graph_helper_tests": "2 passed; all 32 feeder traversals match original helper",
+      "typescript": "passed",
+      "scoped_eslint": "passed",
+      "live_metadata_endpoint": {
+        "stations": 18,
+        "without_active_feeders": 0,
+        "feeders": 32
+      },
+      "browser_recheck": "Blocked by automatic approval review usage limit; no further browser actions attempted."
+    }
+  }
+}

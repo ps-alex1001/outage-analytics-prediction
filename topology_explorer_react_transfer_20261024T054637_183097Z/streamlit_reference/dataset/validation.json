@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "checks": {
+    "radial": true,
+    "single_parent": true,
+    "unique_ids": true,
+    "endpoints_exist": true,
+    "assigned_nodes_reach_substation": true,
+    "consistent_sources": true,
+    "all_transformers_preserved": true,
+    "no_new_unresolved_transformers": true,
+    "all_active_feeders_at_least_threshold": true,
+    "physical_node_geometry_preserved": true,
+    "existing_edge_geometry_preserved": true,
+    "no_long_station_jumps": true
+  },
+  "before": {
+    "assigned_transformers": 7828,
+    "unresolved_transformers": 0,
+    "transformers_outside_station_municipality": 3446,
+    "active_municipal_boundary_crossings": 103,
+    "maximum_station_lead_m": 12017.823713019112,
+    "median_station_lead_m": 3247.0503537734585
+  },
+  "after": {
+    "assigned_transformers": 7747,
+    "unresolved_transformers": 81,
+    "transformers_outside_station_municipality": 1113,
+    "active_municipal_boundary_crossings": 94,
+    "maximum_station_lead_m": 110.36483688818166,
+    "median_station_lead_m": 39.974121219773025
+  },
+  "consolidation_before": {
+    "assigned_transformers": 7747,
+    "unresolved_transformers": 81,
+    "transformers_outside_station_municipality": 1113,
+    "active_municipal_boundary_crossings": 94,
+    "maximum_station_lead_m": 92.61983736932628,
+    "median_station_lead_m": 39.64060856179251
+  },
+  "active_feeders_before": 57,
+  "active_feeders_after": 32,
+  "minimum_transformers": 20,
+  "original_inputs_and_outages_verified": 80,
+  "inactive_empty_inventory_poles": 0,
+  "reported_no_load_feeders_excluded": 4
+}

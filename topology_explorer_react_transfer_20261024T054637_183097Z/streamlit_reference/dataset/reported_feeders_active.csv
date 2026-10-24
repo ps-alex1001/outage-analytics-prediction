@@ -1,0 +1,75 @@
+section_substation_id,reported_substation_id,feeder_number,raw_header,source_line,reference_status,reported_feeder_id,header_source_lines_json,load_status_reported,data_status
+reported-ss-1197e5aa0d6fb027192d,reported-ss-1197e5aa0d6fb027192d,1,Feeder 1 (Samal S/S),2,explicit_substation_reference,reported-feeder-04b5d56df78d42e4aed2,[2],reported_locations,reported_user_supplied_listing
+reported-ss-1197e5aa0d6fb027192d,reported-ss-1197e5aa0d6fb027192d,2,Feeder 2 (Samal S/S),8,explicit_substation_reference,reported-feeder-de266e8732c2931966ab,[8],reported_locations,reported_user_supplied_listing
+reported-ss-1197e5aa0d6fb027192d,reported-ss-1197e5aa0d6fb027192d,3,Feeder 3 (Samal S/S),14,explicit_substation_reference,reported-feeder-06a7a72b559370723b74,"[14, 956]",reported_locations,reported_user_supplied_listing
+reported-ss-1197e5aa0d6fb027192d,reported-ss-1197e5aa0d6fb027192d,4,Feeder 4,26,section_heading,reported-feeder-d994b71f1f4eafe77e68,[26],reported_locations,reported_user_supplied_listing
+reported-ss-e23e3ec5b89080e24d69,reported-ss-e23e3ec5b89080e24d69,1,Feeder 1 (Gugo S/S),33,explicit_substation_reference,reported-feeder-38ffa9181f0590ec2c03,[33],reported_locations,reported_user_supplied_listing
+reported-ss-e23e3ec5b89080e24d69,reported-ss-e23e3ec5b89080e24d69,2,Feeder 2 (Gugo S/S),38,explicit_substation_reference,reported-feeder-2289df0ed369d849ab4c,[38],reported_locations,reported_user_supplied_listing
+reported-ss-e23e3ec5b89080e24d69,reported-ss-e23e3ec5b89080e24d69,3,Feeder 3 (Gugo S/S),42,explicit_substation_reference,reported-feeder-644a57cd0da4a5a56d18,"[42, 966]",reported_locations,reported_user_supplied_listing
+reported-ss-e23e3ec5b89080e24d69,reported-ss-e23e3ec5b89080e24d69,4,Feeder 4 (Gugo S/S),54,explicit_substation_reference,reported-feeder-de9f27a9e74de42950dd,[54],reported_locations,reported_user_supplied_listing
+reported-ss-9f84e48ff31c6762921b,reported-ss-9f84e48ff31c6762921b,2,Feeder 2 (Balanga S/S) 053,64,section_heading,reported-feeder-acefb7372b66ded64299,[64],reported_locations,reported_user_supplied_listing
+reported-ss-9f84e48ff31c6762921b,reported-ss-9f84e48ff31c6762921b,3,Feeder 3 (Balanga S/S) 053,68,section_heading,reported-feeder-fb0a28bf55da17737246,[68],reported_locations,reported_user_supplied_listing
+reported-ss-9f84e48ff31c6762921b,reported-ss-9f84e48ff31c6762921b,4,Feeder 4 (Balanga S/S) 053,83,section_heading,reported-feeder-0aa0a618ef1b361be96c,[83],reported_locations,reported_user_supplied_listing
+reported-ss-9115c1b928138d999191,reported-ss-9115c1b928138d999191,1,Feeder 1 (054),100,section_heading,reported-feeder-589da3e59cf963da1ac9,[100],reported_locations,reported_user_supplied_listing
+reported-ss-9115c1b928138d999191,reported-ss-9115c1b928138d999191,3,Feeder 3 (054),105,section_heading,reported-feeder-cf7b76a983c7f7d8da91,[105],reported_locations,reported_user_supplied_listing
+reported-ss-9115c1b928138d999191,reported-ss-9115c1b928138d999191,4,Feeder 4 (054),108,section_heading,reported-feeder-fc733fdb5b9b80b3f6f6,[108],reported_locations,reported_user_supplied_listing
+reported-ss-8f4840c5a0e2a509ab52,reported-ss-8f4840c5a0e2a509ab52,1,Feeder 1 (052),132,section_heading,reported-feeder-7f1f0afe60bc08c67e88,[132],reported_locations,reported_user_supplied_listing
+reported-ss-8f4840c5a0e2a509ab52,reported-ss-8f4840c5a0e2a509ab52,4,Feeder 4 (052),153,section_heading,reported-feeder-fbb54b7a90b2ddc7d5c7,[153],reported_locations,reported_user_supplied_listing
+reported-ss-d44d275410128dac27f0,reported-ss-d44d275410128dac27f0,1,Feeder 1 (055),172,section_heading,reported-feeder-bbe04c0f80dcc7d27e8c,[172],reported_locations,reported_user_supplied_listing
+reported-ss-d44d275410128dac27f0,reported-ss-d44d275410128dac27f0,2,Feeder 2 (055),195,section_heading,reported-feeder-835635e73c74527e7239,[195],reported_locations,reported_user_supplied_listing
+reported-ss-d44d275410128dac27f0,reported-ss-d44d275410128dac27f0,3,Feeder 3 (055),213,section_heading,reported-feeder-6c518a55c738f20f4c63,[213],reported_locations,reported_user_supplied_listing
+reported-ss-d44d275410128dac27f0,reported-ss-d44d275410128dac27f0,4,Feeder 4 (055),223,section_heading,reported-feeder-2b72b5e617f2d65b4b9e,[223],reported_locations,reported_user_supplied_listing
+reported-ss-a7feb7bbd0d7eeb8e653,reported-ss-a7feb7bbd0d7eeb8e653,1,Feeder 1  (051),227,section_heading,reported-feeder-d8e3e97ae628b3f1c1df,[227],reported_locations,reported_user_supplied_listing
+reported-ss-a7feb7bbd0d7eeb8e653,reported-ss-a7feb7bbd0d7eeb8e653,2,Feeder 2 (051),238,section_heading,reported-feeder-57ead7481d22e417e519,[238],reported_locations,reported_user_supplied_listing
+reported-ss-a7feb7bbd0d7eeb8e653,reported-ss-a7feb7bbd0d7eeb8e653,3,Feeder 3 (051),254,section_heading,reported-feeder-6d94bc6791aaa7e5c42c,[254],reported_locations,reported_user_supplied_listing
+reported-ss-a7feb7bbd0d7eeb8e653,reported-ss-a7feb7bbd0d7eeb8e653,4,Feeder 4 (051),262,section_heading,reported-feeder-1a975b3a7af20c0b1b66,[262],reported_locations,reported_user_supplied_listing
+reported-ss-c644fe7f3d65e1c3138a,reported-ss-c644fe7f3d65e1c3138a,1,Feeder 1,278,section_heading,reported-feeder-a537b98607378335af92,[278],reported_locations,reported_user_supplied_listing
+reported-ss-c644fe7f3d65e1c3138a,reported-ss-c644fe7f3d65e1c3138a,2,Feeder 2,298,section_heading,reported-feeder-82c892dc31d3508cff06,[298],reported_locations,reported_user_supplied_listing
+reported-ss-c644fe7f3d65e1c3138a,reported-ss-c644fe7f3d65e1c3138a,3,Feeder 3,307,section_heading,reported-feeder-ced814ad49f486beae05,[307],reported_locations,reported_user_supplied_listing
+reported-ss-c644fe7f3d65e1c3138a,reported-ss-c644fe7f3d65e1c3138a,4,Feeder 4,316,section_heading,reported-feeder-6733769f9972c89a710e,[316],reported_locations,reported_user_supplied_listing
+reported-ss-af641af4ceac9d72d0e5,reported-ss-af641af4ceac9d72d0e5,1,Feeder 1,326,section_heading,reported-feeder-a5f138c8f7c075cfa976,[326],reported_locations,reported_user_supplied_listing
+reported-ss-af641af4ceac9d72d0e5,reported-ss-af641af4ceac9d72d0e5,3,Feeder 3,331,section_heading,reported-feeder-834eae72a227179ba17e,[331],reported_locations,reported_user_supplied_listing
+reported-ss-af641af4ceac9d72d0e5,reported-ss-af641af4ceac9d72d0e5,4,Feeder 4,348,section_heading,reported-feeder-cad0a258b3618f45212c,[348],reported_locations,reported_user_supplied_listing
+reported-ss-c8811dc903a6da54d54e,reported-ss-c8811dc903a6da54d54e,2,Feeder 2,361,section_heading,reported-feeder-944cc95b80792c885615,[361],reported_locations,reported_user_supplied_listing
+reported-ss-c8811dc903a6da54d54e,reported-ss-c8811dc903a6da54d54e,3,Feeder 3,367,section_heading,reported-feeder-d1aacbbcbe4085b4d616,[367],reported_locations,reported_user_supplied_listing
+reported-ss-c8811dc903a6da54d54e,reported-ss-c8811dc903a6da54d54e,4,Feeder 4,376,section_heading,reported-feeder-ac4da7f7a0f187e03af3,[376],reported_locations,reported_user_supplied_listing
+reported-ss-b6fd18ec6763eb49bdec,reported-ss-b6fd18ec6763eb49bdec,1,Feeder 1 Dinalupihan S/S,395,section_heading,reported-feeder-48a3f658aa8b64191900,[395],reported_locations,reported_user_supplied_listing
+reported-ss-b6fd18ec6763eb49bdec,reported-ss-b6fd18ec6763eb49bdec,3,Feeder 3 Dinalupihan S/S,409,section_heading,reported-feeder-dfb06a80624ccd659d9b,[409],reported_locations,reported_user_supplied_listing
+reported-ss-b6fd18ec6763eb49bdec,reported-ss-b6fd18ec6763eb49bdec,4,Feeder 4 Dinalupihan S/S,430,section_heading,reported-feeder-4faf31cab2ae5f6d6482,[430],reported_locations,reported_user_supplied_listing
+reported-ss-cabcc5dface66bbea971,reported-ss-cabcc5dface66bbea971,2,Feeder 2,437,section_heading,reported-feeder-42423183d83a1f052ae5,[437],reported_locations,reported_user_supplied_listing
+reported-ss-cabcc5dface66bbea971,reported-ss-cabcc5dface66bbea971,4,Feeder 4,444,section_heading,reported-feeder-caa61a0ce5aa9f55f341,[444],reported_locations,reported_user_supplied_listing
+reported-ss-dd37f4e7d94b73ecb86e,reported-ss-dd37f4e7d94b73ecb86e,1,Feeder 1,449,section_heading,reported-feeder-493c4048ed1113a0a42c,[449],reported_locations,reported_user_supplied_listing
+reported-ss-dd37f4e7d94b73ecb86e,reported-ss-dd37f4e7d94b73ecb86e,2,Feeder 2,477,section_heading,reported-feeder-6661cf122a505f77daa3,[477],reported_locations,reported_user_supplied_listing
+reported-ss-dd37f4e7d94b73ecb86e,reported-ss-dd37f4e7d94b73ecb86e,3,Feeder 3,505,section_heading,reported-feeder-f4b9472581d8353031d6,[505],reported_locations,reported_user_supplied_listing
+reported-ss-dd37f4e7d94b73ecb86e,reported-ss-dd37f4e7d94b73ecb86e,4,Feeder 4,534,section_heading,reported-feeder-1f00a3e1e28845f03d3c,[534],reported_locations,reported_user_supplied_listing
+reported-ss-5cb8538d98616d1e464f,reported-ss-5cb8538d98616d1e464f,3,Feeder 3,553,section_heading,reported-feeder-52e0d16cb2c27214ac81,[553],reported_locations,reported_user_supplied_listing
+reported-ss-5cb8538d98616d1e464f,reported-ss-5cb8538d98616d1e464f,4,Feeder 4,564,section_heading,reported-feeder-9152d48e598eb56ed5e6,[564],reported_locations,reported_user_supplied_listing
+reported-ss-49f67635faba870eba8a,reported-ss-49f67635faba870eba8a,1,Feeder 1,571,section_heading,reported-feeder-83f30b0b19aee230927c,[571],reported_locations,reported_user_supplied_listing
+reported-ss-49f67635faba870eba8a,reported-ss-49f67635faba870eba8a,2,Feeder 2,590,section_heading,reported-feeder-51da3fe307d409a8cb96,[590],reported_locations,reported_user_supplied_listing
+reported-ss-49f67635faba870eba8a,reported-ss-49f67635faba870eba8a,3,Feeder 3,619,section_heading,reported-feeder-db29a84b9d5d28d49e59,[619],reported_locations,reported_user_supplied_listing
+reported-ss-8b6e950d7cbd3d704c04,reported-ss-8b6e950d7cbd3d704c04,1,Feeder 1,626,section_heading,reported-feeder-d87d9812c828d64e0ed1,[626],reported_locations,reported_user_supplied_listing
+reported-ss-8b6e950d7cbd3d704c04,reported-ss-8b6e950d7cbd3d704c04,2,Feeder 2,647,section_heading,reported-feeder-d01920d5b20639213554,[647],reported_locations,reported_user_supplied_listing
+reported-ss-8b6e950d7cbd3d704c04,reported-ss-8b6e950d7cbd3d704c04,3,Feeder 3,674,section_heading,reported-feeder-117ca9cc536b3e0c617d,[674],reported_locations,reported_user_supplied_listing
+reported-ss-91ab3935edf63489a08d,reported-ss-91ab3935edf63489a08d,1,Feeder 1,693,section_heading,reported-feeder-cf52cfb3729648282dc7,[693],reported_locations,reported_user_supplied_listing
+reported-ss-91ab3935edf63489a08d,reported-ss-91ab3935edf63489a08d,2,Feeder 2,701,section_heading,reported-feeder-02a0714f55014fb091ec,[701],reported_locations,reported_user_supplied_listing
+reported-ss-91ab3935edf63489a08d,reported-ss-91ab3935edf63489a08d,3,Feeder 3,713,section_heading,reported-feeder-9e30b3c375ab89b4fc53,[713],reported_locations,reported_user_supplied_listing
+reported-ss-91ab3935edf63489a08d,reported-ss-91ab3935edf63489a08d,4,Feeder  4,728,section_heading,reported-feeder-bda38be33dcee08ed0fc,[728],reported_locations,reported_user_supplied_listing
+reported-ss-dda1b00f7324be80a619,reported-ss-dda1b00f7324be80a619,3,Feeder 3,742,section_heading,reported-feeder-9199fc602e66a70291cb,[742],reported_locations,reported_user_supplied_listing
+reported-ss-56db8b2b88596b94164e,reported-ss-56db8b2b88596b94164e,1,Feeder 1 Morong SS,761,section_heading,reported-feeder-bf764e726d58fbfac66e,[761],reported_locations,reported_user_supplied_listing
+reported-ss-56db8b2b88596b94164e,reported-ss-56db8b2b88596b94164e,2,Feeder 2 Morong SS,771,section_heading,reported-feeder-13a6169393d87572dd1f,[771],reported_locations,reported_user_supplied_listing
+reported-ss-56db8b2b88596b94164e,reported-ss-56db8b2b88596b94164e,3,Feeder 3 Morong SS,783,section_heading,reported-feeder-cd5b78cf9c9c93d21239,[783],reported_locations,reported_user_supplied_listing
+reported-ss-56db8b2b88596b94164e,reported-ss-56db8b2b88596b94164e,4,Feeder 4 Morong SS,792,section_heading,reported-feeder-3126ab9517635f5ef068,[792],reported_locations,reported_user_supplied_listing
+reported-ss-6de8a0a785ad8a276106,reported-ss-6de8a0a785ad8a276106,1,Feeder 1 Sabang SS,803,section_heading,reported-feeder-205ec7229bd7443e7369,[803],reported_locations,reported_user_supplied_listing
+reported-ss-6de8a0a785ad8a276106,reported-ss-6de8a0a785ad8a276106,2,Feeder 2 Sabang SS,814,section_heading,reported-feeder-fe76ed10c0812be445c3,[814],reported_locations,reported_user_supplied_listing
+reported-ss-6de8a0a785ad8a276106,reported-ss-6de8a0a785ad8a276106,3,Feeder 3 Sabang SS,819,section_heading,reported-feeder-59696f954a543ab97d1a,[819],reported_locations,reported_user_supplied_listing
+reported-ss-f97f20520b5a4c762d60,reported-ss-f97f20520b5a4c762d60,1,Feeder 1,827,section_heading,reported-feeder-b11c58eaddfb41955264,[827],reported_locations,reported_user_supplied_listing
+reported-ss-f97f20520b5a4c762d60,reported-ss-f97f20520b5a4c762d60,2,Feeder 2,848,section_heading,reported-feeder-26ab0ebb888b41e5cedd,[848],reported_locations,reported_user_supplied_listing
+reported-ss-8be44e668a282442a630,reported-ss-8be44e668a282442a630,1,Feeder 1,882,section_heading,reported-feeder-20ad5f735096caf30904,[882],reported_locations,reported_user_supplied_listing
+reported-ss-8be44e668a282442a630,reported-ss-8be44e668a282442a630,2,Feeder 2,902,section_heading,reported-feeder-1ee4109987c93ce4af44,[902],reported_locations,reported_user_supplied_listing
+reported-ss-f43aa16ccb135474769f,reported-ss-f43aa16ccb135474769f,1,Feeder 1,917,section_heading,reported-feeder-d23b68b5ef938915df5b,[917],reported_locations,reported_user_supplied_listing
+reported-ss-f43aa16ccb135474769f,reported-ss-f43aa16ccb135474769f,2,Feeder 2,925,section_heading,reported-feeder-af38bfbf80248b17d230,[925],reported_locations,reported_user_supplied_listing
+reported-ss-f43aa16ccb135474769f,reported-ss-f43aa16ccb135474769f,4,Feeder 4,946,section_heading,reported-feeder-403a501d17bd036b4e32,[946],reported_locations,reported_user_supplied_listing
+reported-ss-2adafe2cf1b29b93deb8,reported-ss-2adafe2cf1b29b93deb8,1,Feeder 1,980,section_heading,reported-feeder-99d2dd90d95f27b03ca5,[980],reported_locations,reported_user_supplied_listing
+reported-ss-2adafe2cf1b29b93deb8,reported-ss-2adafe2cf1b29b93deb8,2,Feeder 2,996,section_heading,reported-feeder-f600ce978a9d2f947193,[996],reported_locations,reported_user_supplied_listing
+reported-ss-2adafe2cf1b29b93deb8,reported-ss-2adafe2cf1b29b93deb8,3,Feeder 3,1016,section_heading,reported-feeder-15c894e61978ebf555b8,[1016],reported_locations,reported_user_supplied_listing
+reported-ss-2adafe2cf1b29b93deb8,reported-ss-2adafe2cf1b29b93deb8,4,Feeder 4,1027,section_heading,reported-feeder-c39bd83fc78af1192bf4,[1027],reported_locations,reported_user_supplied_listing

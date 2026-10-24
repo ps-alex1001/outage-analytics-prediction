@@ -6,6 +6,7 @@ import {
   FlaskConical,
   LayoutDashboard,
   MapPinned,
+  Network,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -25,6 +26,7 @@ import {
 const navigation = [
   { title: "Overview", href: "/", icon: LayoutDashboard },
   { title: "Spatial & Event Analysis", href: "/spatial", icon: MapPinned },
+  { title: "Network Topology", href: "/network", icon: Network },
   { title: "Outage Forecasting", href: "/forecast", icon: TrendingUp },
   { title: "Scenario Simulator", href: "/scenario", icon: FlaskConical },
 ];

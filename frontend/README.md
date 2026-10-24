@@ -1,8 +1,8 @@
 # Bataan Outage Dashboard
 
 The existing frontend uses Next.js App Router, TypeScript, Tailwind CSS v4,
-and npm. This foundation adds a shared shadcn/ui sidebar and four placeholder
-pages. It does not need the FastAPI server to run.
+and npm. The shared shadcn/ui sidebar and layout wrap the dashboard pages.
+Overview and Network Topology use the existing FastAPI server.
 
 ## Run locally
 
@@ -19,10 +19,11 @@ Open http://localhost:3000.
 
 - `src/app/layout.tsx`: shared application title, sidebar provider, toggle,
   and main content area.
-- `src/components/app-sidebar.tsx`: the four Next.js links, active route
+- `src/components/app-sidebar.tsx`: the Next.js links, active route
   highlighting, collapsed icon tooltips, and mobile drawer dismissal.
 - `src/app/page.tsx`: Overview (`/`).
 - `src/app/spatial/page.tsx`: Spatial & Event Analysis (`/spatial`).
+- `src/app/network/page.tsx`: Network Topology (`/network`).
 - `src/app/forecast/page.tsx`: Outage Forecasting (`/forecast`).
 - `src/app/scenario/page.tsx`: Scenario Simulator (`/scenario`), marked planned.
 - `src/app/globals.css`: neutral colors and semantic CSS variables for future

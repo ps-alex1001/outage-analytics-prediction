@@ -1,0 +1,111 @@
+/* Session-scoped presentation bridge for Streamlit 1.64.
+   Native config provides the initial theme. No hashed Emotion class selectors,
+   DOM reparenting, injected event handlers, or data/map-state changes.
+   Keep this small selector adapter covered by browser checks after upgrades. */
+.stApp, .stMain, .stHeader {
+  background-color: var(--pen-background);
+  color: var(--pen-text);
+}
+.stApp {
+  --st-primary-color: var(--pen-primary);
+  --st-background-color: var(--pen-background);
+  --st-secondary-background-color: var(--pen-surface);
+  --st-text-color: var(--pen-text);
+  --st-heading-color: var(--pen-heading);
+  --st-border-color: var(--pen-border);
+  --st-link-color: var(--pen-primary);
+}
+.stApp h1, .stApp h2, .stApp h3, .stApp h4 { color: var(--pen-heading); }
+.stApp .stMarkdown, .stApp .stWidgetLabel { color: var(--pen-text); }
+.stApp [data-testid="stCaptionContainer"] { color: var(--pen-muted); opacity: 1; }
+.stApp [data-testid="stCaptionContainer"] p { color: var(--pen-muted); }
+.stApp a { color: var(--pen-primary); }
+.stApp a[aria-current="page"] {
+  color: var(--pen-primary); background: var(--pen-info-background);
+  border-bottom: 2px solid var(--pen-primary);
+}
+.stApp [data-testid="stMetric"],
+.stApp [class*="st-key-card_"], .stApp [class*="st-key-leader_"], .stApp .st-key-impact_outage_panel {
+  background: var(--pen-surface); border-color: var(--pen-border);
+  border-radius: 10px;
+}
+.stApp [data-testid="stMetric"] { border-top: 3px solid var(--pen-accent); }
+.stApp [data-testid="stMetricValue"] { color: var(--pen-heading); }
+.stApp [data-testid="stMetricLabel"] { color: var(--pen-muted); }
+.stApp button {
+  color: var(--pen-text); border-color: var(--pen-control-border);
+}
+.stApp button[kind="primary"],
+.stApp button[aria-pressed="true"],
+.stApp .stButtonGroup button[role="radio"][aria-checked="true"] {
+  background: var(--pen-primary); color: var(--pen-surface);
+  border-color: var(--pen-primary);
+}
+.stApp button[aria-pressed="true"] p,
+.stApp [role="radio"][aria-checked="true"] p { color: inherit; }
+.stApp button[kind="secondary"] { background: var(--pen-surface); }
+.stApp button[kind="secondary"]:hover {
+  border-color: var(--pen-primary); color: var(--pen-primary);
+}
+.stApp [role="tab"] { color: var(--pen-muted); }
+.stApp [role="tab"][aria-selected="true"] {
+  color: var(--pen-primary); border-bottom: 2px solid var(--pen-primary);
+}
+.stApp [role="tab"][aria-selected="true"] p { color: inherit; }
+.stApp :is(input, textarea, [role="combobox"]) {
+  color: var(--pen-text); accent-color: var(--pen-primary);
+}
+.stApp :is(.stSelectbox, .stMultiSelect) [data-baseweb="select"] > div,
+.stApp :is(.stTextInput, .stNumberInput, .stDateInput) [data-baseweb="input"],
+.stApp [role="group"]:has(> input[role="combobox"]) {
+  background: var(--pen-surface); border-color: var(--pen-control-border);
+  color: var(--pen-text);
+}
+.stApp :is(button, input, [role="combobox"], a):focus-visible {
+  outline: 2px solid var(--pen-primary); outline-offset: 3px;
+}
+.stApp label:has(input[role="switch"]:checked) > div:not([data-testid]) {
+  background: var(--pen-primary); border-color: var(--pen-primary);
+}
+.stApp label:has(input[role="switch"]:focus-visible) {
+  outline: 2px solid var(--pen-primary); outline-offset: 3px;
+}
+.stApp [data-baseweb="tag"] { background: var(--pen-info-background); color: var(--pen-primary); }
+.stApp .stExpander { background: var(--pen-surface); border-color: var(--pen-border); }
+.stApp .st-key-theme_toolbar {
+  /* Native popover, visually anchored beside the top-bar app controls.
+     No DOM reparenting or injected widget handlers. */
+  position: fixed; top: .5rem; right: 12rem; z-index: 999991;
+  width: max-content; padding: 0; border: 0;
+  background: var(--pen-background);
+}
+.stApp [data-testid="stLayoutWrapper"]:has(> .st-key-theme_toolbar) {
+  display: contents;
+}
+.stApp [data-testid="stToolbar"] .rc-overflow {
+  /* Let native navigation put excess links in its own overflow menu. */
+  max-width: calc(100% - 22rem);
+}
+.stApp .st-key-impact_outage_panel [data-testid="stMetric"] {
+  padding: .55rem .6rem; border-top: 1px solid var(--pen-border);
+}
+.stApp .st-key-impact_outage_panel [data-testid="stMetricValue"] {
+  font-size: 1.1rem; line-height: 1.35;
+  white-space: normal; overflow-wrap: anywhere;
+}
+.stApp .st-key-impact_outage_panel [data-testid="stMetricValue"] [data-testid="stMarkdownContainer"],
+.stApp .st-key-impact_outage_panel [data-testid="stMetricValue"] p {
+  font-size: inherit; font-weight: 650; white-space: normal;
+  overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
+.stApp .st-key-impact_outage_panel [data-testid="stMetricLabel"] p {
+  font-size: .75rem; white-space: normal;
+}
+.stApp .st-key-impact_outage_panel [data-testid="stMetricIcon"] {
+  color: var(--pen-primary);
+}
+/* Hover and table chrome remain readable; chart/map colors come from Python. */
+.stApp .stDataFrame { border-color: var(--pen-border); }
+@media (prefers-reduced-motion: reduce) {
+  .stApp button, .stApp a { transition: none; }
+}

@@ -182,3 +182,42 @@
     @apply font-sans;
   }
 }
+
+/* Topology palette follows the imported style.json; overrides preserve contrast
+   in dark mode and the dashboard's independent Okabe–Ito accessibility mode. */
+:root {
+  --network-station: #0072b2;
+  --network-downstream: #9c4aa3;
+  --network-selected: #d55e00;
+  --network-remaining: #7f899c;
+  --network-pole: #69788d;
+  --network-boundary: #374151;
+}
+.dark {
+  --network-station: #56b4e9;
+  --network-downstream: #ce86d3;
+  --network-selected: #ff9c55;
+  --network-remaining: #8b95a7;
+  --network-pole: #b3bfd1;
+  --network-boundary: #a3adbd;
+}
+:root[data-colorblind="true"] {
+  --network-station: #0072b2;
+  --network-downstream: #995a80;
+  --network-selected: #b34e00;
+}
+:root.dark[data-colorblind="true"] {
+  --network-station: #56b4e9;
+  --network-downstream: #cc79a7;
+  --network-selected: #e69f00;
+}
+.network-map .maplibregl-ctrl-group {
+  background: var(--card);
+  color: var(--foreground);
+}
+.network-map .maplibregl-ctrl-group button { width: 40px; height: 40px; }
+.network-map .maplibregl-ctrl-group button:hover { background-color: var(--muted); }
+.dark .network-map .maplibregl-ctrl-icon { filter: invert(1); }
+.network-map .maplibregl-ctrl-scale,
+.network-map .maplibregl-ctrl-attrib { background-color: var(--card); color: var(--foreground); }
+.network-map .maplibregl-ctrl-scale { border-color: var(--foreground); }

@@ -1,0 +1,14 @@
+{
+  "parent_run": "D:\\PyCharmProjects\\Outage Prediction\\data\\synthetic\\infrastructure_20261024T023121_228455Z",
+  "comparison_run": "D:\\PyCharmProjects\\Outage Prediction\\data\\synthetic\\power_connections_20261024T040022_131158Z",
+  "method": "local_radial_road_forest",
+  "observed_sources": 20,
+  "mapped_substations": 38,
+  "branches": 32,
+  "transformers": 7828,
+  "unresolved_transformers": 81,
+  "supply_connection_policy": "Local short departures and municipal-penalized shortest paths over existing road sections. Candidate station roles are explicit in eligibility_basis. Reported feeder labels remain contextual evidence, not enforced official boundaries.",
+  "consolidation_parent": "D:\\PyCharmProjects\\Outage Prediction\\data\\synthetic\\power_connections_20261024T043405_097124Z",
+  "minimum_transformers_per_feeder": 20,
+  "feeder_policy": "Remove feeders below threshold through supported road ties; Balanga reuses its empty feeder for a connected redistribution from the large feeder."
+}

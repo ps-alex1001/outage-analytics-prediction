@@ -4,11 +4,13 @@ from typing import Literal
 import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.topology import router as topology_router
 
 app = FastAPI()
+app.include_router(topology_router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_methods=["GET"],
     allow_headers=["*"],
 )

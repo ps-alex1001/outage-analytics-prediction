@@ -1,0 +1,25 @@
+reported_substation_id,reported_name,capacity_mva_reported,station_code_reported,source_line,data_status,is_verified_connectivity,municipality_psgc,observed_match_status,observed_asset_candidates_json,observed_asset_id
+reported-ss-1197e5aa0d6fb027192d,SAMAL 10MVA SUBSTATION,10.0,,1,reported_user_supplied_listing,False,0300812000,ambiguous_name_match,"[""observed-osm:way/1211836837"", ""observed-osm:way/1217459791""]",
+reported-ss-e23e3ec5b89080e24d69,GUGO 20MVA SUBSTATION,20.0,,32,reported_user_supplied_listing,False,,unmatched,[],
+reported-ss-9f84e48ff31c6762921b,BALANGA IBAYO 10MVA SUBSTATION MIRROR,10.0,,60,reported_user_supplied_listing,False,0300803000,unmatched,[],
+reported-ss-9115c1b928138d999191,BALANGA VISTAMALL 10MVA SUBSTATION (054),10.0,054,98,reported_user_supplied_listing,False,0300803000,unmatched,[],
+reported-ss-8f4840c5a0e2a509ab52,BALANGA MAIN OFFICE 10MVA SUBSTATION (052),10.0,052,131,reported_user_supplied_listing,False,0300803000,unmatched,[],
+reported-ss-d44d275410128dac27f0,NEW 20MVA TUYO SUBSTATION (055) MAIN OFFICE,20.0,055,171,reported_user_supplied_listing,False,,unmatched,[],
+reported-ss-a7feb7bbd0d7eeb8e653,BALANGA IBAYO NEW 20MVA SUBSTATION (051),20.0,051,226,reported_user_supplied_listing,False,0300803000,unmatched,[],
+reported-ss-c644fe7f3d65e1c3138a,ABUCAY 10MVA SUBSTATION,10.0,,277,reported_user_supplied_listing,False,0300801000,unmatched,[],
+reported-ss-af641af4ceac9d72d0e5,ALAS-ASIN 10MVA SUBSTATION,10.0,,325,reported_user_supplied_listing,False,0300807000,ambiguous_name_match,"[""observed-osm:way/250207420"", ""observed-osm:way/549261508""]",
+reported-ss-c8811dc903a6da54d54e,CALUNGUSAN 20MVA SUBSTATION,20.0,,360,reported_user_supplied_listing,False,0300810000,unmatched,[],
+reported-ss-b6fd18ec6763eb49bdec,TABACAN 10MVA SUBSTATION,10.0,,394,reported_user_supplied_listing,False,,unmatched,[],
+reported-ss-cabcc5dface66bbea971,SAN BENITO 20MVA SUBSTATION,20.0,,436,reported_user_supplied_listing,False,0300804000,unmatched,[],
+reported-ss-dd37f4e7d94b73ecb86e,LIMAY 10MVA OLD SUBSTATION,10.0,,448,reported_user_supplied_listing,False,0300806000,unmatched,[],
+reported-ss-5cb8538d98616d1e464f,PINULOT 10MVA SUBSTATION,10.0,,552,reported_user_supplied_listing,False,0300804000,unique_name_match,"[""observed-osm:way/1211829495""]",observed-osm:way/1211829495
+reported-ss-49f67635faba870eba8a,MARIVELES 10MVA SUBSTATION,10.0,,570,reported_user_supplied_listing,False,0300807000,unique_name_match,"[""observed-osm:way/633943427""]",observed-osm:way/633943427
+reported-ss-8b6e950d7cbd3d704c04,CABCABEN 10MVA SUBSTATION,10.0,,625,reported_user_supplied_listing,False,0300807000,unmatched,[],
+reported-ss-91ab3935edf63489a08d,Pilar 10MVA SUBSTATION,10.0,,692,reported_user_supplied_listing,False,0300811000,unique_name_match,"[""observed-osm:way/1211965110""]",observed-osm:way/1211965110
+reported-ss-dda1b00f7324be80a619,VISTAMALL SUBSTATION C/O PILAR,,,741,reported_user_supplied_listing,False,0300811000,unmatched,[],
+reported-ss-56db8b2b88596b94164e,MORONG 10MVA SUBSTATION,10.0,,760,reported_user_supplied_listing,False,0300808000,ambiguous_name_match,"[""observed-osm:way/98318338"", ""observed-osm:way/1211849028""]",
+reported-ss-6de8a0a785ad8a276106,SABANG 10MVA SUBSTATION,10.0,,802,reported_user_supplied_listing,False,0300808000,unmatched,[],
+reported-ss-f97f20520b5a4c762d60,HERMOSA 33MVA SUBSTATION,33.0,,825,reported_user_supplied_listing,False,0300805000,unique_name_match,"[""observed-osm:way/109694345""]",observed-osm:way/109694345
+reported-ss-8be44e668a282442a630,HERMOSA 10MVA SUBSTATION,10.0,,881,reported_user_supplied_listing,False,0300805000,unique_name_match,"[""observed-osm:way/109694345""]",observed-osm:way/109694345
+reported-ss-f43aa16ccb135474769f,ORANI 10MVA SUBSTATION,10.0,,916,reported_user_supplied_listing,False,0300809000,unique_name_match,"[""observed-osm:way/298050549""]",observed-osm:way/298050549
+reported-ss-2adafe2cf1b29b93deb8,BAGAC 10MVA SUBSTATION,10.0,,979,reported_user_supplied_listing,False,0300802000,unique_name_match,"[""observed-osm:way/1218331877""]",observed-osm:way/1218331877

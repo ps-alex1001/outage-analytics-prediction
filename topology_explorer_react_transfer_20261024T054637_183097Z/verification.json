@@ -1,0 +1,19 @@
+{
+  "copied_source_files_unchanged": true,
+  "no_archives": true,
+  "no_generation_inputs": true,
+  "source_validation_passed": true,
+  "expected_balanga_counts": [
+    467,
+    574
+  ],
+  "active_feeders": 32,
+  "react_graph_helper_test_passed": true,
+  "all_32_feeder_counts_verified": true,
+  "balanga_transformers": [
+    467,
+    574
+  ],
+  "single_transformer_selection_passed": true,
+  "standalone_reference_test_passed": true
+}
