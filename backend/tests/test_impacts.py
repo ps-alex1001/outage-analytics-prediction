@@ -5,6 +5,8 @@ import unittest
 
 import pandas as pd
 from fastapi import HTTPException
+from starlette.requests import Request
+import gzip
 
 from backend.impact_model import ImpactGraph, ProtectionPolicy, assign_source, choose_isolation, choose_branch_source, impact_set, DEFAULT_WEIGHTS
 from backend import impacts
@@ -143,6 +145,22 @@ class IsolationTests(unittest.TestCase):
 
 @unittest.skipUnless((impacts.IMPACTS_PATH / 'run_manifest.json').is_file(), 'Precomputed V2 impacts not installed')
 class ImpactDataTests(unittest.TestCase):
+    def test_compact_event_and_cached_boundaries_preserve_the_original_view(self):
+        oid = 'SYN-V2-42-0005333'
+        original = impacts.event_impact(oid)
+        request = Request({'type': 'http', 'headers': [(b'accept-encoding', b'gzip')]})
+        response = impacts.get_event_view(request, oid)
+        self.assertEqual(response.headers['content-encoding'], 'gzip')
+        compact = json.loads(gzip.decompress(response.body))
+        self.assertEqual(compact, {**original, 'boundaries': {'type': 'FeatureCollection', 'features': []}})
+        codes = [f['properties']['barangay_psgc'] for f in original['boundaries']['features']]
+        result = impacts.get_impact_boundaries(request, ','.join(codes + codes))
+        self.assertEqual(json.loads(gzip.decompress(result.body)), original['boundaries'])
+        cached = Request({'type': 'http', 'headers': [(b'accept-encoding', b'gzip'), (b'if-none-match', response.headers['etag'].encode())]})
+        self.assertEqual(impacts.get_event_view(cached, oid).status_code, 304)
+        with self.assertRaises(HTTPException):
+            impacts.get_impact_boundaries(request, 'not-a-barangay')
+
     def test_source_promotion_and_small_exceptions_are_explicit(self):
         frame, _, manifest = impacts.dataset()
         self.assertEqual(manifest['generator_version'], '1.2.0')

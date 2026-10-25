@@ -3,6 +3,7 @@ from functools import lru_cache
 import gzip
 import hashlib
 import json
+from threading import Lock
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import Response
@@ -17,6 +18,7 @@ EVENT_FIELDS = ['outage_id', 'municipality_psgc', 'municipality', 'barangay_psgc
 SUMMARY_FIELDS = ['affected_line_segment_count', 'affected_line_length_km', 'affected_pole_count',
                   'affected_transformer_count', 'affected_barangay_count', 'affected_feeder_ids',
                   'large_modeled_impact', 'no_downstream_transformers']
+_dataset_lock = Lock()
 
 
 def records(frame):
@@ -25,7 +27,7 @@ def records(frame):
 
 
 @lru_cache(maxsize=1)
-def dataset():
+def _read_dataset():
     try:
         manifest = json.loads((IMPACTS_PATH / 'run_manifest.json').read_text(encoding='utf-8'))
         expected_paths = {'outages': OUTAGES_PATH, **{name: topology.DATA / name for name in [
@@ -45,6 +47,12 @@ def dataset():
     indexed = frame.set_index('outage_id', drop=False)
     indexed.index.name = 'event_key'
     return indexed, sets, manifest
+
+
+def dataset():
+    # Initial metadata/list/detail requests share one hash + Parquet load.
+    with _dataset_lock:
+        return _read_dataset()
 
 
 @lru_cache(maxsize=1)
@@ -86,7 +94,7 @@ def list_events(q: str = '', year: int | None = None, municipality_psgc: str | N
 
 
 @router.get('/events/{outage_id}')
-def event_impact(outage_id: str):
+def event_impact(outage_id: str, include_boundaries: bool = True):
     frame, sets, _ = dataset()
     if outage_id not in frame.index:
         raise HTTPException(404, 'Unknown synthetic outage')
@@ -100,7 +108,53 @@ def event_impact(outage_id: str):
             'assignment': {k: v for k, v in row.items() if k not in EVENT_FIELDS and k not in SUMMARY_FIELDS},
             'impact': impact,
             'affected_barangays': [{**boundaries[code]['properties'], 'is_origin_barangay': code == row['barangay_psgc']} for code in codes],
-            'boundaries': topology.collection([boundaries[c] for c in sorted(set(codes) | {row['barangay_psgc']})])}
+            'boundaries': topology.collection([boundaries[c] for c in sorted(set(codes) | {row['barangay_psgc']})] if include_boundaries else [])}
+
+
+@lru_cache(maxsize=32)
+def view_payload(kind, key):
+    if kind == 'detail':
+        data = event_impact(key, include_boundaries=False)
+    else:
+        codes = key.split(',') if key else []
+        boundaries = boundary_index()
+        if len(codes) > 300 or any(code not in boundaries for code in codes):
+            raise HTTPException(422, 'Unknown impact boundary codes')
+        data = topology.collection([boundaries[code] for code in codes])
+    raw = json.dumps(data, ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode()
+    return raw, gzip.compress(raw, compresslevel=3, mtime=0)
+
+
+def view_response(request, kind, key):
+    raw, packed = view_payload(kind, key)
+    gzip_ok = False
+    for item in request.headers.get('accept-encoding', '').split(','):
+        parts = item.strip().split(';')
+        if parts[0] == 'gzip':
+            try:
+                gzip_ok = all(float(p.strip()[2:]) > 0 for p in parts[1:] if p.strip().startswith('q='))
+            except ValueError:
+                gzip_ok = False
+    body = packed if gzip_ok else raw
+    headers = {'Cache-Control': 'public, max-age=300', 'Vary': 'Accept-Encoding',
+               'ETag': '"' + hashlib.sha256(body).hexdigest() + '"'}
+    if gzip_ok:
+        headers['Content-Encoding'] = 'gzip'
+    if request.headers.get('if-none-match') == headers['ETag']:
+        return Response(status_code=304, headers=headers)
+    return Response(body, media_type='application/json', headers=headers)
+
+
+@router.get('/events/{outage_id}/view')
+def get_event_view(request: Request, outage_id: str):
+    dataset()
+    return view_response(request, 'detail', outage_id)
+
+
+@router.get('/boundaries')
+def get_impact_boundaries(request: Request, codes: str = ''):
+    dataset()  # Preserve input validation before serving cached geometry.
+    return view_response(request, 'boundaries', ','.join(sorted(set(codes.split(',')) - {''})))
 
 
 @lru_cache(maxsize=8)

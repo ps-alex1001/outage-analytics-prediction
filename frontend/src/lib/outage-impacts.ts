@@ -1,4 +1,6 @@
 import { buildTopology, type Assets, type LoadedNetwork, type Network } from "./topology";
+import { ImpactCache, awaitImpact } from "./impact-cache";
+import type { Asset } from "./topology";
 
 export const IMPACT_API = `${(process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "")}/api/impacts`;
 export type OutageEvent = {
@@ -40,17 +42,47 @@ export async function fetchImpact<T>(path: string, signal?: AbortSignal): Promis
   return response.json() as Promise<T>;
 }
 
-const feederCache = new Map<string, Promise<LoadedNetwork>>();
-export function loadImpactFeeder(id: string) {
-  let pending = feederCache.get(id);
-  if (!pending) {
-    pending = fetchImpact<Network>(`network?${new URLSearchParams({ feeder_id: id })}`)
-      .then(network => ({ ...network, graph: buildTopology(network) }))
-      .catch(error => { feederCache.delete(id); throw error; });
-    feederCache.set(id, pending);
-    if (feederCache.size > 3) feederCache.delete(feederCache.keys().next().value!);
+const detailCache = new ImpactCache<ImpactDetail>(24);
+const feederCache = new ImpactCache<LoadedNetwork>(3);
+const boundaryCache = new Map<string, Promise<Asset>>();
+export function loadImpactDetail(id: string, signal?: AbortSignal) {
+  return awaitImpact(detailCache.get(id, () => fetchImpact<ImpactDetail>(`events/${encodeURIComponent(id)}/view`)), signal);
+}
+
+export async function loadImpactBoundaries(codes: string[], signal?: AbortSignal): Promise<Assets> {
+  const unique = [...new Set(codes)].sort();
+  const missing = unique.filter(code => !boundaryCache.has(code));
+  if (missing.length) {
+    const batch = fetchImpact<Assets>(`boundaries?${new URLSearchParams({ codes: missing.join(",") })}`);
+    for (const code of missing) {
+      const feature = batch.then(data => {
+        const result = data.features.find(f => f.properties.barangay_psgc === code);
+        if (!result) throw new Error("Missing impact boundary");
+        return result;
+      }).catch(error => { if (boundaryCache.get(code) === feature) boundaryCache.delete(code); throw error; });
+      // A canceled consumer can leave other members of a batch unused.
+      void feature.catch(() => {});
+      boundaryCache.set(code, feature);
+    }
   }
-  return pending;
+  const features = await awaitImpact(Promise.all(unique.map(code => boundaryCache.get(code)!)), signal);
+  return { type: "FeatureCollection", features };
+}
+
+let prefetching = false;
+export async function prefetchImpact(id: string) {
+  if (prefetching) return;
+  prefetching = true;
+  try {
+    const detail = await loadImpactDetail(id);
+    if (detail.impact && detail.assignment.feeder_id) await loadImpactFeeder(detail.assignment.feeder_id);
+  } catch { /* Selecting the row retries failed requests through the normal UI. */ }
+  finally { prefetching = false; }
+}
+
+export function loadImpactFeeder(id: string) {
+  return feederCache.get(id, () => fetchImpact<Network>(`network?${new URLSearchParams({ feeder_id: id })}`)
+    .then(network => ({ ...network, graph: buildTopology(network) })));
 }
 
 export function manilaTime(value: string) {

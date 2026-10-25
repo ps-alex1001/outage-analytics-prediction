@@ -9,11 +9,11 @@ export default function NetworkPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Network Topology</h1>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-            Explore Bataan’s modeled PENELCO network. Choose a substation and feeder,
-            then inspect a line, pole, or transformer and its connected paths.
+            Explore observed OSM infrastructure and Bataan’s generated network in gray.
+            Select an asset, substation, or feeder to inspect its modeled connected paths.
           </p>
         </div>
-        <span className="rounded-full border bg-muted px-3 py-1 text-xs font-medium">Modeled / inferred</span>
+        <span className="rounded-full border bg-muted px-3 py-1 text-xs font-medium">Observed + modeled</span>
       </div>
       <NetworkExplorer />
     </section>

@@ -68,10 +68,27 @@ counts, geographic surface-area estimates or predictive modeling is performed.
 
 The source ripple sits on the selected transformer or the upstream node of the
 selected line. Red starts at that anchor. A soft translucent screen-space halo
-follows the affected lines, with stronger strokes and larger outlined poles and
-transformers. The halo does not define geographic coverage or change any metric.
+follows the affected lines, with stronger strokes and larger outlined
+transformers. Transformer radii increase smoothly from tiny dots at province
+scale to their full size at zoom 17. Affected poles use small red dots with a fine
+white edge: hidden below zoom 15, fading in by zoom 16 and reaching their current
+2.2px radius at zoom 17. Lines and halos also thin out with distance. The source
+keeps its recognizable red center and ripples.
+The halo does not define geographic coverage or change any metric.
 Unaffected infrastructure is muted. Both ripple and halo have layer controls;
 the ripple respects reduced-motion preferences.
+
+The impact map defaults to muted OpenStreetMap raster tiles, with a Background
+selector for Street map (muted), Color street map, Satellite imagery or Plain
+background. Color street map renders OSM's original colors; satellite uses Esri
+World Imagery with its source credits displayed on the map. Hidden background
+layers do not request tiles. Tile errors fall back to plain
+without blocking outage data; choosing a map background again retries. Browser HTTP
+caching is preserved and only visible tiles are requested. Attribution stays
+visible. `NEXT_PUBLIC_STREET_MAP_TILES` can configure an alternate compatible
+tile endpoint (retain the appropriate provider attribution when changing it).
+The street background requires internet access. No base layer changes electrical
+connectivity, asset coordinates or impact measures.
 
 Additional validation:
 

@@ -102,12 +102,52 @@ def network(station_id):
     }
 
 
+def infrastructure_context():
+    """Complete display context; these records never add active graph links."""
+    active = {row[0] for row in read_json("active_tree.json")["edges"]}
+    features, counts = [], {}
+    fields = {"asset_id", "node_id", "edge_id", "node_type", "edge_type", "source_node_id",
+              "feeder_id", "is_synthetic", "connection_status", "data_status", "name",
+              "municipality", "barangay", "geometry_basis", "is_verified_connectivity",
+              "from_node_id", "to_node_id", "length_m"}
+    for kind, filename in [("node", "network_nodes.geojson"), ("edge", "network_edges.geojson")]:
+        records = read_json(filename)["features"]
+        counts[f"topology_{kind}s"] = len(records)
+        for feature in records:
+            p = feature["properties"]
+            identity = p[f"{kind}_id"]
+            props = {k: v for k, v in p.items() if k in fields}
+            props.update(context_id=f"{kind}:{identity}", asset_type=p[f"{kind}_type"],
+                         provenance="generated_topology" if p.get("is_synthetic", True) else "observed_anchor",
+                         is_synthetic=p.get("is_synthetic", True),
+                         is_active_tree=identity in active if kind == "edge" else None)
+            features.append({"type": "Feature", "geometry": feature["geometry"], "properties": props})
+    observed_path = DATA.parents[1] / "infrastructure/observed/bataan_electrical_infrastructure_cleaned.geojson"
+    if not observed_path.is_file():
+        raise HTTPException(503, "Observed infrastructure dataset missing")
+    with observed_path.open(encoding="utf-8") as file:
+        observed = json.load(file)["features"]
+    counts["observed_assets"] = len(observed)
+    observed_fields = {"asset_id", "asset_type", "name", "operator", "voltage", "voltage_levels_v",
+                       "municipality", "barangay", "source_id", "source_type", "network_tier_inferred"}
+    for i, feature in enumerate(observed):
+        p = feature["properties"]
+        props = {k: v for k, v in p.items() if k in observed_fields}
+        props.update(context_id=f"observed:{p['asset_id']}:{i}", provenance="observed_osm",
+                     is_synthetic=False, is_verified_connectivity=False,
+                     data_status="observed_osm_geometry; electrical_connection_not_verified")
+        features.append({"type": "Feature", "geometry": feature["geometry"], "properties": props})
+    return {"infrastructure": collection(features), "counts": counts}
+
+
 @lru_cache(maxsize=8)
 def encoded_payload(kind, key=""):
     if kind == "metadata":
         payload = metadata()
     elif kind == "network":
         payload = network(key)
+    elif kind == "context":
+        payload = infrastructure_context()
     else:
         names = {
             "municipality": ("municipalities.geojson", "municipality_labels.geojson"),
@@ -149,6 +189,11 @@ def get_metadata(request: Request):
 @router.get("/network")
 def get_network(request: Request, station_id: str):
     return payload_response(request, "network", station_id)
+
+
+@router.get("/context")
+def get_context(request: Request):
+    return payload_response(request, "context")
 
 
 @router.get("/boundaries/{level}")

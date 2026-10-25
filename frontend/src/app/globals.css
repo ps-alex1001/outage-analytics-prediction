@@ -224,24 +224,25 @@
 
 /* The outage-impact roles are independent of the network-inspection palette. */
 :root {
-  --impact-fault: #b85a00;
+  --impact-fault: #b91c1c;
   --impact-loss: #c83036;
   --impact-upstream: #0072b2;
 }
 .dark {
-  --impact-fault: #ffad60;
+  --impact-fault: #ff737b;
   --impact-loss: #ff7178;
   --impact-upstream: #6dc4f4;
 }
 .impact-workspace .maplibregl-ctrl-group button { width: 44px; height: 44px; }
 
 .outage-origin-marker {
-  width: 64px;
-  height: 64px;
-  color: var(--impact-fault, #b85a00);
+  width: 80px;
+  height: 80px;
+  color: var(--impact-fault, #b91c1c);
   pointer-events: none;
 }
 .outage-origin-marker[hidden] { display: none; }
+.outage-origin-marker::after { content: none; display: none; }
 .outage-origin-ring, .outage-origin-dot {
   position: absolute;
   inset: 0;
@@ -249,19 +250,19 @@
   border-radius: 50%;
 }
 .outage-origin-ring {
-  width: 60px;
-  height: 60px;
+  width: 76px;
+  height: 76px;
   border: 2px solid currentColor;
   background: color-mix(in srgb, currentColor 9%, transparent);
   animation: outage-origin-ripple 2.4s ease-out infinite;
   opacity: 0;
 }
 .outage-origin-dot {
-  width: 11px;
-  height: 11px;
+  width: 18px;
+  height: 18px;
   background: currentColor;
-  border: 2px solid var(--viz-background, #fff);
-  box-shadow: 0 0 0 2px currentColor;
+  border: 3px solid var(--viz-background, #fff);
+  box-shadow: 0 0 0 3px currentColor, 0 2px 8px #0004;
 }
 @keyframes outage-origin-ripple {
   0% { transform: scale(.12); opacity: .85; }

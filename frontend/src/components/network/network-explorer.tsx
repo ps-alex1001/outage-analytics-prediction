@@ -5,10 +5,10 @@ import { useTheme } from "next-themes";
 import { Focus, LoaderCircle, RotateCcw, Search } from "lucide-react";
 import { useColorblindMode } from "@/components/theme-provider";
 import {
-  assetName, loadBoundaries, loadMetadata, loadNetwork, stationName, traceAssetInspection,
+  assetName, loadBoundaries, loadMetadata, loadNetwork, loadInfrastructureContext, stationName, traceAssetInspection,
   type Asset, type LoadedNetwork, type Metadata, type Selection, type Station,
 } from "@/lib/topology";
-import { TopologyMap } from "@/lib/topology-map";
+import { TopologyMap, type MapBackground } from "@/lib/topology-map";
 
 const control = "min-h-11 rounded-md border bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50";
 const button = `${control} inline-flex items-center justify-center gap-2 hover:bg-muted disabled:cursor-not-allowed`;
@@ -21,6 +21,7 @@ export default function NetworkExplorer() {
   const metadataRef = useRef<Metadata | null>(null);
   const stationRef = useRef("");
   const feederRef = useRef("");
+  const pendingInspection = useRef<Asset | null>(null);
   const [ready, setReady] = useState(false);
   const [metadata, setMetadata] = useState<Metadata | null>(null);
   const [stationId, setStationId] = useState("");
@@ -32,7 +33,10 @@ export default function NetworkExplorer() {
   const [mapError, setMapError] = useState<string | null>(null);
   const [boundaryError, setBoundaryError] = useState<string | null>(null);
   const [inspection, setInspection] = useState<Inspection | null>(null);
-  const [showPoles, setShowPoles] = useState(false);
+  const [showPoles, setShowPoles] = useState(true);
+  const [basemap, setBasemap] = useState<MapBackground>("street");
+  const [basemapError, setBasemapError] = useState(false);
+  const [contextCounts, setContextCounts] = useState<Record<string, number> | null>(null);
   const [showBarangays, setShowBarangays] = useState(false);
   const [query, setQuery] = useState("");
   const [assetType, setAssetType] = useState("transformer");
@@ -55,7 +59,14 @@ export default function NetworkExplorer() {
     }
   }, []);
 
+  const clearAll = useCallback(() => {
+    stationRef.current = ""; feederRef.current = ""; network.current = null; pendingInspection.current = null;
+    map.current?.clearNetwork(); map.current?.setFeeder(""); map.current?.fitAll();
+    setStationId(""); setFeederId(""); setInspection(null); setBusy(false); setError(null); setQuery("");
+  }, []);
+
   const chooseStation = useCallback((id: string) => {
+    if (!id) { clearAll(); return; }
     if (id === stationRef.current) return;
     stationRef.current = id;
     feederRef.current = "";
@@ -63,7 +74,7 @@ export default function NetworkExplorer() {
     map.current?.clearNetwork();
     setStationId(id); setFeederId(""); setInspection(null);
     setBusy(true); setError(null); setQuery("");
-  }, []);
+  }, [clearAll]);
 
   const inspectStation = useCallback((station: Station) => {
     const id = station.properties.modeled_source_node_id;
@@ -72,12 +83,29 @@ export default function NetworkExplorer() {
     map.current?.inspectStation(station);
   }, [chooseStation]);
 
+  const inspectContext = useCallback((asset: Asset) => {
+    const p = asset.properties;
+    const selection: Selection = { kind: p.node_id ? "node" : "edge", id: String(p.node_id ?? p.edge_id) };
+    const station = p.source_node_id;
+    if ((p.node_id || p.edge_id) && typeof station === "string" && metadataRef.current?.substations.features.some(s => s.properties.modeled_source_node_id === station)) {
+      if (station === stationRef.current && network.current) {
+        const found = selection.kind === "node" ? network.current.graph.nodes.has(selection.id) : network.current.graph.edges.has(selection.id);
+        if (found) { inspect(selection); return; }
+      } else {
+        chooseStation(station); pendingInspection.current = asset; return;
+      }
+    }
+    map.current?.clearSelection(); setInspection({ asset });
+  }, [chooseStation, inspect]);
+
   useEffect(() => {
     if (!container.current) return;
     let viewer: TopologyMap;
     try {
       viewer = new TopologyMap(container.current, {
         ready: () => setReady(true), select: inspect, station: inspectStation, error: setMapError,
+        context: inspectContext,
+        basemapError: () => { setBasemap("plain"); setBasemapError(true); },
       });
       map.current = viewer;
     } catch (cause) {
@@ -86,20 +114,20 @@ export default function NetworkExplorer() {
       return;
     }
     return () => { viewer.destroy(); map.current = null; };
-  }, [inspect, inspectStation]);
+  }, [inspect, inspectStation, inspectContext]);
 
   useEffect(() => {
     if (!ready) return;
     let cancelled = false;
-    loadMetadata().then(data => {
+    loadMetadata().then(async data => {
       if (cancelled) return;
       metadataRef.current = data;
       setMetadata(data);
       map.current?.setMetadata(data);
-      const initial = data.substations.features
-        .filter(f => f.properties.active_feeder_count > 0)
-        .sort((a, b) => b.properties.transformer_count - a.properties.transformer_count)[0];
-      if (!stationRef.current && initial?.properties.modeled_source_node_id) chooseStation(initial.properties.modeled_source_node_id);
+      const context = await loadInfrastructureContext();
+      if (cancelled) return;
+      map.current?.setInfrastructureContext(context.infrastructure); setContextCounts(context.counts);
+      if (!stationRef.current) { map.current?.fitAll(); setBusy(false); }
       // Geographic context is independent of network geometry and can load concurrently.
       return loadBoundaries("municipality").then(boundaries => {
         if (!cancelled) { map.current?.setBoundaries("municipality", boundaries); setBoundaryError(null); }
@@ -117,7 +145,12 @@ export default function NetworkExplorer() {
       map.current?.setNetwork(data);
       map.current?.setFeeder(feederRef.current);
       const feeder = metadataRef.current?.feeders.find(f => f.feeder_id === feederRef.current);
-      inspect({ kind: "node", id: feeder?.root_node_id ?? stationId });
+      const pending = pendingInspection.current; pendingInspection.current = null;
+      if (pending) {
+        const p = pending.properties, selection: Selection = { kind: p.node_id ? "node" : "edge", id: String(p.node_id ?? p.edge_id) };
+        const found = selection.kind === "node" ? data.graph.nodes.has(selection.id) : data.graph.edges.has(selection.id);
+        if (found) inspect(selection); else setInspection({ asset: pending });
+      } else inspect({ kind: "node", id: feeder?.root_node_id ?? stationId });
       map.current?.fitNetwork();
       setBusy(false); setError(null); setRevision(value => value + 1);
     }).catch(cause => { if (!cancelled) { setBusy(false); setError(String(cause.message)); } });
@@ -135,6 +168,7 @@ export default function NetworkExplorer() {
     if (!ready) return;
     map.current?.showPoles(showPoles);
   }, [ready, showPoles]);
+  useEffect(() => { if (ready) map.current?.setBasemap(basemap); }, [ready, basemap]);
 
   useEffect(() => {
     if (!ready) return;
@@ -191,6 +225,10 @@ export default function NetworkExplorer() {
   const isStation = Boolean(props && "active_feeder_count" in props);
   const fields = props ? [
     ["Identifier", props.node_id ?? props.edge_id ?? props.asset_id],
+    ["Name", props.name],
+    ["Data origin", props.provenance],
+    ["Operator", props.operator],
+    ["Recorded voltage", props.voltage ?? props.voltage_levels_v],
     ["Highlighted branch origin pole", inspection?.connectionPoleId],
     ["Modeled feeder ID", props.feeder_id],
     ["Location", [props.barangay, props.municipality].filter(Boolean).join(", ")],
@@ -209,7 +247,7 @@ export default function NetworkExplorer() {
             Substation
             <select aria-label="Substation" className={`${control} w-full min-w-0`} value={stationId}
               disabled={!metadata} onChange={event => chooseStation(event.target.value)}>
-              {!metadata && <option value="">Loading mapped substations…</option>}
+              <option value="">{metadata ? "All infrastructure — no selection" : "Loading mapped substations…"}</option>
               {stations.map(station => <option key={station.properties.asset_id} value={station.properties.modeled_source_node_id!}>
                 {stationName(station)} · {station.properties.transformer_count.toLocaleString()} transformers · OSM {station.properties.asset_id.split("/").at(-1)}
               </option>)}
@@ -225,13 +263,14 @@ export default function NetworkExplorer() {
               </option>)}
             </select>
           </label>
-          <button type="button" className={button} disabled={busy || !!error} onClick={resetSelection}>
+          <button type="button" className={button} disabled={busy || !!error || !stationId} onClick={resetSelection}>
             <RotateCcw size={15} aria-hidden="true" /> Show whole {feederId ? "feeder" : "substation"}
           </button>
         </div>
         <p className="mt-3 text-xs leading-5 text-muted-foreground">
           {metadata ? `${metadata.substations.features.length} connected substations · ${metadata.dataset.counts.active_feeders} modeled feeders` : "Loading station catalog…"}
           {activeStation && ` · ${Number(activeFeeder?.transformer_count ?? activeStation.properties.transformer_count).toLocaleString()} transformers in this view`}
+          {contextCounts && ` · ${contextCounts.observed_assets.toLocaleString()} observed OSM records · ${contextCounts.topology_nodes.toLocaleString()} topology nodes · ${contextCounts.topology_edges.toLocaleString()} topology connections`}
         </p>
       </div>
 
@@ -246,8 +285,12 @@ export default function NetworkExplorer() {
             <h2 className="text-sm font-semibold">Modeled network</h2>
             <div className="flex flex-wrap gap-2">
               <button type="button" className={button} disabled={busy || !!error} onClick={() => map.current?.fitNetwork()}><Focus size={15} aria-hidden="true" /> Fit network</button>
-              <button type="button" className={button} disabled={!metadata} onClick={() => map.current?.fitAll()}>Fit all substations</button>
+              <button type="button" className={button} disabled={!metadata} onClick={clearAll}>Clear selection / Show all</button>
             </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 border-b px-4 py-2 text-xs">
+            <label className="flex items-center gap-2">Background<select aria-label="Network map background" className={control} value={basemap} onChange={e => { setBasemap(e.target.value as MapBackground); setBasemapError(false); }}><option value="street">Street map (muted)</option><option value="color">Color street map</option><option value="satellite">Satellite imagery</option><option value="plain">Plain background</option></select></label>
+            {basemapError && <p role="status">Background unavailable. Showing plain background; choose a map background to retry.</p>}
           </div>
           <div className="network-map relative h-[480px] sm:h-[650px]" aria-busy={busy}>
             <div ref={container} className="h-full w-full" />
@@ -256,17 +299,17 @@ export default function NetworkExplorer() {
             </div>}
             {busy && !error && <div role="status" className="pointer-events-none absolute left-3 top-3 flex max-w-[calc(100%-4.5rem)] items-center gap-2 rounded-lg border bg-card/95 px-3 py-2 text-sm shadow-sm">
               <LoaderCircle size={16} className="shrink-0 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-              {metadata ? "Loading selected network…" : "Loading mapped substations…"}
+              {metadata ? stationId ? "Loading selected network…" : "Loading all infrastructure…" : "Loading mapped substations…"}
             </div>}
             {mapError && <p role="alert" className="absolute inset-x-3 bottom-10 rounded-md border bg-card p-3 text-sm">{mapError}</p>}
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 border-t px-4 py-3 text-xs" aria-label="Map legend">
             <Legend shape="square" color="station">Mapped station</Legend>
-            <Legend shape="line" color="downstream">{inspection?.connectionPoleId ? "Connection-pole branch" : "Downstream"}</Legend>
+            <Legend shape="line" color="selected">{inspection?.connectionPoleId ? "Connection-pole branch" : "Downstream"}</Legend>
             <Legend shape="dash" color="station">Inferred station link</Legend>
             <Legend shape="line" color="station">Upstream path</Legend>
             <Legend shape="dot" color="selected">Selected</Legend>
-            <Legend shape="line" color="remaining">Remaining network</Legend>
+            <Legend shape="line" color="remaining">Observed and generated context</Legend>
           </div>
         </div>
 
@@ -277,7 +320,7 @@ export default function NetworkExplorer() {
               {inspection ? <>
                 <p className="break-words text-sm font-medium capitalize">{isStation ? stationName(inspection.asset as Station) : assetName(inspection.asset)}</p>
                 {inspection.connectionPoleId && <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                  This transformer is an endpoint. Purple shows the downstream branch from its recorded connection pole;
+                  This transformer is an endpoint. Orange shows the downstream branch from its recorded connection pole;
                   blue shows that pole’s upstream supply path. Orange marks the selected transformer.
                 </p>}
                 {inspection.downstream !== undefined && <div className="my-3 border-y py-3">
@@ -295,8 +338,8 @@ export default function NetworkExplorer() {
           </section>
           <section className="rounded-xl border bg-card p-4">
             <h2 className="font-semibold">Map display</h2>
-            <label className="mt-2 flex min-h-11 cursor-pointer items-center gap-2 text-sm"><input type="checkbox" checked={showPoles} onChange={event => setShowPoles(event.target.checked)} className="size-4 accent-primary" /> Show poles at all zooms</label>
-            <p className="text-xs leading-5 text-muted-foreground">Poles appear automatically at zoom 14+. Transformers remain visible at wider zooms.</p>
+            <label className="mt-2 flex min-h-11 cursor-pointer items-center gap-2 text-sm"><input type="checkbox" checked={showPoles} onChange={event => setShowPoles(event.target.checked)} className="size-4 accent-primary" /> Show poles when zoomed in</label>
+            <p className="text-xs leading-5 text-muted-foreground">Poles fade in between zoom 15 and 16. Transformers and lines shrink smoothly as you zoom out.</p>
             <label className="mt-2 flex min-h-11 cursor-pointer items-center gap-2 text-sm"><input type="checkbox" checked={showBarangays} onChange={event => setShowBarangays(event.target.checked)} className="size-4 accent-primary" /> Barangay borders and labels</label>
             <p className="text-xs leading-5 text-muted-foreground">Barangay detail appears at close zoom. Municipality borders and labels remain available.</p>
           </section>
@@ -329,8 +372,10 @@ export default function NetworkExplorer() {
         </div>
       </details>
       <p className="max-w-5xl text-xs leading-5 text-muted-foreground">
-        Observed substation positions are distinct from modeled electrical connectivity. Lines, feeder assignments,
-        and highlighted paths are inferred infrastructure, not verified official PENELCO routes or service areas.
+        Gray shows observed OSM infrastructure and generated topology, including unresolved components.
+        Observed locations are distinct from modeled electrical connectivity. Orange and blue paths follow
+        the inferred active tree; observed line crossings do not create electrical connections.
+        Highlighted paths are not verified official PENELCO routes or service areas.
         Modeled feeder numbers are local identifiers. {metadata?.dataset.counts.unresolved_transformers ?? 81} transformers
         remain unresolved province-wide and are not assigned a connection here. This view does not estimate outages, customers interrupted, or electrical load.
       </p>

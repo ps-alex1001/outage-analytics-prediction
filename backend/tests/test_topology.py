@@ -27,6 +27,27 @@ class TopologyTests(unittest.TestCase):
         self.assertEqual(len(data["feeders"]), 32)
         self.assertLess(len(raw), 50_000)
 
+    def test_all_infrastructure_context_keeps_geometry_without_adding_connectivity(self):
+        raw, packed = topology.encoded_payload("context")
+        self.assertEqual(gzip.decompress(packed), raw)
+        data = json.loads(raw)
+        features = data["infrastructure"]["features"]
+        counts = data["counts"]
+        self.assertEqual(counts, {"topology_nodes": 87958, "topology_edges": 92847, "observed_assets": 3761})
+        self.assertEqual(len(features), sum(counts.values()))
+        self.assertEqual(len({f["properties"]["context_id"] for f in features}), len(features))
+        observed = [f for f in features if f["properties"]["provenance"] == "observed_osm"]
+        self.assertEqual(len(observed), 3761)
+        self.assertTrue(all(not f["properties"]["is_synthetic"] for f in observed))
+        with (topology.DATA.parents[1] / "infrastructure/observed/bataan_electrical_infrastructure_cleaned.geojson").open(encoding="utf-8") as file:
+            original = json.load(file)["features"]
+        self.assertTrue(all(a["geometry"] == b["geometry"] and a["properties"]["asset_id"] == b["properties"]["asset_id"] for a, b in zip(observed, original)))
+        inactive = [f for f in features if f["properties"].get("is_active_tree") is False]
+        self.assertEqual(len(inactive), 92847 - 87910)
+        unresolved = [f for f in features if f["properties"].get("node_type") == "transformer" and not f["properties"].get("source_node_id")]
+        self.assertEqual(len(unresolved), 81)
+        self.assertNotIn("tree", data)
+
     def test_unknown_or_unassigned_station_is_not_connected(self):
         for station_id in ["missing", "../../network_nodes.geojson", ""]:
             with self.assertRaises(HTTPException) as caught:

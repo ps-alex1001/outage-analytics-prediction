@@ -43,6 +43,7 @@ export type Graph = {
   parents: Map<string, { nodeId: string; edgeId: string }>;
 };
 export type LoadedNetwork = Network & { graph: Graph };
+export type InfrastructureContext = { infrastructure: Assets; counts: Record<string, number> };
 export type Trace = {
   nodeIds: Set<string>;
   edgeIds: Set<string>;
@@ -144,6 +145,13 @@ export function loadMetadata() {
 // A bounded cache outside React state. Concurrent requests for the same station
 // share their download and build the active-tree index just once.
 const networkCache = new Map<string, Promise<LoadedNetwork>>();
+let contextPromise: Promise<InfrastructureContext> | undefined;
+export function loadInfrastructureContext() {
+  contextPromise ??= fetchTopology<InfrastructureContext>("context").catch(error => {
+    contextPromise = undefined; throw error;
+  });
+  return contextPromise;
+}
 export function loadNetwork(stationId: string) {
   const cached = networkCache.get(stationId);
   if (cached) {
@@ -176,5 +184,5 @@ export function stationName(station: Station) {
 
 export function assetName(asset: Asset) {
   const p = asset.properties;
-  return `${p.node_type ?? p.edge_type ?? "Component"}${p.barangay ? ` · ${p.barangay}` : ""}`.replaceAll("_", " ");
+  return `${p.node_type ?? p.edge_type ?? p.asset_type ?? "Component"}${p.barangay ? ` · ${p.barangay}` : ""}`.replaceAll("_", " ");
 }
