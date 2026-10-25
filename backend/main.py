@@ -1,13 +1,15 @@
-from pathlib import Path
 import json
 from typing import Literal
 import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.topology import router as topology_router
+from backend.impacts import router as impacts_router
+from backend.datasets import DATA_ROOT, OUTAGES_PATH
 
 app = FastAPI()
 app.include_router(topology_router)
+app.include_router(impacts_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -19,8 +21,7 @@ app.add_middleware(
 def read_root():
     return {'Hello' : 'World!'}
 
-DATA_PATH = (Path(__file__).parent.parent / 'data' / 'outages' /
-             'synthetic_outage_events.csv')
+DATA_PATH = OUTAGES_PATH
 OUTAGES_DF = pd.read_csv(
     DATA_PATH,
     dtype={
@@ -30,7 +31,7 @@ OUTAGES_DF = pd.read_csv(
 ).drop_duplicates(subset=["outage_id"])
 
 BOUNDARY_PATH = (
-    DATA_PATH.parent.parent
+    DATA_ROOT
     / "boundaries"
     / "bataan_barangays.geojson"
 )

@@ -47,6 +47,7 @@ export type Trace = {
   nodeIds: Set<string>;
   edgeIds: Set<string>;
   upstreamEdgeIds: Set<string>;
+  upstreamNodeIds?: Set<string>;
   transformers: number;
 };
 export type InspectionTrace = Trace & { connectionPoleId?: string };
