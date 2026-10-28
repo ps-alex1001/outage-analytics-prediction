@@ -1,0 +1,33 @@
+# Default: automatically detect text files and normalize to LF
+* text=auto
+
+# Python
+*.py text eol=lf
+
+# TypeScript and JavaScript
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+
+# Configuration and documentation
+*.json text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.lock text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.parquet binary
+*.pkl binary
+*.joblib binary

@@ -136,41 +136,6 @@
   --map-no-data: #525252;
 }
 
-/* Okabe–Ito hues, adjusted for contrast on light/dark backgrounds.
-   Future visualizations must also use labels, symbols, dashes, or patterns. */
-:root[data-colorblind="true"] {
-  --primary: #0072b2;
-  --primary-foreground: #ffffff;
-  --ring: #0072b2;
-  --sidebar-primary: #0072b2;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #0072b2;
-  --destructive: #a44200;
-  --chart-1: #0072b2;
-  --chart-2: #b36b00;
-  --chart-3: #008060;
-  --chart-4: #a44200;
-  --chart-5: #995a80;
-  --map-low: var(--chart-1);
-  --map-medium: var(--chart-2);
-  --map-high: var(--chart-4);
-}
-
-:root.dark[data-colorblind="true"] {
-  --primary: #56b4e9;
-  --primary-foreground: #171717;
-  --ring: #56b4e9;
-  --sidebar-primary: #56b4e9;
-  --sidebar-primary-foreground: #171717;
-  --sidebar-ring: #56b4e9;
-  --destructive: #e69f00;
-  --chart-1: #56b4e9;
-  --chart-2: #e69f00;
-  --chart-3: #009e73;
-  --chart-4: #d55e00;
-  --chart-5: #cc79a7;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -184,7 +149,7 @@
 }
 
 /* Topology palette follows the imported style.json; overrides preserve contrast
-   in dark mode and the dashboard's independent Okabe–Ito accessibility mode. */
+   in dark mode and the dashboard's light/dark appearance. */
 :root {
   --network-station: #0072b2;
   --network-downstream: #9c4aa3;
@@ -201,16 +166,6 @@
   --network-pole: #b3bfd1;
   --network-boundary: #a3adbd;
 }
-:root[data-colorblind="true"] {
-  --network-station: #0072b2;
-  --network-downstream: #995a80;
-  --network-selected: #b34e00;
-}
-:root.dark[data-colorblind="true"] {
-  --network-station: #56b4e9;
-  --network-downstream: #cc79a7;
-  --network-selected: #e69f00;
-}
 .network-map .maplibregl-ctrl-group {
   background: var(--card);
   color: var(--foreground);
@@ -221,6 +176,38 @@
 .network-map .maplibregl-ctrl-scale,
 .network-map .maplibregl-ctrl-attrib { background-color: var(--card); color: var(--foreground); }
 .network-map .maplibregl-ctrl-scale { border-color: var(--foreground); }
+
+/* Network Topology alone uses the available app viewport as its map canvas. */
+[data-slot="sidebar-inset"]:has(> .app-content[data-full-map="true"]) {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+[data-slot="sidebar-inset"]:has(> .app-content[data-full-map="true"]) > header { flex-shrink: 0; }
+.app-content[data-full-map="true"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+.network-workspace .maplibregl-ctrl-group button { width: 44px; height: 44px; }
+.network-workspace .maplibregl-ctrl-bottom-right { display: flex; flex-direction: column; align-items: flex-end; }
+.network-workspace .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group { margin: 0 16px 12px 0; }
+.network-workspace .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib { order: 1; margin: 0; }
+.network-workspace { container-type: inline-size; }
+@container (max-width: 899px) {
+  .network-inspector {
+    top: auto;
+    bottom: 44px;
+    left: 12px;
+    right: 68px;
+    width: auto;
+    max-height: 35%;
+  }
+}
+@media (min-width: 768px) {
+  [data-slot="sidebar-inset"]:has(> .app-content[data-full-map="true"]) { height: calc(100dvh - 1rem); }
+}
 
 /* The outage-impact roles are independent of the network-inspection palette. */
 :root {

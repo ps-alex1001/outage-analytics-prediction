@@ -47,7 +47,7 @@ Reproduced behaviors:
   transformer. The raw tree traversal and line/pole selection remain unchanged.
 - Shared dashboard appearance controls update map paint and local label sprites
   without replacing the map. Symbols, dash patterns, text and visible controls
-  supplement the colorblind palette. Fit/focus respect reduced-motion settings.
+  supplement the palette. Fit/focus respect reduced-motion settings.
 
 ## Loading and caching
 
@@ -120,7 +120,7 @@ unresolved components, invalid inputs, compression/ETags, and boundary counts.
 - Browser checks before the final station filter: Balanga feeder switching
   (467/574), switching to Alasasin (48), single-transformer inspection (1),
   station inspection, fit controls, zoom buttons, fullscreen, pole/barangay
-  toggles, light/dark appearance and colorblind mode. A single map canvas remained.
+  toggles, light/dark appearance. A single map canvas remained.
 - A hot-reload startup race was found and fixed by deferring map source/layer
   operations until the map load event. The final browser reload/retest and further
   mobile/panning/wheel checks could not be completed: automatic approval review

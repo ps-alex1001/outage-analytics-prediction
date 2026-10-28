@@ -2,7 +2,6 @@
 
 import {useEffect, useState} from "react";
 import {useTheme} from "next-themes";
-import {useColorblindMode} from "@/components/theme-provider";
 import {getVisualizationColors} from "@/lib/visualization-theme";
 import type {SelectedArea} from "./outage-map";
 import Link from "next/link";
@@ -65,9 +64,9 @@ export default function SelectedLocation({
     const [causeLoading, setCauseLoading] = useState(false);
 
     const {resolvedTheme} = useTheme();
-    const {colorblind} = useColorblindMode();
 
     useEffect(() => {
+        const frame = requestAnimationFrame(() => {
         const visual = getVisualizationColors();
         const styles = getComputedStyle(document.documentElement);
 
@@ -75,7 +74,9 @@ export default function SelectedLocation({
             selected: visual.chart.series[0] || "#d97706",
             remainder: styles.getPropertyValue("--muted").trim() || "#d1d5db",
         });
-    }, [resolvedTheme, colorblind]);
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [resolvedTheme]);
 
     useEffect(() => {
         const controller = new AbortController();

@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "next-themes";
-import { ArrowDown, ArrowUp, Focus, LoaderCircle, Search } from "lucide-react";
-import { useColorblindMode } from "@/components/theme-provider";
+import { SpatialHeaderFilters } from "@/components/page-header";
+import EnvironmentalProfile from "@/components/spatial/environmental-profile";
+import WeatherContext from "@/components/spatial/weather-context";
+import { ArrowDown, ArrowUp, Focus, LoaderCircle } from "lucide-react";
 import { TopologyMap, type MapBackground } from "@/lib/topology-map";
 import { assetName, loadBoundaries, loadMetadata, type Asset, type LoadedNetwork, type Selection } from "@/lib/topology";
 import { fetchImpact, loadImpactDetail, loadImpactBoundaries, loadImpactFeeder, prefetchImpact, manilaTime, type ImpactDetail, type ImpactMetadata, type OutageEvent } from "@/lib/outage-impacts";
@@ -11,13 +13,12 @@ import { fetchImpact, loadImpactDetail, loadImpactBoundaries, loadImpactFeeder, 
 const control = "min-h-11 min-w-0 rounded-md border bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50";
 const button = `${control} inline-flex items-center justify-center gap-2 hover:bg-muted disabled:cursor-not-allowed`;
 type EventPage = { events: OutageEvent[]; total: number; page: number; pages: number };
-const initialFilters = { year: "", municipality_psgc: "", barangay_psgc: "", cause_category: "", status: "", q: "" };
+const initialFilters = { year: "", municipality_psgc: "", barangay_psgc: "", cause_category: "" };
 const initialLayers = { fault: true, loss: true, upstream: true, unaffected: true, poles: true, transformers: true, boundaries: true, halo: true };
 
 export default function OutageImpactExplorer() {
   const [metadata, setMetadata] = useState<ImpactMetadata | null>(null);
   const [filters, setFilters] = useState(initialFilters);
-  const [query, setQuery] = useState("");
   const [sort, setSort] = useState("start_time");
   const [direction, setDirection] = useState("desc");
   const [page, setPage] = useState(1);
@@ -43,9 +44,7 @@ export default function OutageImpactExplorer() {
   const currentDetail = useRef<ImpactDetail | null>(null);
   const request = useRef<AbortController | null>(null);
   const prefetchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const appliedQuery = useRef("");
   const { resolvedTheme } = useTheme();
-  const { colorblind } = useColorblindMode();
 
   function inspect(selection: Selection) {
     const graph = network.current?.graph;
@@ -65,15 +64,6 @@ export default function OutageImpactExplorer() {
       .catch(e => { if (!abort.signal.aborted) setError(e.message); });
     return () => abort.abort();
   }, [retry]);
-
-  useEffect(() => {
-    if (query === appliedQuery.current) return;
-    const timeout = setTimeout(() => {
-      appliedQuery.current = query; request.current?.abort();
-      setFilters(f => ({ ...f, q: query })); setPage(1); setSelected(null);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [query]);
 
   useEffect(() => {
     const abort = new AbortController();
@@ -188,7 +178,7 @@ export default function OutageImpactExplorer() {
     // Read palette variables after next-themes has applied the root class.
     const frame = requestAnimationFrame(() => viewer.current?.setTheme());
     return () => cancelAnimationFrame(frame);
-  }, [resolvedTheme, colorblind, ready]);
+  }, [resolvedTheme, ready]);
   useEffect(() => { viewer.current?.setImpactLayers(layers); }, [layers, ready, revision]);
   useEffect(() => { viewer.current?.setBasemap(basemap); }, [basemap, ready]);
 
@@ -225,14 +215,13 @@ export default function OutageImpactExplorer() {
       <p>{metadata ? <><strong>{metadata.total_events.toLocaleString()}</strong> V2 events · {metadata.validation.mapped_percentage.toFixed(1)}% with modeled impact assignments</> : "Loading event catalog…"}</p>
       <p className="max-w-2xl text-xs leading-5 text-muted-foreground">Synthetic downstream outage scenarios. Connectivity and fault locations are unverified. Outlines identify infrastructure locations, not whole-barangay outages.</p>
     </div>
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
-      <label className="space-y-1 text-xs font-medium xl:col-span-2"><span>Search events</span><span className="relative block"><Search aria-hidden className="absolute left-3 top-3.5 size-4 text-muted-foreground" /><input className={`${control} w-full pl-9`} value={query} onChange={e => setQuery(e.target.value)} placeholder="ID, place or cause" /></span></label>
+    <SpatialHeaderFilters>
       <label className="space-y-1 text-xs font-medium">Year<select className={`${control} block w-full`} value={filters.year} onChange={e => filter("year", e.target.value)}><option value="">All years</option>{metadata?.years.map(y => <option key={y}>{y}</option>)}</select></label>
       <label className="space-y-1 text-xs font-medium">Municipality<select className={`${control} block w-full`} value={filters.municipality_psgc} onChange={e => filter("municipality_psgc", e.target.value)}><option value="">All municipalities</option>{municipalities.map(m => <option key={m.municipality_psgc} value={m.municipality_psgc}>{m.municipality}</option>)}</select></label>
       <label className="space-y-1 text-xs font-medium">Barangay<select className={`${control} block w-full`} value={filters.barangay_psgc} onChange={e => filter("barangay_psgc", e.target.value)}><option value="">All barangays</option>{barangays.map(b => <option key={b.barangay_psgc} value={b.barangay_psgc}>{b.barangay}{!filters.municipality_psgc ? `, ${b.municipality}` : ""}</option>)}</select></label>
       <label className="space-y-1 text-xs font-medium">Synthetic cause<select className={`${control} block w-full`} value={filters.cause_category} onChange={e => filter("cause_category", e.target.value)}><option value="">All causes</option>{metadata?.causes.map(c => <option key={c}>{c}</option>)}</select></label>
-      <label className="space-y-1 text-xs font-medium">Assignment<select className={`${control} block w-full`} value={filters.status} onChange={e => filter("status", e.target.value)}><option value="">All assignments</option><option value="resolved_modeled">Mapped scenario</option><option value="unresolved">Unresolved</option></select></label>
-    </div>
+    </SpatialHeaderFilters>
+    <EnvironmentalProfile filters={filters} area={metadata?.geography.find(g => filters.barangay_psgc ? g.barangay_psgc === filters.barangay_psgc : g.municipality_psgc === filters.municipality_psgc)?.[filters.barangay_psgc ? "barangay" : "municipality"] ?? "Bataan"} />
     {error && <div role="alert" className="rounded-lg border border-destructive/40 p-4 text-sm">{error} <button className={button} onClick={() => setRetry(x => x + 1)}>Retry</button></div>}
     <div className="grid items-start gap-4 xl:grid-cols-[minmax(390px,0.9fr)_minmax(0,1.1fr)]">
       <section className="min-w-0 overflow-hidden rounded-lg border bg-card" aria-label="Synthetic outage event table">
@@ -290,5 +279,6 @@ export default function OutageImpactExplorer() {
         </div>}
       </section>
     </div>
+    {selected && <WeatherContext key={selected} outageId={selected} />}
   </div>;
 }

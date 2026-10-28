@@ -2,15 +2,14 @@
 
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
-import { useColorblindMode } from "@/components/theme-provider";
+import { Moon, Sun } from "lucide-react";
 
 const subscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
 export function AppearanceControls() {
-  const { theme, setTheme } = useTheme();
-  const { colorblind, setColorblind } = useColorblindMode();
+  const { resolvedTheme, setTheme } = useTheme();
   // Preferences are unknown on the server. Keep controls stable until hydration.
   const mounted = useSyncExternalStore(
     subscribe,
@@ -18,34 +17,19 @@ export function AppearanceControls() {
     getServerSnapshot,
   );
 
-  return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-      <label className="flex items-center gap-2">
-        <span>Appearance</span>
-        <select
-          className="h-8 rounded-md border border-input bg-background px-2 text-foreground focus-visible:outline-2 focus-visible:outline-ring"
-          value={mounted ? theme : "system"}
-          disabled={!mounted}
-          onChange={(event) => setTheme(event.target.value)}
-        >
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="system">System</option>
-        </select>
-      </label>
-      <label className="flex min-h-8 cursor-pointer items-center gap-2">
-        <input
-          type="checkbox"
-          className="size-4 accent-primary focus-visible:outline-2 focus-visible:outline-ring"
-          checked={mounted && colorblind}
-          disabled={!mounted}
-          onChange={(event) => setColorblind(event.target.checked)}
-        />
-        <span>Colorblind-friendly mode</span>
-        <span className="font-medium" aria-hidden="true">
-          {mounted && colorblind ? "On" : "Off"}
-        </span>
-      </label>
-    </div>
-  );
+  const dark = mounted && resolvedTheme === "dark";
+  return <button
+    type="button"
+    role="switch"
+    aria-label="Dark mode"
+    aria-checked={dark}
+    title={dark ? "Switch to light mode" : "Switch to dark mode"}
+    disabled={!mounted}
+    onClick={() => setTheme(dark ? "light" : "dark")}
+    className="relative flex h-11 w-[88px] shrink-0 items-center justify-between rounded-full border border-input bg-muted p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50"
+  >
+    <span aria-hidden="true" className={`absolute left-1 top-1 size-9 rounded-full bg-foreground shadow-sm transition-transform duration-200 motion-reduce:transition-none ${dark ? "translate-x-11" : "translate-x-0"}`} />
+    <span className={`relative z-10 flex size-9 items-center justify-center ${dark ? "text-muted-foreground" : "text-primary-foreground"}`}><Sun size={18} aria-hidden="true" /></span>
+    <span className={`relative z-10 flex size-9 items-center justify-center ${dark ? "text-primary-foreground" : "text-muted-foreground"}`}><Moon size={18} aria-hidden="true" /></span>
+  </button>;
 }

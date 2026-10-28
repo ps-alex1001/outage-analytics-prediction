@@ -1,12 +1,19 @@
 {
   "interpreter": "D:\\PyCharmProjects\\Outage Analytics and Prediction\\.venv\\Scripts\\python.exe",
-  "code_cells": 29,
+  "code_cells": 27,
   "figures": 4,
   "errors": 0,
-  "protected_data_files_metadata_unchanged": 47,
-  "lesson_input_hashes_unchanged": true,
+  "protected_data_files_metadata_unchanged": 324,
+  "analysis_input_hashes_unchanged": true,
+  "other_notebooks_hashes_unchanged": true,
+  "main_dataset": "data/synthetic/v2_20261024T181237_896469Z/synthetic_outage_events_v2.csv",
+  "analysis_style": "Informative analytical report; no exercises or guided lesson",
   "notebook01_hash_unchanged": true,
-  "visual_review": "New municipal and ERA5 figures inspected at original resolution; all context summary outputs checked. Existing rainfall/wind cells rerun unchanged.",
-  "html_review_limit": "Saved HTML updated. Browser layout review/automatic refresh of the existing file:// tab blocked by browser URL policy; reopen preview manually.",
-  "scope": "One selected synthetic event plus simultaneous events in the same municipality; descriptive analysis only."
+  "visual_review": {
+    "status": "passed",
+    "all_four_figures_inspected": true,
+    "html_preview_inspected": true,
+    "horizontal_overflow": false,
+    "v2_dataset_and_informative_report_verified": true
+  }
 }

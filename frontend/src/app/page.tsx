@@ -1,5 +1,6 @@
 "use client";
 import {memo, useEffect, useState} from "react";
+import { useOverviewYear } from "@/components/page-header";
 import CauseDistribution from "@/components/overview/cause-distribution";
 import OutageTrends from "@/components/overview/outage-trends";
 import OutageMap, {
@@ -64,7 +65,7 @@ function DeltaBadge({
 }
 
 export default function OverviewPage() {
-    const [year, setYear] = useState("all");
+    const { year } = useOverviewYear();
     const [selectedCause, setSelectedCause] = useState<string | null>(null);
     const [level, setLevel] = useState<BoundaryLevel>("municipality");
     const [data, setData] = useState<OverviewKpis | null>(null);
@@ -128,32 +129,6 @@ export default function OverviewPage() {
 
     return (
         <section className="space-y-6">
-            {/* Header and filters */}
-            <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                        Overview
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Power outage analytics across Bataan
-                    </p>
-                </div>
-
-                <select
-                    aria-label="Select year"
-                    value={year}
-                    onChange={(e) => setYear(e.target.value)}
-                    className="rounded-md border bg-card px-4 py-2"
-                >
-                    <option value="all">All Time</option>
-                    {Array.from({length: 8}, (_, i) => 2019 + i).map((y) => (
-                        <option key={y} value={y}>
-                            {y}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
             {/* Error message */}
             {error && (
                 <p role="alert" className="text-sm text-destructive">

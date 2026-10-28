@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
 import type { EChartsOption, EChartsType } from "echarts";
 import { DonutChartSkeleton, DonutSkeleton } from "./loading-skeletons";
@@ -33,7 +32,6 @@ export default function CauseDistribution({
 }: CauseDistributionProps) {
 
   const { resolvedTheme } = useTheme();
-  const { colorblind } = useColorblindMode();
 
   const [colors, setColors] = useState<Colors | null>(null);
   const [causes, setCauses] = useState<Cause[]>([]);
@@ -62,8 +60,9 @@ useEffect(() => {
 }, [selectedCause, causes, colors]);
   // Refresh chart colors when appearance settings change.
   useEffect(() => {
-    setColors(getVisualizationColors());
-  }, [resolvedTheme, colorblind]);
+    const frame = requestAnimationFrame(() => setColors(getVisualizationColors()));
+    return () => cancelAnimationFrame(frame);
+  }, [resolvedTheme]);
 
   // Fetch cause distribution whenever the selected year changes.
   useEffect(() => {

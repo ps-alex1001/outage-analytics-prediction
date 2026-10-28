@@ -6,10 +6,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.topology import router as topology_router
 from backend.impacts import router as impacts_router
 from backend.datasets import DATA_ROOT, OUTAGES_PATH
+from backend.forecast import router as forecast_router
+from backend.weather_context import router as weather_context_router
+
+from backend.environment_context import router as environment_context_router
 
 app = FastAPI()
 app.include_router(topology_router)
 app.include_router(impacts_router)
+app.include_router(forecast_router)
+app.include_router(weather_context_router)
+app.include_router(environment_context_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -127,12 +134,9 @@ def get_overview_trends(
         barangay_psgc=barangay_psgc,
         cause_category=cause_category,
     ).drop_duplicates(subset=["outage_id"])
-    # Match KPI duration semantics: sum known event durations, and average
-    # known durations only. These are event hours, not customer outage hours.
-    durations = pd.to_numeric(df["duration_minutes"], errors="coerce")
+    # Trends expose outage counts only. Duration metrics belong to other views.
     aggregated = (
         df.assign(
-            duration_minutes=durations,
             period=(
                     df["year"].astype(str)
                     + "-"
@@ -142,26 +146,16 @@ def get_overview_trends(
         .groupby("period")
         .agg(
             total_outages=("outage_id", "nunique"),
-            total_minutes=("duration_minutes", "sum"),
-            average_minutes=("duration_minutes", "mean"),
         )
         .reindex(periods)
     )
 
     points = []
     for period, row in aggregated.iterrows():
-        average = row["average_minutes"]
         points.append({
             "period": str(period),
             "total_outages": (
                 int(row["total_outages"]) if pd.notna(row["total_outages"]) else 0
-            ),
-            "total_duration_hours": (
-                round(float(row["total_minutes"]) / 60, 2)
-                if pd.notna(row["total_minutes"]) else 0.0
-            ),
-            "average_duration_minutes": (
-                round(float(average), 2) if pd.notna(average) else None
             ),
         })
     return {"granularity": granularity, "points": points}

@@ -1,4 +1,4 @@
-"""Run only lesson 02, preserve its outputs, and verify today's protected files."""
+"""Execute Notebook 02's V2 analytical report and verify protected inputs."""
 from pathlib import Path
 import base64
 import hashlib
@@ -20,6 +20,7 @@ def file_hash(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 first_hash = file_hash(first_notebook)
+other_notebook_hashes = {str(path): file_hash(path) for path in (ROOT / "notebooks").glob("*.ipynb") if path != PATH}
 notebook = nbformat.read(PATH, as_version=4)
 nbformat.validate(notebook)
 manager = KernelManager(kernel_name="python3")
@@ -43,8 +44,11 @@ for relative, before in protected.items():
     path = ROOT / relative
     assert path.exists() and (path.stat().st_size, path.stat().st_mtime_ns) == before, f"Source changed: {relative}"
 assert file_hash(first_notebook) == first_hash, "Notebook 01 changed."
+assert all(file_hash(Path(path)) == digest for path, digest in other_notebook_hashes.items()), "Another notebook changed."
 validation = {"interpreter": sys.executable, "code_cells": sum(c.cell_type == "code" for c in notebook.cells),
     "figures": figures, "errors": 0, "protected_data_files_metadata_unchanged": len(protected),
-    "lesson_input_hashes_unchanged": True, "notebook01_hash_unchanged": True, "visual_review": "pending"}
+    "analysis_input_hashes_unchanged": True, "other_notebooks_hashes_unchanged": True,
+    "main_dataset": notebook.metadata.get("event_source"), "analysis_style": notebook.metadata.get("analysis_style"),
+    "notebook01_hash_unchanged": True, "visual_review": "pending"}
 (REVIEW / "validation.json").write_text(json.dumps(validation, indent=2), encoding="utf-8")
 print(json.dumps(validation, indent=2))

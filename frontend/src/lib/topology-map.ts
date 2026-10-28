@@ -69,6 +69,7 @@ export class TopologyMap {
   private impactVisibility?: Parameters<TopologyMap["setImpactLayers"]>[0];
   private impactBoundaryKey = "";
   private disposed = false;
+  private fitPadding: maplibregl.PaddingOptions = { top: 45, bottom: 45, left: 45, right: 45 };
 
   private deferUntilReady(work: () => void) {
     if (this.ready) return false;
@@ -85,12 +86,14 @@ export class TopologyMap {
       center: [120.47, 14.67], zoom: 9, minZoom: 7, maxZoom: 19,
       attributionControl: false, renderWorldCopies: false,
     });
-    this.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-    this.map.addControl(new maplibregl.FullscreenControl(), "top-right");
+    this.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), this.impactMode ? "top-right" : "bottom-right");
+    if (this.impactMode) this.map.addControl(new maplibregl.FullscreenControl(), "top-right");
     this.map.addControl(new maplibregl.ScaleControl(), "bottom-left");
     this.map.addControl(new maplibregl.AttributionControl({ compact: false,
       customAttribution: 'Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>' }), "bottom-right");
-    this.map.getCanvas().setAttribute("aria-label", "Modeled electrical network map. Use arrow keys to pan and plus or minus to zoom. Asset inspection is also available in the component search.");
+    this.map.getCanvas().setAttribute("aria-label", this.impactMode
+      ? "Modeled electrical network map. Use arrow keys to pan and plus or minus to zoom. Asset inspection is also available in the component search."
+      : "Modeled electrical network map. Use arrow keys to pan and plus or minus to zoom. Select a substation with the floating controls to inspect its assets.");
     this.resize = new ResizeObserver(() => this.map.resize());
     this.resize.observe(container);
     this.map.on("error", event => {
@@ -662,8 +665,9 @@ export class TopologyMap {
     else if (asset.geometry.type === "LineString") point = asset.geometry.coordinates[Math.floor(asset.geometry.coordinates.length / 2)];
     if (point) this.map.easeTo({ center: point as [number, number], zoom: Math.max(14, this.map.getZoom()), duration: duration() });
   }
+  setFitPadding(padding: maplibregl.PaddingOptions) { this.fitPadding = padding; }
   private fit(bounds: maplibregl.LngLatBounds) {
-    if (!bounds.isEmpty()) this.map.fitBounds(bounds, { padding: 45, maxZoom: 15, duration: duration() });
+    if (!bounds.isEmpty()) this.map.fitBounds(bounds, { padding: this.fitPadding, maxZoom: 15, duration: duration() });
   }
   destroy() { this.disposed = true; ++this.impactPreparation; if (this.impactFadeFrame !== undefined) cancelAnimationFrame(this.impactFadeFrame); this.originMarker?.remove(); this.resize.disconnect(); this.map.remove(); }
 }

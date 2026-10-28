@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, PointerEvent } from "react";
 import * as maplibregl from "maplibre-gl";
 import { useTheme } from "next-themes";
-import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
 import { MapSkeleton } from "./loading-skeletons";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -103,7 +102,6 @@ export default function OutageMap({
   const [statisticsError, setStatisticsError] = useState<string | null>(null);
 
   const { resolvedTheme } = useTheme();
-  const { colorblind } = useColorblindMode();
 
   const currentRows = useMemo(
     () =>
@@ -414,7 +412,9 @@ export default function OutageMap({
     const map = mapRef.current;
     if (!map || !mapReady) return;
 
-    return applyWhenStyleReady(map, () => {
+    let cancelStyleUpdate: (() => void) | undefined;
+    const frame = requestAnimationFrame(() => {
+      cancelStyleUpdate = applyWhenStyleReady(map, () => {
       if (!map.getLayer(FILL_LAYER)) return;
       const colors = getVisualizationColors();
 
@@ -437,9 +437,11 @@ export default function OutageMap({
       ] as maplibregl.ExpressionSpecification;
 
       map.setPaintProperty(FILL_LAYER, "fill-color", fillExpression);
+      });
     });
+    return () => { cancelAnimationFrame(frame); cancelStyleUpdate?.(); };
   }, [mapReady, geographicData, maxOutages, countExpression,
-    resolvedTheme, colorblind]);
+    resolvedTheme]);
 
   // Dragging handles changes opacity; delayed updates avoid style-loading errors.
   useEffect(() => {

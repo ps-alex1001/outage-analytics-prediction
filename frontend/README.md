@@ -27,7 +27,7 @@ Open http://localhost:3000.
 - `src/app/forecast/page.tsx`: Outage Forecasting (`/forecast`).
 - `src/app/scenario/page.tsx`: Scenario Simulator (`/scenario`), marked planned.
 - `src/app/globals.css`: neutral colors and semantic CSS variables for future
-  themes, including dark appearance and the independent colorblind palette.
+  themes, including dark appearance.
 - `src/components/ui/`, `src/hooks/use-mobile.ts`, `src/lib/utils.ts`:
   official shadcn components and supporting utilities. The mobile hook uses
   React's `useSyncExternalStore` to follow the browser breakpoint and comply
@@ -53,13 +53,16 @@ with example charts or analytics was added.
 
 ## Appearance and visualization colors
 
-The header has Light, Dark, and System appearance options (default: System)
-and an independent colorblind-friendly checkbox. `next-themes` manages the
-`light`/`dark` class on `<html>` and persists `bataan-appearance` in localStorage.
-`src/components/theme-provider.tsx` separately restores and persists
-`bataan-colorblind`, reflected in `data-colorblind="true"` on `<html>`. Both
-preferences survive navigation and reloads. Controls wait for hydration before
-enabling, and inline initialization restores palettes before first paint.
+The header stays pinned at the top while scrolling. It shows the current page
+title without a subtitle, alongside a light/dark switch with sun and moon icons.
+The switch follows the system appearance until a user chooses a mode. Overview's year selector
+sits beside its title and shares filter state with the Overview charts through
+`PageHeaderProvider`. Spatial Analysis renders its Year, Municipality, Barangay,
+and Synthetic cause controls in the same sticky header through a route-scoped
+portal, keeping the existing filter and pagination behavior. Event search and
+the assignment filter are omitted. `next-themes` manages the `light`/`dark` class on `<html>`
+and persists `bataan-appearance` in localStorage. Controls wait for hydration
+before enabling.
 
 `src/app/globals.css` is the source of truth for all colors:
 
@@ -69,17 +72,14 @@ enabling, and inline initialization restores palettes before first paint.
 - `--map-background`, `--map-boundary`, `--map-low`, `--map-medium`,
   `--map-high`, and `--map-no-data` style future map layers.
 
-The default visualization palette is neutral. Colorblind mode uses
-[Okabe–Ito hues](https://jfly.uni-koeln.de/color/) adjusted for background
-contrast. Navigation includes an underline and `aria-current` for the selected
-route; the checkbox and explicit On/Off text communicate its state without
-depending on color.
+The default visualization palette is neutral. Navigation includes an underline
+and `aria-current` for the selected route.
 
 Future client-side ECharts/MapLibre components should import
 `getVisualizationColors` from `@/lib/visualization-theme` and call it after
 mounting. It returns resolved hex colors instead of CSS `var(...)` expressions,
 which canvas and map color parsers cannot resolve themselves. Re-read colors
-when `useTheme().resolvedTheme` or `useColorblindMode().colorblind` changes;
+when `useTheme().resolvedTheme` changes;
 update the existing chart options or map paint properties rather than recreating
 the visualization. For future charts and maps, always pair colors with clear
 labels, different marker shapes, line dashes, or fill patterns, including a

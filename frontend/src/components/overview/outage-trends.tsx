@@ -4,8 +4,8 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
+import { yearlyOutageSeries, type TrendPoint } from "@/lib/outage-trends";
 import { TrendSkeleton } from "./loading-skeletons";
 
 const ReactECharts = dynamic(() => import("echarts-for-react"), {
@@ -13,19 +13,10 @@ const ReactECharts = dynamic(() => import("echarts-for-react"), {
   loading: () => <TrendSkeleton />,
 });
 
-type TrendPoint = {
-  period: string;
-  total_outages: number;
-  total_duration_hours: number;
-  average_duration_minutes: number | null;
-};
-
 type TrendResponse = {
-  granularity: "annual" | "monthly";
+  granularity: "monthly";
   points: TrendPoint[];
 };
-
-type Metric = "outages" | "duration";
 
 const months = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -40,21 +31,21 @@ export default function OutageTrends({
   selectedCause: string | null;
 }) {
   const { resolvedTheme } = useTheme();
-  const { colorblind } = useColorblindMode();
 
   const [colors, setColors] = useState<
     ReturnType<typeof getVisualizationColors> | null
   >(null);
 
   const [data, setData] = useState<TrendResponse | null>(null);
-  const [metric, setMetric] = useState<Metric>("outages");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hiddenYears, setHiddenYears] = useState<Record<string, boolean>>({});
 
   // Update chart colors when the application theme changes.
   useEffect(() => {
-    setColors(getVisualizationColors());
-  }, [resolvedTheme, colorblind]);
+    const frame = requestAnimationFrame(() => setColors(getVisualizationColors()));
+    return () => cancelAnimationFrame(frame);
+  }, [resolvedTheme]);
 
   // Fetch data whenever the year or cause filter changes.
   useEffect(() => {
@@ -109,51 +100,27 @@ export default function OutageTrends({
   // Prepare data for the chart.
   const points = data?.points ?? [];
 
-  const labels = points.map((point) =>
-    data?.granularity === "annual"
-      ? point.period
-      : months[Number(point.period.slice(5, 7)) - 1]
-  );
-
-  // Use only the metric currently selected.
-  const values = points.map((point) =>
-    metric === "outages"
-      ? point.total_outages
-      : point.total_duration_hours
-  );
-
-  const metricLabel =
-    metric === "outages" ? "Outage Events" : "Event-Duration Hours";
-
-  const axisName = metric === "outages" ? "Events" : "Hours";
-
-  const lineColor =
-    metric === "outages"
-      ? colors?.chart.series[0]
-      : colors?.chart.series[1];
-
-  // Calculate the average across displayed periods.
-  const periodAverage =
-    values.length > 0
-      ? values.reduce((sum, value) => sum + value, 0) / values.length
-      : 0;
+  const series = yearlyOutageSeries(points);
+  const hasVisibleYears = year !== "all" || series.some(item => !hiddenYears[item.name]);
 
   // ECharts configuration.
   const option = {
     backgroundColor: "transparent",
 
-    color: [lineColor],
+    color: colors?.chart.series,
+    aria: { enabled: true },
 
     tooltip: {
       trigger: "axis",
+      confine: true,
       valueFormatter: (value: number) =>
-        `${value.toLocaleString()} ${axisName.toLowerCase()}`,
+        value == null ? "No coverage" : `${value.toLocaleString()} outages`,
     },
 
     grid: {
       left: 20,
       right: 25,
-      top: 50,
+      top: 35,
       bottom: 35,
       containLabel: true,
     },
@@ -161,7 +128,7 @@ export default function OutageTrends({
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: labels,
+      data: months,
       axisLabel: {
         color: colors?.chart.text,
       },
@@ -174,8 +141,9 @@ export default function OutageTrends({
 
     yAxis: {
       type: "value",
-      name: axisName,
+      name: "Outages",
       min: 0,
+      minInterval: 1,
       nameTextStyle: {
         color: colors?.chart.text,
       },
@@ -189,57 +157,52 @@ export default function OutageTrends({
       },
     },
 
-    series: [
-      {
-        name: metricLabel,
+    series: series.map((item, index) => ({
+        ...item,
+        // Partial years stop at the last observed month.
+        data: item.data.slice(0, item.data.findLastIndex(value => value !== null) + 1),
         type: "line",
-        data: values,
+        connectNulls: false,
         smooth: false,
         symbol: "none",
         symbolSize: 7,
         lineStyle: {
-          width: 3,
-          color: lineColor,
+          width: 2,
+          type: index < 5 ? "solid" : "dashed",
+          color: colors?.chart.series[index % colors.chart.series.length],
         },
-        itemStyle: {
-          color: lineColor,
-        },
-      },
-    ],
+        itemStyle: { color: colors?.chart.series[index % colors.chart.series.length] },
+        emphasis: { focus: "series" },
+      })).filter(item => year !== "all" || !hiddenYears[item.name]),
   };
 
   return (
     <section aria-busy={loading || !colors} className="flex h-[434px] min-w-0 flex-col rounded-xl border bg-card p-4">
-      {/* Chart heading and metric toggle */}
+      {/* Chart heading */}
       <div className="flex min-h-10 shrink-0 flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold">Outage Trends</h2>
           <p className="text-xs text-muted-foreground">
-            {year === "all" ? "Annual" : "Monthly"} trends
+            {year === "all" ? "Monthly outage counts by year" : `${year} monthly outage counts`}
           </p>
         </div>
 
-        <div className="flex rounded-md border p-1">
-          {([
-            ["outages", "Outages"],
-            ["duration", "Duration"],
-          ] as const).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={metric === value}
-              onClick={() => setMetric(value)}
-              className={`rounded px-3 py-1 text-xs font-medium ${
-                metric === value
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
+
+      {year === "all" && series.length > 0 && <div className="mt-2 flex shrink-0 flex-wrap items-center gap-1" role="group" aria-label="Years to compare">
+        {series.map((item, index) => <button
+          key={item.name}
+          type="button"
+          aria-pressed={!hiddenYears[item.name]}
+          onClick={() => setHiddenYears(previous => ({ ...previous, [item.name]: !previous[item.name] }))}
+          className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${hiddenYears[item.name] ? "border-transparent text-muted-foreground hover:bg-muted" : "border-primary/25 bg-primary/10 text-primary hover:bg-primary/15"}`}
+        >
+          <span aria-hidden="true" className="w-3 border-t-2" style={{ borderColor: colors?.chart.series[index % colors.chart.series.length], borderStyle: index < 5 ? "solid" : "dashed", opacity: hiddenYears[item.name] ? .35 : 1 }} />
+          {item.name}
+        </button>)}
+        <button type="button" className="min-h-11 rounded-md px-2 text-xs text-primary hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" aria-label="Show all years" onClick={() => setHiddenYears({})}>All</button>
+        <button type="button" className="min-h-11 rounded-md px-2 text-xs text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" aria-label="Clear comparison years" onClick={() => setHiddenYears(Object.fromEntries(series.map(item => [item.name, true])))}>Clear</button>
+      </div>}
 
       {/* Chart content */}
       <div className="mt-4 min-h-0 flex-1">
@@ -258,6 +221,8 @@ export default function OutageTrends({
           <p className="flex h-full items-center justify-center text-sm text-muted-foreground">
             No trend data available.
           </p>
+        ) : !hasVisibleYears ? (
+          <p role="status" className="flex h-full items-center justify-center text-sm text-muted-foreground">Select years above to compare outage counts.</p>
         ) : (
           <ReactECharts
             option={option}

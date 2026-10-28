@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "next-themes";
-import { Focus, LoaderCircle, RotateCcw, Search } from "lucide-react";
-import { useColorblindMode } from "@/components/theme-provider";
+import { ChevronDown, ChevronUp, Focus, LoaderCircle, RotateCcw } from "lucide-react";
 import {
   assetName, loadBoundaries, loadMetadata, loadNetwork, loadInfrastructureContext, stationName, traceAssetInspection,
   type Asset, type LoadedNetwork, type Metadata, type Selection, type Station,
@@ -16,6 +15,8 @@ type Inspection = { asset: Asset; selection?: Selection; downstream?: number; co
 
 export default function NetworkExplorer() {
   const container = useRef<HTMLDivElement>(null);
+  const controls = useRef<HTMLElement>(null);
+  const inspector = useRef<HTMLElement>(null);
   const map = useRef<TopologyMap | null>(null);
   const network = useRef<LoadedNetwork | null>(null);
   const metadataRef = useRef<Metadata | null>(null);
@@ -27,22 +28,15 @@ export default function NetworkExplorer() {
   const [stationId, setStationId] = useState("");
   const [feederId, setFeederId] = useState("");
   const [busy, setBusy] = useState(true);
-  const [revision, setRevision] = useState(0);
   const [retry, setRetry] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const [boundaryError, setBoundaryError] = useState<string | null>(null);
   const [inspection, setInspection] = useState<Inspection | null>(null);
-  const [showPoles, setShowPoles] = useState(true);
   const [basemap, setBasemap] = useState<MapBackground>("street");
   const [basemapError, setBasemapError] = useState(false);
-  const [contextCounts, setContextCounts] = useState<Record<string, number> | null>(null);
-  const [showBarangays, setShowBarangays] = useState(false);
-  const [query, setQuery] = useState("");
-  const [assetType, setAssetType] = useState("transformer");
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [controlsOpen, setControlsOpen] = useState(true);
   const { resolvedTheme } = useTheme();
-  const { colorblind } = useColorblindMode();
 
   const inspect = useCallback((selection: Selection, focus = false) => {
     const current = network.current;
@@ -61,8 +55,8 @@ export default function NetworkExplorer() {
 
   const clearAll = useCallback(() => {
     stationRef.current = ""; feederRef.current = ""; network.current = null; pendingInspection.current = null;
-    map.current?.clearNetwork(); map.current?.setFeeder(""); map.current?.fitAll();
-    setStationId(""); setFeederId(""); setInspection(null); setBusy(false); setError(null); setQuery("");
+    map.current?.clearNetwork(); map.current?.setFeeder("");
+    setStationId(""); setFeederId(""); setInspection(null); setBusy(false); setError(null);
   }, []);
 
   const chooseStation = useCallback((id: string) => {
@@ -73,7 +67,8 @@ export default function NetworkExplorer() {
     network.current = null;
     map.current?.clearNetwork();
     setStationId(id); setFeederId(""); setInspection(null);
-    setBusy(true); setError(null); setQuery("");
+    if ((container.current?.clientWidth ?? innerWidth) < 900) setControlsOpen(false);
+    setBusy(true); setError(null);
   }, [clearAll]);
 
   const inspectStation = useCallback((station: Station) => {
@@ -126,8 +121,8 @@ export default function NetworkExplorer() {
       map.current?.setMetadata(data);
       const context = await loadInfrastructureContext();
       if (cancelled) return;
-      map.current?.setInfrastructureContext(context.infrastructure); setContextCounts(context.counts);
-      if (!stationRef.current) { map.current?.fitAll(); setBusy(false); }
+      map.current?.setInfrastructureContext(context.infrastructure);
+      if (!stationRef.current) setBusy(false);
       // Geographic context is independent of network geometry and can load concurrently.
       return loadBoundaries("municipality").then(boundaries => {
         if (!cancelled) { map.current?.setBoundaries("municipality", boundaries); setBoundaryError(null); }
@@ -151,8 +146,7 @@ export default function NetworkExplorer() {
         const found = selection.kind === "node" ? data.graph.nodes.has(selection.id) : data.graph.edges.has(selection.id);
         if (found) inspect(selection); else setInspection({ asset: pending });
       } else inspect({ kind: "node", id: feeder?.root_node_id ?? stationId });
-      map.current?.fitNetwork();
-      setBusy(false); setError(null); setRevision(value => value + 1);
+      setBusy(false); setError(null);
     }).catch(cause => { if (!cancelled) { setBusy(false); setError(String(cause.message)); } });
     return () => { cancelled = true; };
   }, [ready, stationId, retry, inspect]);
@@ -162,23 +156,54 @@ export default function NetworkExplorer() {
     // Read CSS after next-themes has applied the root class/attribute.
     const frame = requestAnimationFrame(() => map.current?.setTheme());
     return () => cancelAnimationFrame(frame);
-  }, [ready, resolvedTheme, colorblind]);
+  }, [ready, resolvedTheme]);
 
-  useEffect(() => {
-    if (!ready) return;
-    map.current?.showPoles(showPoles);
-  }, [ready, showPoles]);
   useEffect(() => { if (ready) map.current?.setBasemap(basemap); }, [ready, basemap]);
 
   useEffect(() => {
     if (!ready) return;
     let cancelled = false;
-    map.current?.showBarangays(showBarangays);
-    if (showBarangays) loadBoundaries("barangay").then(data => {
+    map.current?.showPoles(true);
+    map.current?.showBarangays(true);
+    loadBoundaries("barangay").then(data => {
       if (!cancelled) map.current?.setBoundaries("barangay", data);
-    }).catch(() => { if (!cancelled) setBoundaryError("Barangay context could not load. Toggle it off and on to retry."); });
+    }).catch(() => { if (!cancelled) setBoundaryError("Barangay context could not load. Retry to restore borders and labels."); });
     return () => { cancelled = true; };
-  }, [ready, showBarangays]);
+  }, [ready, retry]);
+
+  const updateFitPadding = useCallback(() => {
+    if (!container.current || !controls.current) return;
+    const viewport = container.current.getBoundingClientRect();
+    const left = controls.current.getBoundingClientRect();
+    const right = inspector.current?.getBoundingClientRect();
+    const compact = viewport.width < 900;
+    map.current?.setFitPadding(compact ? {
+      top: Math.min(left.height + 32, viewport.height * .35),
+      bottom: right ? Math.min(right.height + 60, viewport.height * .45) : 48,
+      left: 24, right: 24,
+    } : {
+      top: 48, bottom: 48,
+      left: Math.min(left.width + 40, viewport.width * .3),
+      right: right ? Math.min(right.width + 48, viewport.width * .3) : 72,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!ready || !container.current || !controls.current) return;
+    const observer = new ResizeObserver(updateFitPadding);
+    observer.observe(container.current);
+    observer.observe(controls.current);
+    if (inspector.current) observer.observe(inspector.current);
+    updateFitPadding();
+    return () => observer.disconnect();
+  }, [ready, stationId, controlsOpen, updateFitPadding]);
+
+  // Fit after React has committed the inspection panel, including cached loads.
+  useEffect(() => {
+    if (!ready || busy) return;
+    updateFitPadding();
+    if (stationId) map.current?.fitNetwork(); else map.current?.fitAll();
+  }, [ready, busy, stationId, updateFitPadding]);
 
   const stations = useMemo(() => metadata?.substations.features
     .filter(f => f.properties.active_feeder_count > 0)
@@ -188,7 +213,7 @@ export default function NetworkExplorer() {
   const activeFeeder = feeders.find(f => f.feeder_id === feederId);
 
   function chooseFeeder(id: string) {
-    feederRef.current = id; setFeederId(id); setQuery("");
+    feederRef.current = id; setFeederId(id);
     map.current?.setFeeder(id);
     inspect({ kind: "node", id: feeders.find(f => f.feeder_id === id)?.root_node_id ?? stationId });
     map.current?.fitNetwork();
@@ -196,35 +221,12 @@ export default function NetworkExplorer() {
 
   function resetSelection() {
     inspect({ kind: "node", id: activeFeeder?.root_node_id ?? stationId });
+    map.current?.fitNetwork();
   }
-
-  // Only the first 50 matches enter React state/rendering. Large geometry and the
-  // connectivity index stay in refs/the bounded cache, never in component state.
-  const [matches, setMatches] = useState<Asset[]>([]);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const current = network.current;
-      if ((!current && assetType !== "station") || busy || !searchOpen) { setMatches([]); return; }
-      const candidates = assetType === "station" ? metadataRef.current?.substations.features ?? []
-        : assetType === "edge" ? current!.graph.edges.values() : current!.graph.nodes.values();
-      const found: Asset[] = [], needle = query.trim().toLowerCase();
-      for (const asset of candidates) {
-        const p = asset.properties;
-        if (assetType !== "station" && assetType !== "edge" && p.node_type !== assetType) continue;
-        if (assetType !== "station" && feederId && p.feeder_id !== feederId) continue;
-        if (needle && !`${p.node_id ?? p.edge_id ?? p.asset_id} ${p.name ?? ""} ${p.barangay ?? ""} ${p.municipality ?? ""}`.toLowerCase().includes(needle)) continue;
-        found.push(asset);
-        if (found.length === 50) break;
-      }
-      setMatches(found);
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [query, assetType, feederId, revision, busy, searchOpen]);
 
   const props = inspection?.asset.properties;
   const isStation = Boolean(props && "active_feeder_count" in props);
   const fields = props ? [
-    ["Identifier", props.node_id ?? props.edge_id ?? props.asset_id],
     ["Name", props.name],
     ["Data origin", props.provenance],
     ["Operator", props.operator],
@@ -235,25 +237,35 @@ export default function NetworkExplorer() {
     ["Connection status", props.connection_status],
     ["Geometry basis", props.geometry_basis],
     ["Data status", props.data_status],
-    ["Synthetic asset", typeof props.is_synthetic === "boolean" ? (props.is_synthetic ? "Yes" : "No — observed geometry") : "Not specified in export"],
     ["Verified connectivity", props.is_verified_connectivity === true ? "Yes" : props.is_verified_connectivity === false ? "No" : "Not specified in export"],
   ].filter(([, value]) => value !== null && value !== undefined && value !== "") : [];
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-xl border bg-card p-4">
-        <div className="grid items-end gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_auto]">
-          <label className="grid min-w-0 gap-1.5 text-sm font-medium">
+    <div className="network-map network-workspace relative min-h-0 flex-1 overflow-hidden" aria-busy={busy}>
+      <div ref={container} className="h-full w-full" />
+
+      <section ref={controls} aria-label="Network controls" className="network-controls absolute left-3 top-3 z-10 w-[min(320px,calc(100%-76px))] overflow-hidden rounded-xl border bg-card shadow-lg md:left-4 md:top-4">
+        <div className="flex items-center justify-between gap-2 px-4 py-2">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold tracking-tight">Network controls</h2>
+            <p className="text-xs text-muted-foreground">Observed + modeled infrastructure</p>
+          </div>
+          <button type="button" className="inline-flex size-11 shrink-0 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" aria-label={controlsOpen ? "Collapse network controls" : "Expand network controls"} aria-expanded={controlsOpen} aria-controls="network-controls-body" onClick={() => setControlsOpen(value => !value)}>
+            {controlsOpen ? <ChevronUp size={18} aria-hidden="true" /> : <ChevronDown size={18} aria-hidden="true" />}
+          </button>
+        </div>
+        <div id="network-controls-body" hidden={!controlsOpen} className="max-h-[calc(100dvh-210px)] space-y-3 overflow-y-auto border-t p-4">
+          <label className="grid min-w-0 gap-1.5 text-xs font-medium">
             Substation
             <select aria-label="Substation" className={`${control} w-full min-w-0`} value={stationId}
               disabled={!metadata} onChange={event => chooseStation(event.target.value)}>
-              <option value="">{metadata ? "All infrastructure — no selection" : "Loading mapped substations…"}</option>
+              <option value="">{metadata ? "All infrastructure" : "Loading substations…"}</option>
               {stations.map(station => <option key={station.properties.asset_id} value={station.properties.modeled_source_node_id!}>
-                {stationName(station)} · {station.properties.transformer_count.toLocaleString()} transformers · OSM {station.properties.asset_id.split("/").at(-1)}
+                {stationName(station)}
               </option>)}
             </select>
           </label>
-          <label className="grid min-w-0 gap-1.5 text-sm font-medium">
+          <label className="grid min-w-0 gap-1.5 text-xs font-medium">
             Modeled feeder
             <select aria-label="Modeled feeder" className={`${control} w-full min-w-0`} value={feederId} disabled={busy || !stationId || !!error}
               onChange={event => chooseFeeder(event.target.value)}>
@@ -263,122 +275,67 @@ export default function NetworkExplorer() {
               </option>)}
             </select>
           </label>
-          <button type="button" className={button} disabled={busy || !!error || !stationId} onClick={resetSelection}>
-            <RotateCcw size={15} aria-hidden="true" /> Show whole {feederId ? "feeder" : "substation"}
-          </button>
-        </div>
-        <p className="mt-3 text-xs leading-5 text-muted-foreground">
-          {metadata ? `${metadata.substations.features.length} connected substations · ${metadata.dataset.counts.active_feeders} modeled feeders` : "Loading station catalog…"}
-          {activeStation && ` · ${Number(activeFeeder?.transformer_count ?? activeStation.properties.transformer_count).toLocaleString()} transformers in this view`}
-          {contextCounts && ` · ${contextCounts.observed_assets.toLocaleString()} observed OSM records · ${contextCounts.topology_nodes.toLocaleString()} topology nodes · ${contextCounts.topology_edges.toLocaleString()} topology connections`}
-        </p>
-      </div>
-
-      {(error || boundaryError) && <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3 text-sm">
-        <p>{error || boundaryError}</p>
-        <button className={button} onClick={() => { setBusy(true); setError(null); setRetry(value => value + 1); }}>Retry loading</button>
-      </div>}
-
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="min-w-0 overflow-hidden rounded-xl border bg-card">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
-            <h2 className="text-sm font-semibold">Modeled network</h2>
-            <div className="flex flex-wrap gap-2">
-              <button type="button" className={button} disabled={busy || !!error} onClick={() => map.current?.fitNetwork()}><Focus size={15} aria-hidden="true" /> Fit network</button>
-              <button type="button" className={button} disabled={!metadata} onClick={clearAll}>Clear selection / Show all</button>
+          {metadata && <p className="text-xs leading-5 text-muted-foreground">
+            {activeStation ? `${Number(activeFeeder?.transformer_count ?? activeStation.properties.transformer_count).toLocaleString()} transformers in this view` : `${stations.length} substations · ${metadata.dataset.counts.active_feeders} modeled feeders`}
+          </p>}
+          <div className="grid grid-cols-2 gap-2 border-t pt-3" aria-label="Map actions">
+            <button type="button" className={button} disabled={busy || !!error} onClick={() => map.current?.fitNetwork()}><Focus size={15} aria-hidden="true" /> Fit network</button>
+            <button type="button" className={button} disabled={!metadata} onClick={clearAll}>Clear selection / Show all</button>
+            {stationId && <button type="button" className={`${button} col-span-2`} disabled={busy || !!error} onClick={resetSelection}>
+              <RotateCcw size={15} aria-hidden="true" /> Show whole {feederId ? "feeder" : "substation"}
+            </button>}
+          </div>
+          <label className="grid gap-1.5 border-t pt-3 text-xs font-medium">Background
+            <select aria-label="Network map background" className={`${control} w-full`} value={basemap} onChange={event => { setBasemap(event.target.value as MapBackground); setBasemapError(false); }}>
+              <option value="street">Street map (muted)</option><option value="color">Color street map</option><option value="satellite">Satellite imagery</option><option value="plain">Plain background</option>
+            </select>
+          </label>
+          {basemapError && <p role="status" className="text-xs leading-5">Background unavailable. Showing plain background; choose a map background to retry.</p>}
+          <details className="border-t pt-1">
+            <summary className="flex min-h-11 cursor-pointer items-center text-xs font-medium">Map legend</summary>
+            <div className="grid gap-2 pb-1 text-xs" aria-label="Map legend">
+              <Legend shape="square" color="station">Mapped station</Legend>
+              <Legend shape="line" color="selected">Downstream</Legend>
+              <Legend shape="dash" color="station">Inferred station link</Legend>
+              <Legend shape="line" color="station">Upstream path</Legend>
+              <Legend shape="dot" color="selected">Selected</Legend>
+              <Legend shape="line" color="remaining">Observed and generated context</Legend>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 border-b px-4 py-2 text-xs">
-            <label className="flex items-center gap-2">Background<select aria-label="Network map background" className={control} value={basemap} onChange={e => { setBasemap(e.target.value as MapBackground); setBasemapError(false); }}><option value="street">Street map (muted)</option><option value="color">Color street map</option><option value="satellite">Satellite imagery</option><option value="plain">Plain background</option></select></label>
-            {basemapError && <p role="status">Background unavailable. Showing plain background; choose a map background to retry.</p>}
-          </div>
-          <div className="network-map relative h-[480px] sm:h-[650px]" aria-busy={busy}>
-            <div ref={container} className="h-full w-full" />
-            {!busy && inspection?.connectionPoleId && <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-4.5rem)] rounded-lg border bg-card/95 px-3 py-2 text-xs shadow-sm">
-              Downstream from the transformer’s connection pole
-            </div>}
-            {busy && !error && <div role="status" className="pointer-events-none absolute left-3 top-3 flex max-w-[calc(100%-4.5rem)] items-center gap-2 rounded-lg border bg-card/95 px-3 py-2 text-sm shadow-sm">
-              <LoaderCircle size={16} className="shrink-0 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-              {metadata ? stationId ? "Loading selected network…" : "Loading all infrastructure…" : "Loading mapped substations…"}
-            </div>}
-            {mapError && <p role="alert" className="absolute inset-x-3 bottom-10 rounded-md border bg-card p-3 text-sm">{mapError}</p>}
-          </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-2 border-t px-4 py-3 text-xs" aria-label="Map legend">
-            <Legend shape="square" color="station">Mapped station</Legend>
-            <Legend shape="line" color="selected">{inspection?.connectionPoleId ? "Connection-pole branch" : "Downstream"}</Legend>
-            <Legend shape="dash" color="station">Inferred station link</Legend>
-            <Legend shape="line" color="station">Upstream path</Legend>
-            <Legend shape="dot" color="selected">Selected</Legend>
-            <Legend shape="line" color="remaining">Observed and generated context</Legend>
-          </div>
+          </details>
         </div>
+        {busy && !error && <p role="status" className="flex items-center gap-2 border-t px-4 py-3 text-xs">
+          <LoaderCircle size={15} className="shrink-0 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          {metadata ? stationId ? "Loading selected network…" : "Loading all infrastructure…" : "Loading substations…"}
+        </p>}
+        {(error || boundaryError) && <div role="alert" className="space-y-2 border-t p-3 text-xs leading-5">
+          <p>{error || boundaryError}</p>
+          <button className={`${button} w-full`} onClick={() => { setBusy(true); setError(null); setBoundaryError(null); setRetry(value => value + 1); }}>Retry loading</button>
+        </div>}
+      </section>
 
-        <aside className="min-w-0 space-y-4" aria-label="Network inspection and display settings">
-          <section className="rounded-xl border bg-card p-4">
-            <h2 className="font-semibold">Asset inspection</h2>
-            <div className="mt-3" aria-live="polite">
-              {inspection ? <>
-                <p className="break-words text-sm font-medium capitalize">{isStation ? stationName(inspection.asset as Station) : assetName(inspection.asset)}</p>
-                {inspection.connectionPoleId && <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                  This transformer is an endpoint. Orange shows the downstream branch from its recorded connection pole;
-                  blue shows that pole’s upstream supply path. Orange marks the selected transformer.
-                </p>}
-                {inspection.downstream !== undefined && <div className="my-3 border-y py-3">
-                  <p className="text-2xl font-semibold tabular-nums">{inspection.downstream.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">{inspection.connectionPoleId ? "Transformers in the connection pole’s downstream branch" : "Transformers downstream in the stored tree"}</p>
-                </div>}
-                {inspection.connectionPoleId && <p className="text-xs text-muted-foreground">No assets are modeled downstream of the transformer itself.</p>}
-              </> : <p className="text-sm leading-6 text-muted-foreground">Click a station, line, pole, or transformer to inspect its recorded attributes.</p>}
-            </div>
-            <dl className="mt-3 space-y-3 text-xs">
-              {fields.map(([label, value]) => <div key={String(label)}>
-                <dt className="text-muted-foreground">{label}</dt><dd className="mt-1 break-words [overflow-wrap:anywhere]">{String(value)}</dd>
-              </div>)}
-            </dl>
-          </section>
-          <section className="rounded-xl border bg-card p-4">
-            <h2 className="font-semibold">Map display</h2>
-            <label className="mt-2 flex min-h-11 cursor-pointer items-center gap-2 text-sm"><input type="checkbox" checked={showPoles} onChange={event => setShowPoles(event.target.checked)} className="size-4 accent-primary" /> Show poles when zoomed in</label>
-            <p className="text-xs leading-5 text-muted-foreground">Poles fade in between zoom 15 and 16. Transformers and lines shrink smoothly as you zoom out.</p>
-            <label className="mt-2 flex min-h-11 cursor-pointer items-center gap-2 text-sm"><input type="checkbox" checked={showBarangays} onChange={event => setShowBarangays(event.target.checked)} className="size-4 accent-primary" /> Barangay borders and labels</label>
-            <p className="text-xs leading-5 text-muted-foreground">Barangay detail appears at close zoom. Municipality borders and labels remain available.</p>
-          </section>
-        </aside>
-      </div>
-
-      <details className="rounded-xl border bg-card" onToggle={event => setSearchOpen(event.currentTarget.open)}>
-        <summary className="min-h-11 cursor-pointer px-4 py-3 text-sm font-medium">Choose a component without clicking the map</summary>
-        <div className="space-y-3 border-t p-4">
-          <div className="grid gap-3 sm:grid-cols-[200px_1fr]">
-            <label className="grid gap-1.5 text-sm">Component type<select className={control} value={assetType} onChange={event => setAssetType(event.target.value)}>
-              <option value="transformer">Transformer</option><option value="edge">Line / logical connection</option><option value="pole">Pole</option><option value="station">Mapped substation ({metadata?.substations.features.length ?? 0})</option>
-            </select></label>
-            <label className="grid gap-1.5 text-sm">Find by component ID or location<div className="relative"><Search className="absolute left-3 top-3.5 size-4 text-muted-foreground" aria-hidden="true" /><input className={`${control} w-full pl-9`} value={query} onChange={event => setQuery(event.target.value)} placeholder="Component ID, barangay, or municipality" /></div></label>
-          </div>
-          <p className="text-xs text-muted-foreground">First 50 matches in the selected network, or all {metadata?.substations.features.length ?? 0} connected station records. Search to narrow the list. Logical Point connections are inspectable here.</p>
-          <div className="grid max-h-64 gap-2 overflow-y-auto sm:grid-cols-2" aria-label="Matching components">
-            {!busy && matches.length === 0 && <p className="text-sm text-muted-foreground">No matching components.</p>}
-            {matches.map(asset => {
-              const id = String(asset.properties.node_id ?? asset.properties.edge_id ?? asset.properties.asset_id);
-              const stationAsset = "active_feeder_count" in asset.properties;
-              return <button type="button" key={id} disabled={busy} className="min-h-11 rounded-md border p-3 text-left text-xs hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" onClick={() => {
-                if (stationAsset) { inspectStation(asset as Station); map.current?.focusAsset(asset); }
-                else inspect({ kind: asset.properties.node_id ? "node" : "edge", id }, true);
-              }}>
-                <span className="block capitalize">{stationAsset ? stationName(asset as Station) : assetName(asset)}</span><span className="mt-1 block break-all text-muted-foreground">{id}</span>
-              </button>;
-            })}
-          </div>
+      {stationId && <aside ref={inspector} aria-label="Asset inspection" className="network-inspector absolute bottom-11 left-3 right-[68px] z-10 max-h-[35%] overflow-y-auto rounded-xl border bg-card p-4 shadow-lg md:bottom-auto md:left-auto md:right-4 md:top-4 md:max-h-[calc(100%-4rem)] md:w-[300px]">
+        <h2 className="text-sm font-semibold">Asset inspection</h2>
+        <div className="mt-3" aria-live="polite">
+          {inspection ? <>
+            <p className="break-words text-sm font-medium">{activeStation ? stationName(activeStation) : "Selected substation"}</p>
+            {activeFeeder && <p className="mt-1 text-sm text-muted-foreground">Feeder line {activeFeeder.modeled_feeder_number}</p>}
+            {!isStation && inspection.selection?.id !== stationId && inspection.selection?.id !== activeFeeder?.root_node_id && <p className="mt-2 break-words text-xs capitalize text-muted-foreground">{assetName(inspection.asset)}</p>}
+            {inspection.connectionPoleId && <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              Orange shows the downstream branch from this transformer’s connection pole. Blue shows its upstream supply path.
+            </p>}
+            {inspection.downstream !== undefined && <div className="my-3 border-y py-3">
+              <p className="text-2xl font-semibold tabular-nums">{inspection.downstream.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">{inspection.connectionPoleId ? "Transformers in the connection pole’s downstream branch" : "Transformers downstream in the stored tree"}</p>
+            </div>}
+          </> : <p className="text-sm leading-6 text-muted-foreground">{busy ? "Loading selected substation…" : "Click a line, pole, or transformer to inspect its attributes."}</p>}
         </div>
-      </details>
-      <p className="max-w-5xl text-xs leading-5 text-muted-foreground">
-        Gray shows observed OSM infrastructure and generated topology, including unresolved components.
-        Observed locations are distinct from modeled electrical connectivity. Orange and blue paths follow
-        the inferred active tree; observed line crossings do not create electrical connections.
-        Highlighted paths are not verified official PENELCO routes or service areas.
-        Modeled feeder numbers are local identifiers. {metadata?.dataset.counts.unresolved_transformers ?? 81} transformers
-        remain unresolved province-wide and are not assigned a connection here. This view does not estimate outages, customers interrupted, or electrical load.
-      </p>
+        <dl className="mt-3 space-y-3 text-xs">
+          {fields.map(([label, value]) => <div key={String(label)}>
+            <dt className="text-muted-foreground">{label}</dt><dd className="mt-1 break-words [overflow-wrap:anywhere]">{String(value)}</dd>
+          </div>)}
+        </dl>
+      </aside>}
+      {mapError && <p role="alert" className="absolute inset-x-3 bottom-10 z-20 rounded-md border bg-card p-3 text-sm">{mapError}</p>}
     </div>
   );
 }

@@ -5,7 +5,6 @@ import type { CSSProperties } from "react";
 import dynamic from "next/dynamic";
 import type { EChartsOption } from "echarts";
 import { useTheme } from "next-themes";
-import { useColorblindMode } from "@/components/theme-provider";
 import { getVisualizationColors } from "@/lib/visualization-theme";
 import { TimingSkeleton } from "./loading-skeletons";
 
@@ -85,7 +84,6 @@ export default function OutageTiming({ year, selectedCause }: Props) {
   >(null);
 
   const { resolvedTheme } = useTheme();
-  const { colorblind } = useColorblindMode();
   const reduceMotion = useSyncExternalStore(
     subscribeReducedMotion,
     getReducedMotion,
@@ -98,7 +96,7 @@ export default function OutageTiming({ year, selectedCause }: Props) {
       setVisual(getVisualizationColors());
     });
     return () => cancelAnimationFrame(frame);
-  }, [resolvedTheme, colorblind]);
+  }, [resolvedTheme]);
 
   const params = new URLSearchParams();
   if (year !== "all") params.set("year", year);
@@ -162,9 +160,7 @@ export default function OutageTiming({ year, selectedCause }: Props) {
     )
     .slice(0, 3);
 
-  const peakColor = colorblind
-    ? (visual?.chart.series[0] ?? "#377eb8")
-    : (visual?.map.high ?? "#b91c32");
+  const peakColor = visual?.map.high ?? "#b91c32";
 
   const option: EChartsOption = {
     backgroundColor: "transparent",
@@ -353,13 +349,9 @@ export default function OutageTiming({ year, selectedCause }: Props) {
                   width: `calc(${HEATMAP_WIDTH / 24}% - 1.2px)`,
                   height: HEATMAP_HEIGHT / 7 - 1.2,
                   transform: "translate(-50%, -50%)",
-                  backgroundColor: colorblind
-                    ? "rgba(195, 235, 255, 0.20)"
-                    : "rgba(255, 247, 188, 0.20)",
-                  borderColor: colorblind ? "#d6f5ff" : "#fff6c7",
-                  "--hotspot-glow": colorblind
-                    ? "rgba(115, 206, 255, 0.90)"
-                    : "rgba(255, 238, 145, 0.95)",
+                  backgroundColor: "rgba(255, 247, 188, 0.20)",
+                  borderColor: "#fff6c7",
+                  "--hotspot-glow": "rgba(255, 238, 145, 0.95)",
                 };
 
                 return (
