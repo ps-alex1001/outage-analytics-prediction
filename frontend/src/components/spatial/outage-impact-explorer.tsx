@@ -211,17 +211,13 @@ export default function OutageImpactExplorer() {
   const metrics = detail?.impact;
 
   return <div className="impact-workspace space-y-4">
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-4 text-sm">
-      <p>{metadata ? <><strong>{metadata.total_events.toLocaleString()}</strong> V2 events · {metadata.validation.mapped_percentage.toFixed(1)}% with modeled impact assignments</> : "Loading event catalog…"}</p>
-      <p className="max-w-2xl text-xs leading-5 text-muted-foreground">Synthetic downstream outage scenarios. Connectivity and fault locations are unverified. Outlines identify infrastructure locations, not whole-barangay outages.</p>
-    </div>
     <SpatialHeaderFilters>
       <label className="space-y-1 text-xs font-medium">Year<select className={`${control} block w-full`} value={filters.year} onChange={e => filter("year", e.target.value)}><option value="">All years</option>{metadata?.years.map(y => <option key={y}>{y}</option>)}</select></label>
       <label className="space-y-1 text-xs font-medium">Municipality<select className={`${control} block w-full`} value={filters.municipality_psgc} onChange={e => filter("municipality_psgc", e.target.value)}><option value="">All municipalities</option>{municipalities.map(m => <option key={m.municipality_psgc} value={m.municipality_psgc}>{m.municipality}</option>)}</select></label>
       <label className="space-y-1 text-xs font-medium">Barangay<select className={`${control} block w-full`} value={filters.barangay_psgc} onChange={e => filter("barangay_psgc", e.target.value)}><option value="">All barangays</option>{barangays.map(b => <option key={b.barangay_psgc} value={b.barangay_psgc}>{b.barangay}{!filters.municipality_psgc ? `, ${b.municipality}` : ""}</option>)}</select></label>
       <label className="space-y-1 text-xs font-medium">Synthetic cause<select className={`${control} block w-full`} value={filters.cause_category} onChange={e => filter("cause_category", e.target.value)}><option value="">All causes</option>{metadata?.causes.map(c => <option key={c}>{c}</option>)}</select></label>
     </SpatialHeaderFilters>
-    <EnvironmentalProfile filters={filters} area={metadata?.geography.find(g => filters.barangay_psgc ? g.barangay_psgc === filters.barangay_psgc : g.municipality_psgc === filters.municipality_psgc)?.[filters.barangay_psgc ? "barangay" : "municipality"] ?? "Bataan"} />
+    <EnvironmentalProfile onCauseChange={cause => filter("cause_category", cause)} filters={filters} area={metadata?.geography.find(g => filters.barangay_psgc ? g.barangay_psgc === filters.barangay_psgc : g.municipality_psgc === filters.municipality_psgc)?.[filters.barangay_psgc ? "barangay" : "municipality"] ?? "Bataan"} />
     {error && <div role="alert" className="rounded-lg border border-destructive/40 p-4 text-sm">{error} <button className={button} onClick={() => setRetry(x => x + 1)}>Retry</button></div>}
     <div className="grid items-start gap-4 xl:grid-cols-[minmax(390px,0.9fr)_minmax(0,1.1fr)]">
       <section className="min-w-0 overflow-hidden rounded-lg border bg-card" aria-label="Synthetic outage event table">

@@ -112,3 +112,20 @@ def get_environment_metadata(level: str, psgc: str, year: int = 2025) -> dict:
     """Return isolated metadata, including native/aligned statistics and map corners."""
     root, entry = _area(level, psgc, year)
     return deepcopy(_read_json(_asset_path(root, entry['metadata_path'])))
+
+
+def get_environment_catalog() -> dict:
+    """Cached internal catalog; callers must treat the returned object as read-only."""
+    catalog = _read_json(_root(2025) / 'manifest.json')
+    if catalog.get('status') != 'complete' or catalog.get('ndvi_year') != 2025:
+        raise ValueError('Environmental export is incomplete or has the wrong year')
+    return catalog
+
+
+def environment_revision(level: str, codes: tuple[str, ...]) -> tuple:
+    """Invalidate summary responses when catalog or selected metadata changes."""
+    root = _root(2025)
+    catalog = get_environment_catalog()
+    paths = [root / 'manifest.json'] + [
+        _asset_path(root, catalog['areas'][level][code]['metadata_path']) for code in codes]
+    return tuple((str(path), path.stat().st_mtime_ns, path.stat().st_size) for path in paths)
