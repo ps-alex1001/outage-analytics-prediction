@@ -1,6 +1,19 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { yearlyOutageSeries } from "../src/lib/outage-trends.ts";
+import { monthlyOutageTimeline, yearlyOutageSeries } from "../src/lib/outage-trends.ts";
+
+test("continuous timeline crosses years and preserves missing months without future padding", () => {
+  assert.deepEqual(monthlyOutageTimeline([
+    { period: "2026-02", total_outages: 0 },
+    { period: "2025-12", total_outages: 7 },
+    { period: "invalid", total_outages: 9 },
+  ]), [
+    { period: "2025-12", value: 7 },
+    { period: "2026-01", value: null },
+    { period: "2026-02", value: 0 },
+  ]);
+  assert.deepEqual(monthlyOutageTimeline([]), []);
+});
 
 test("years share calendar months without joining December to next January", () => {
   const result = yearlyOutageSeries([

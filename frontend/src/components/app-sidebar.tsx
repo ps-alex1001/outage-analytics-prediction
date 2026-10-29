@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   FlaskConical,
@@ -8,14 +9,12 @@ import {
   MapPinned,
   Network,
   TrendingUp,
-  Zap,
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -37,18 +36,26 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
-      <SidebarHeader className="border-b">
-        <div className="flex h-12 items-center gap-2 px-2">
-          <Zap className="size-4 shrink-0" aria-hidden="true" />
+      <SidebarHeader className="border-b border-sidebar-border">
+        <div className="flex h-12 items-center gap-2 px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+          <span className="relative size-8 shrink-0 overflow-hidden" role="img" aria-label="PENELCO logo">
+            <Image
+              src="/penelco-logo.png"
+              alt=""
+              width={194}
+              height={122}
+              unoptimized
+              className="absolute max-w-none"
+              style={{ width: 116, height: 73, left: -24, top: -14 }}
+            />
+          </span>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <p className="text-sm font-semibold">Bataan</p>
-            <p className="text-xs text-muted-foreground">Outage dashboard</p>
+            <p className="text-sm font-semibold leading-5">Bataan Outage Analytics</p>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <nav aria-label="Main navigation">
               <SidebarMenu>
@@ -60,7 +67,7 @@ export function AppSidebar() {
                       <SidebarMenuButton
                         isActive={isActive}
                         tooltip={item.title}
-                        className="data-active:underline data-active:underline-offset-4"
+                        className="data-active:underline data-active:underline-offset-4 group-data-[collapsible=icon]:mx-auto"
                         render={
                           <Link
                             href={item.href}
