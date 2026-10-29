@@ -91,5 +91,6 @@ def build_rows(geography, frames, cutoffs):
         f = f[FEATURES].astype("float32")
         f["prediction_time"] = cutoffs
         f["barangay_psgc"] = place["barangay_psgc"]
+        f["municipality_psgc"] = place["municipality_psgc"]
         rows.append(f)
     return pd.concat(rows, ignore_index=True)

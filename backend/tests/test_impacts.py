@@ -1,4 +1,4 @@
-"""Radial isolation semantics plus checks against the completed V2 impact run."""
+"""Radial isolation semantics plus checks against the active V3 impact run."""
 import json
 from pathlib import Path
 import unittest
@@ -143,10 +143,11 @@ class IsolationTests(unittest.TestCase):
         self.assertFalse(blocked['source_promoted_upstream'])
 
 
-@unittest.skipUnless((impacts.IMPACTS_PATH / 'run_manifest.json').is_file(), 'Precomputed V2 impacts not installed')
+@unittest.skipUnless((impacts.IMPACTS_PATH / 'run_manifest.json').is_file(), 'Precomputed impacts not installed')
 class ImpactDataTests(unittest.TestCase):
     def test_compact_event_and_cached_boundaries_preserve_the_original_view(self):
-        oid = 'SYN-V2-42-0005333'
+        frame, _, _ = impacts.dataset()
+        oid = frame.loc[frame.resolution_status.eq('resolved_modeled')].index[0]
         original = impacts.event_impact(oid)
         request = Request({'type': 'http', 'headers': [(b'accept-encoding', b'gzip')]})
         response = impacts.get_event_view(request, oid)
@@ -163,26 +164,41 @@ class ImpactDataTests(unittest.TestCase):
 
     def test_source_promotion_and_small_exceptions_are_explicit(self):
         frame, _, manifest = impacts.dataset()
-        self.assertEqual(manifest['generator_version'], '1.2.0')
+        self.assertEqual(manifest['generator_version'], '3.0.0')
         self.assertNotIn('assumed_isolation_component_id', frame.columns)
         mapped = frame.resolution_status.eq('resolved_modeled')
         self.assertTrue(frame.loc[mapped, 'source_anchor_node_id'].notna().all())
         small = frame.loc[mapped & frame.source_target_met.eq(False)]
         self.assertTrue(small.source_selection_limit_reason.notna().all())
         promoted = frame.loc[frame.source_promoted_upstream.eq(True)]
-        self.assertGreater(len(promoted), 0)
+        if 'previous_source_topology_id' in frame.columns:
+            self.assertGreater(len(promoted), 0)
+            self.assertTrue(frame.affected_line_segment_count.gt(0).all())
+        else:
+            self.assertEqual(len(promoted), 0)
         self.assertTrue(promoted.fault_source_topology_id.ne(promoted.initial_source_topology_id).all())
         policy = manifest['source_selection_policy']
-        self.assertTrue(promoted.affected_transformer_count.le(policy['max_expanded_transformers']).all())
-        self.assertTrue(promoted.affected_line_length_km.le(policy['max_expanded_line_km']).all())
+        if 'previous_source_topology_id' not in frame.columns:
+            self.assertEqual(policy['max_upstream_hops'], 0)
+        bounded = promoted.loc[~promoted.minimum_physical_branch_exception] if 'minimum_physical_branch_exception' in promoted else promoted
+        self.assertTrue(bounded.affected_transformer_count.le(policy['max_expanded_transformers']).all())
+        self.assertTrue(bounded.affected_line_length_km.le(policy['max_expanded_line_km']).all())
 
     def test_unresolved_metrics_are_null_and_origin_is_preserved(self):
         frame, _, _ = impacts.dataset()
         unresolved = frame.loc[frame.resolution_status.eq('unresolved')]
-        self.assertGreater(len(unresolved), 0)
+        if 'random_connected_fallback' in frame.columns:
+            self.assertEqual(len(unresolved), 0)
+            fallback = frame.loc[frame.random_connected_fallback]
+            self.assertEqual(len(fallback), 19)
+            for row in fallback.itertuples():
+                self.assertEqual(frame.loc[row.fallback_donor_event_id, 'municipality_psgc'], row.municipality_psgc)
+        else:
+            self.assertGreater(len(unresolved), 0)
         self.assertTrue(unresolved.affected_transformer_count.isna().all())
         self.assertTrue(frame.barangay_psgc.eq(frame.origin_barangay_psgc).all())
-        for oid in [unresolved.index[0], frame.loc[frame.resolution_status.eq('resolved_modeled')].index[0]]:
+        sample_ids = unresolved.index[:1].tolist() + frame.loc[frame.resolution_status.eq('resolved_modeled')].index[:1].tolist()
+        for oid in sample_ids:
             d = impacts.event_impact(oid)
             json.dumps(d, allow_nan=False)
             if d['event']['resolution_status'] == 'unresolved':
@@ -190,11 +206,11 @@ class ImpactDataTests(unittest.TestCase):
 
     def test_table_filters_sort_and_pages(self):
         one = impacts.list_events(q='', year=2026, municipality_psgc=None, barangay_psgc=None,
-            cause_category='Tree Contact', status='resolved_modeled', sort='duration_minutes', direction='desc', page=1, page_size=10)
+            cause_category='Tree contact', status='resolved_modeled', sort='duration_minutes', direction='desc', page=1, page_size=10)
         self.assertEqual(len(one['events']), 10)
         minutes = [x['duration_minutes'] for x in one['events']]
         self.assertEqual(minutes, sorted(minutes, reverse=True))
-        self.assertTrue(all(x['cause_category'] == 'Tree Contact' and x['start_time'].startswith('2026') for x in one['events']))
+        self.assertTrue(all(x['cause_category'] == 'Tree contact' and x['start_time'].startswith('2026') for x in one['events']))
         with self.assertRaises(HTTPException):
             impacts.event_impact('nonexistent')
 
@@ -206,11 +222,11 @@ class ImpactDataTests(unittest.TestCase):
         for sid, row in sets.iterrows():
             self.assertEqual(counts.get((sid, 'node'), 0), len(row.affected_node_ids))
             self.assertEqual(counts.get((sid, 'edge'), 0), len(row.affected_edge_ids))
-        self.assertEqual(len(frame), 10608)
+        self.assertEqual(len(frame), 6017)
 
     def test_geometry_scope_is_connected_feeder_and_excludes_candidates(self):
         data = impacts.get_metadata()
-        self.assertEqual(data['total_events'], 10608)
+        self.assertEqual(data['total_events'], 6017)
         frame, _, _ = impacts.dataset()
         fid = frame.loc[frame.resolution_status.eq('resolved_modeled'), 'feeder_id'].iloc[0]
         raw, _ = impacts.feeder_payload(fid)

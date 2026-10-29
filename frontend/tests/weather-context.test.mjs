@@ -23,7 +23,7 @@ test("ten chart cards share plot gutters and exact time bounds; nulls remain gap
   assert.equal(WEATHER_TRACKS.length, 10);
   for (const track of WEATHER_TRACKS) {
     const option = weatherChartOption(data, palettes[0], "#c83036", track);
-    assert.deepEqual(option.grid, { left: 64, right: 16, top: 8, bottom: 38 });
+    assert.deepEqual(option.grid, { left: 64, right: 100, top: 8, bottom: 38 });
     assert.equal(option.xAxis.min, Date.parse(data.window.start));
     assert.equal(option.xAxis.max, Date.parse(data.window.end));
     for (const series of option.series) {

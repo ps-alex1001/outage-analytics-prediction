@@ -36,7 +36,7 @@ export function AppSidebar() {
   const { setOpenMobile } = useSidebar();
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader className="border-b">
         <div className="flex h-12 items-center gap-2 px-2">
           <Zap className="size-4 shrink-0" aria-hidden="true" />

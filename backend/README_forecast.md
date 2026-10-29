@@ -34,7 +34,7 @@ memory. Scoring is CPU-only and does not load the 15-million-row panel.
 
 ## Model installation
 
-The default local installation is `data/models/outage_v2_xgboost/`, containing
+The preserved original installation is `data/models/outage_v2_xgboost/`, containing
 `manifest.json`, `model.ubj` and `parity.json`. The export was produced from the
 evaluated frozen model in Colab, including the original fitted median imputer,
 exact feature order, source bundle checksum and 153 reference predictions (including
@@ -51,7 +51,16 @@ uv --cache-dir .venv/uv-cache run python scripts/install_forecast_model.py D:/Do
 
 The installer rejects extra archive paths, corrupt files and parity mismatches.
 An identical installation is idempotent. A different model must be installed into
-a new directory. Set `FORECAST_MODEL_DIR` to switch it, then restart the service.
+a new directory. The optional `data/models/active_forecast.json` selects a verified
+versioned installation by directory name. The service notices pointer changes;
+model IDs invalidate forecast and historical replay caches. `FORECAST_MODEL_DIR`
+remains an explicit override and takes precedence over the pointer.
+
+The municipality-aware artifact version 2 retains all 24 original weather,
+terrain and calendar predictors and adds 12 one-hot municipality columns. Their
+order and exact string PSGCs are stored in the model manifest. All inference paths
+use the same encoder. Version 1 artifacts remain supported for rollback. Read
+`scripts/README_municipality_model.md` for the training and promotion protocol.
 The evaluated native artifact uses XGBoost 3.4.1, pinned in `pyproject.toml`/`uv.lock`.
 
 ## Weather and feature contract
@@ -133,3 +142,12 @@ References: [Open-Meteo forecast semantics](https://open-meteo.com/en/docs),
 [ECMWF variables](https://open-meteo.com/en/docs/ecmwf-api),
 [archived single runs](https://open-meteo.com/en/docs/single-runs-api),
 [XGBoost native model persistence](https://xgboost.readthedocs.io/en/stable/tutorials/saving_model.html).
+
+
+## Versioned V3 deployment
+
+The reviewed V3 workflow and dataset protocol are documented in `scripts/README_ml_dataset_v3.md`. `data/active_bundle.json`, when installed by `scripts/activate_v3_model.py`, resolves the event CSV, topology impacts, ML geographic audit and frozen model together. Restart the backend after changing this pointer. `FORECAST_MODEL_DIR` remains an explicit model override; ordinary bundle deployment should leave it unset. Without a bundle pointer the pre-existing dataset/model defaults apply.
+
+The model loader accepts the original native XGBoost exports and checksum-verified numerical JSON exports for the other six benchmark algorithms. It never loads executable model pickles. Input feature order, one-hot municipality encoding, fitted imputer parameters and reference predictions are verified before readiness. Metadata also exposes the selected algorithm and dataset version. Forecast, Advanced Scenario and historical replay call the same loader and feature encoder; missing/stale weather behavior is unchanged.
+
+A V3 candidate is activated only after full training, chronological evaluation, confirmed ranking and local serving parity. The preserved V2 bundle can be restored with `scripts/activate_v3_model.py --rollback-v2` and a backend restart. No model is retrained inside the API.

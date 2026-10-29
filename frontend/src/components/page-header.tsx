@@ -40,8 +40,8 @@ export function PageHeader() {
   const { year, setYear } = useOverviewYear();
   const headerFilters = useContext(HeaderFilterContext);
   return <header className="sticky top-0 z-30 flex min-h-16 shrink-0 flex-wrap items-center gap-3 border-b bg-background px-4 py-3 sm:px-6">
-    <SidebarTrigger className="shrink-0" />
-    <h1 className="min-w-0 text-base font-semibold leading-6 sm:text-lg">{titles[pathname] ?? "Bataan Outage Analytics"}</h1>
+    <SidebarTrigger className="relative top-1 shrink-0" />
+    <h1 className="relative top-1 min-w-0 text-lg font-semibold leading-7 sm:text-xl">{titles[pathname] ?? "Bataan Outage Analytics"}</h1>
     {pathname === "/" && <select aria-label="Select year" value={year} onChange={event => setYear(event.target.value)} className="min-h-10 rounded-md border bg-card px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring">
       <option value="all">All Time</option>
       {Array.from({ length: 8 }, (_, index) => 2019 + index).map(value => <option key={value} value={value}>{value}</option>)}

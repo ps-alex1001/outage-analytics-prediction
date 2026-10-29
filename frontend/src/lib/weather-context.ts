@@ -61,6 +61,7 @@ export function weatherChartOption(data: WeatherContextData, colors: ChartColors
         lineStyle: { width: 1.8, type: fieldIndex ? "dashed" : "solid" },
         itemStyle: { color: colors.series[fieldIndex ? 2 : 0] },
         barMaxWidth: 18, z: 3,
+        ...(track.fields.length > 1 ? { endLabel: { show: true, formatter: track.names[fieldIndex], color: colors.text, fontSize: 10 }, labelLayout: { moveOverlap: "shiftY" as const } } : {}),
         ...(fieldIndex === 0 ? {
           markArea: { silent: true, z: 0, itemStyle: { color: gradient },
             data: [[{ xAxis: outageStart }, { xAxis: outageEnd }]] },
@@ -73,7 +74,7 @@ export function weatherChartOption(data: WeatherContextData, colors: ChartColors
   return {
     animation: false, backgroundColor: "transparent",
     aria: { enabled: true, description: `${track.title}, hourly in Philippine time. Red shading marks the exact selected outage. An hourly data table follows the charts.` },
-    grid: { left: 64, right: 16, top: 8, bottom: 38 },
+    grid: { left: 64, right: 100, top: 8, bottom: 38 },
     xAxis: {
       type: "time",
       min: Date.parse(data.window.start), max: Date.parse(data.window.end),

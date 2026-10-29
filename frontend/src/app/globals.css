@@ -259,3 +259,7 @@
   .outage-origin-ring { animation: none; }
   .outage-origin-ring:first-child { transform: scale(.55); opacity: .7; }
 }
+
+/* Keep map attribution below the navigation buttons. */
+.impact-workspace .maplibregl-ctrl-bottom-right { display: flex; flex-direction: column; align-items: flex-end; }
+.impact-workspace .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib { order: 1; margin: 0; }

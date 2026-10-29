@@ -4,7 +4,7 @@ import * as maplibregl from "maplibre-gl";
 import { useTheme } from "next-themes";
 import { getVisualizationColors } from "@/lib/visualization-theme";
 import { MapSkeleton } from "./loading-skeletons";
-import { Skeleton } from "@/components/ui/skeleton";
+
 
 export type BoundaryLevel = "municipality" | "barangay";
 type Handle = "min" | "max";
@@ -55,10 +55,10 @@ type BoundaryFeature = {
 // Defers style mutations until MapLibre has finished loading the active style.
 function applyWhenStyleReady(map: maplibregl.Map, update: () => void): () => void {
   const run = () => {
-    if (map.isStyleLoaded()) update();
+    if (map.getLayer(FILL_LAYER)) update();
   };
 
-  if (map.isStyleLoaded()) run();
+  if (map.getLayer(FILL_LAYER)) run();
   else map.once("idle", run);
 
   return () => map.off("idle", run);
@@ -140,8 +140,7 @@ export default function OutageMap({
     if (year !== "all") params.set("year", year);
     if (selectedCause) params.set("cause_category", selectedCause);
 
-    setGeographicData(null);
-    setStatisticsError(null);
+    queueMicrotask(() => { if (!controller.signal.aborted) { setGeographicData(null); setStatisticsError(null); } });
 
     async function loadGeography() {
       try {
@@ -167,8 +166,9 @@ export default function OutageMap({
 
   // Always start with the full range when the geography or filters change.
   useEffect(() => {
-    setRange({ min: 0, max: maxOutages });
-    setLegendHover(null);
+    let cancelled = false;
+    queueMicrotask(() => { if (!cancelled) { setRange({ min: 0, max: maxOutages }); setLegendHover(null); } });
+    return () => { cancelled = true; };
   }, [level, year, selectedCause, maxOutages]);
 
   // Create MapLibre once. The existing source is reused after toggling levels.
@@ -196,6 +196,14 @@ export default function OutageMap({
     });
 
     mapRef.current = map;
+    const resize = new ResizeObserver(() => {
+      map.resize();
+      const bounds = provinceBoundsRef.current;
+      if (!lastSelectionRef.current && bounds && !bounds.isEmpty()) {
+        map.fitBounds(bounds, { padding: 25, duration: 0 });
+      }
+    });
+    resize.observe(containerRef.current);
     map.addControl(new maplibregl.NavigationControl(), "top-right");
 
     map.on("load", async () => {
@@ -272,6 +280,7 @@ export default function OutageMap({
 
     return () => {
       controller.abort();
+      resize.disconnect();
       requestId.current += 1;
       hoverPopupRef.current?.remove();
       map.remove();
@@ -580,8 +589,8 @@ export default function OutageMap({
 
   function pointerValue(event: PointerEvent<HTMLDivElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
-    const proportion = bounds.width > 0
-      ? (event.clientX - bounds.left) / bounds.width : 0;
+    const proportion = bounds.height > 0
+      ? (bounds.bottom - event.clientY) / bounds.height : 0;
     return Math.round(Math.max(0, Math.min(1, proportion)) * maxOutages);
   }
 
@@ -648,90 +657,10 @@ export default function OutageMap({
         </div>
       </div>
 
-      <div className="relative h-[350px] w-full shrink-0 overflow-hidden rounded-lg">
+      <div className="relative min-h-[350px] w-full flex-1 overflow-hidden rounded-lg">
         <div ref={containerRef} aria-hidden={loading} inert={loading} className="h-full w-full" />
         {loading && <MapSkeleton />}
-      </div>
-
-      <div className="relative mt-4 min-h-0 flex-1 overflow-y-auto">
-        {loading && (
-          <div role="status" aria-label="Loading map legend" className="absolute inset-0 space-y-2">
-            <div className="flex h-4 justify-between gap-4"><Skeleton className="h-3 w-40" /><Skeleton className="h-3 w-24" /></div>
-            <div className="flex h-8 items-center"><Skeleton className="h-4 w-full" /></div>
-            <div className="flex h-4 justify-between"><Skeleton className="h-3 w-5" /><Skeleton className="h-3 w-16" /></div>
-            <div className="flex min-h-6 items-center justify-between gap-4"><Skeleton className="h-3 w-4/5" /><Skeleton className="h-6 w-12" /></div>
-          </div>
-        )}
-        <div aria-hidden={loading} inert={loading} className={`space-y-2 ${loading ? "invisible" : ""}`}>
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Simulated outage frequency</span>
-          <span>{range.min.toLocaleString()}–{range.max.toLocaleString()} events</span>
-        </div>
-
-        <div
-          className="relative mx-2 h-8 select-none touch-none"
-          onPointerDown={onSliderPointerDown}
-          onPointerMove={onSliderPointerMove}
-          onPointerUp={onSliderPointerEnd}
-          onPointerCancel={onSliderPointerEnd}
-          onPointerLeave={() => { if (!dragHandleRef.current) setLegendHover(null); }}
-          aria-label="Outage frequency legend"
-        >
-          <div
-            className="absolute inset-x-0 top-2 h-4 rounded-md border border-border"
-            style={{
-              background: "linear-gradient(to right, var(--map-no-data) 0%, var(--map-low) 15%, var(--map-medium) 55%, var(--map-high) 100%)",
-            }}
-          />
-          <div
-            className="pointer-events-none absolute top-2 h-4 rounded-l-md bg-background/65"
-            style={{ left: 0, width: `${minPct}%` }}
-          />
-          <div
-            className="pointer-events-none absolute top-2 h-4 rounded-r-md bg-background/65"
-            style={{ left: `${maxPct}%`, right: 0 }}
-          />
-          {(["min", "max"] as const).map((handle) => {
-            const value = handle === "min" ? range.min : range.max;
-            return (
-              <button
-                key={handle}
-                type="button"
-                role="slider"
-                data-handle={handle}
-                aria-label={`${handle === "min" ? "Minimum" : "Maximum"} outage count`}
-                aria-valuemin={0}
-                aria-valuemax={maxOutages}
-                aria-valuenow={value}
-                aria-valuetext={`${value} outages`}
-                disabled={maxOutages === 0}
-                onKeyDown={(event) => onSliderKeyDown(event, handle)}
-                className="absolute top-0 z-10 h-8 w-3 -translate-x-1/2 cursor-ew-resize rounded border-2 border-foreground bg-card shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-default"
-                style={{ left: `${handle === "min" ? minPct : maxPct}%` }}
-              />
-            );
-          })}
-        </div>
-
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>0</span>
-          <span>{maxOutages.toLocaleString()} (max)</span>
-        </div>
-        <div className="flex min-h-6 items-center justify-between gap-2 text-xs">
-          <span className="min-w-0 text-muted-foreground">
-            {legendMatch
-              ? `Near ${legendMatch.count.toLocaleString()} events: ${legendMatch.names.slice(0, 2).join(", ")}${legendMatch.names.length > 2 ? ` +${legendMatch.names.length - 2} more` : ""}`
-              : "Hover the legend to highlight matching areas; drag handles to fade others."}
-          </span>
-          <button
-            type="button"
-            onClick={() => setRange({ min: 0, max: maxOutages })}
-            className="shrink-0 rounded border px-2 py-1 hover:bg-muted"
-          >
-            Reset
-          </button>
-        </div>
-        </div>
+        {!loading && <div className="absolute bottom-8 left-3 z-10 rounded-md border bg-card/95 p-2 text-xs shadow-sm"><div className="flex gap-2"><div className="relative h-36 w-7 touch-none" onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onPointerLeave={() => { if (!dragHandleRef.current) setLegendHover(null); }}><div className="absolute inset-y-0 left-1 w-4 rounded border" style={{background:"linear-gradient(to top,var(--map-no-data),var(--map-low) 15%,var(--map-medium) 55%,var(--map-high))"}} />{(["min","max"] as const).map(handle => <button key={handle} role="slider" data-handle={handle} aria-label={handle === "min" ? "Minimum outage count" : "Maximum outage count"} aria-orientation="vertical" aria-valuemin={0} aria-valuemax={maxOutages} aria-valuenow={handle === "min" ? range.min : range.max} onKeyDown={event=>onSliderKeyDown(event,handle)} className="absolute left-0 h-3 w-6 translate-y-1/2 rounded border-2 border-foreground bg-card focus-visible:outline-2" style={{bottom:`${handle === "min" ? minPct : maxPct}%`}} />)}</div><div className="flex flex-col justify-between"><span>{maxOutages.toLocaleString()}</span><span>0</span></div></div><button onClick={()=>setRange({min:0,max:maxOutages})} className="mt-2 rounded border px-2 py-1">Reset</button></div>}
       </div>
 
       {(error || statisticsError) && <p role="alert" className="mt-2 text-sm text-destructive">{error || statisticsError}</p>}

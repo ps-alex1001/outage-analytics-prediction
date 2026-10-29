@@ -10,20 +10,20 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 
-from backend.datasets import DATA_ROOT
+from backend.datasets import DATA_ROOT, dataset_paths
 from backend.forecast_features import FEATURES, TERRAIN, TZ, build_rows
-from backend.forecast_model import ForecastModel, ModelUnavailable
+from backend.forecast_model import ForecastModel, ModelUnavailable, active_model_directory, model_values
 from backend.weather_forecast import OpenMeteoClient, WeatherUnavailable, utc_now
 
 router = APIRouter(prefix="/api/forecast", tags=["experimental forecasting"])
-NOTICE = ("Experimental synthetic-model score, not a calibrated real outage probability. "
+NOTICE = ("Experimental synthetic-model score; probability calibration is unvalidated. "
           "Forecast weather differs from evaluated historical inputs; no operational alerts are issued.")
 
 
 @lru_cache(maxsize=1)
 def geography():
     try:
-        audit = DATA_ROOT / "ml/v2/audit"
+        audit = dataset_paths()['ml'] / "audit"
         geo = pd.read_csv(audit / "geographic_crosswalk.csv", dtype=str)
         terrain = pd.read_csv(DATA_ROOT / "terrain/bataan_barangay_terrain.csv", dtype={"barangay_psgc": str})
         coordinates = pd.read_csv(audit / "weather_coordinate_groups.csv")
@@ -32,7 +32,7 @@ def geography():
         geo = geo.merge(terrain[["barangay_psgc", *TERRAIN]], on="barangay_psgc", validate="one_to_one", how="left")
         geo = geo.merge(coordinates, on="municipality", validate="many_to_one", how="left")
         if len(geo) != 237 or geo.municipality_psgc.nunique() != 12 or geo.isna().any().any():
-            raise ValueError("Incomplete V2 geographic mapping")
+            raise ValueError("Incomplete geographic mapping")
         for name in [*TERRAIN, "latitude", "longitude", "era5_latitude", "era5_longitude"]:
             geo[name] = pd.to_numeric(geo[name], errors="raise")
             if not np.isfinite(geo[name]).all():
@@ -49,12 +49,13 @@ def geography():
             places.append(row)
         return places, list(by_coordinate.values())
     except (OSError, ValueError, KeyError) as exc:
-        raise ModelUnavailable("V2 geography, terrain or weather mapping is unavailable") from exc
+        raise ModelUnavailable("Geography, terrain or weather mapping is unavailable") from exc
 
 
 class ForecastService:
     def __init__(self, model_dir=None, weather=None, clock=utc_now, catalog=geography):
-        self.model_dir = Path(model_dir or os.getenv("FORECAST_MODEL_DIR", str(DATA_ROOT / "models/outage_v2_xgboost")))
+        self._follow_active = model_dir is None and not os.getenv("FORECAST_MODEL_DIR")
+        self.model_dir = Path(model_dir) if model_dir else active_model_directory(DATA_ROOT / "models")
         self.weather = weather or OpenMeteoClient(
             os.getenv("FORECAST_CACHE_DIR", str(DATA_ROOT / "forecasts/weather")),
             model=os.getenv("FORECAST_WEATHER_MODEL", "ecmwf_ifs025"),
@@ -67,6 +68,11 @@ class ForecastService:
 
     def model(self):
         with self._model_lock:
+            if self._follow_active:
+                directory = active_model_directory(DATA_ROOT / "models")
+                if directory != self.model_dir:
+                    self.model_dir, self._model = directory, None
+                    geography.cache_clear()
             if self._model is None:
                 self._model = ForecastModel(self.model_dir)
             return self._model
@@ -77,12 +83,15 @@ class ForecastService:
             model = self.model()
             places, locations = self.catalog()
             info = {"model_id": model.manifest["model_id"], "training_rows": model.manifest["training_rows"],
+                    "algorithm": model.manifest.get("algorithm", "XGBoost"),
+                    "dataset_version": model.manifest.get("dataset_version", "2.0.0"),
+                    "score_interpretation": "uncalibrated experimental classifier score for synthetic onset",
                     "parity_rows_verified": model.parity_rows, "held_out_metrics": model.manifest.get("held_out_metrics")}
         except ModelUnavailable as exc:
             status, error, places, locations = "unavailable", str(exc), [], []
         municipalities = {p["municipality_psgc"]: p["municipality"] for p in places}
         return {"status": status, "error": error, "scope": "experimental_synthetic", "notice": NOTICE,
-                "model": info, "features": FEATURES, "timezone": TZ, "target_interval": "(t,t+1h]",
+                "model": info, "features": self._model.manifest.get("features", FEATURES) if self._model else FEATURES, "timezone": TZ, "target_interval": "(t,t+1h]",
                 "supported_hours": [1, 48], "forecast_weather_validated": False,
                 "weather_model": self.weather.model, "unique_weather_coordinates": len(locations),
                 "barangay_count": len(places), "municipalities": [
@@ -116,7 +125,7 @@ class ForecastService:
                 complete = np.isfinite(values).all(axis=1)
                 scores = np.full(len(values), np.nan)
                 if not snapshot.stale and complete.any():
-                    scores[complete] = model.predict(values[complete])
+                    scores[complete] = model.predict(model_values(model, matrix.loc[complete]))
                 matrix["score"] = scores
                 matrix["complete"] = complete
                 self._cached = key, matrix

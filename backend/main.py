@@ -7,6 +7,8 @@ from backend.topology import router as topology_router
 from backend.impacts import router as impacts_router
 from backend.datasets import DATA_ROOT, OUTAGES_PATH
 from backend.forecast import router as forecast_router
+from backend.scenario import router as scenario_router
+from backend.storm_replay import router as storm_replay_router
 from backend.weather_context import router as weather_context_router
 
 from backend.environment_context import router as environment_context_router
@@ -15,12 +17,14 @@ app = FastAPI()
 app.include_router(topology_router)
 app.include_router(impacts_router)
 app.include_router(forecast_router)
+app.include_router(scenario_router)
+app.include_router(storm_replay_router)
 app.include_router(weather_context_router)
 app.include_router(environment_context_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 

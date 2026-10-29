@@ -1,4 +1,4 @@
-"""Install a Colab native serving export after checksum and prediction-parity checks."""
+"""Install a frozen native/numerical export after checksum and prediction parity."""
 import argparse
 import hashlib
 from pathlib import Path
@@ -17,14 +17,15 @@ def install(archive, target, expected_sha256=None):
     if expected_sha256 and checksum != expected_sha256:
         raise ValueError("Archive checksum mismatch")
     target.parent.mkdir(parents=True, exist_ok=True)
-    names = {"manifest.json", "model.ubj", "parity.json"}
     with TemporaryDirectory(prefix="forecast-install-", dir=target.parent) as tmp:
         staging = Path(tmp) / "model"
         staging.mkdir()
         with zipfile.ZipFile(archive) as package:
-            if len(package.namelist()) != 3 or set(package.namelist()) != names:
-                raise ValueError("Expected exactly manifest.json, model.ubj and parity.json")
-            if sum(info.file_size for info in package.infolist()) > 10_000_000:
+            names = set(package.namelist())
+            if len(package.namelist()) != 3 or names not in ({"manifest.json", "model.ubj", "parity.json"},
+                                                           {"manifest.json", "model.json", "parity.json"}):
+                raise ValueError("Expected manifest, parity and one native/numerical model")
+            if sum(info.file_size for info in package.infolist()) > 100_000_000:
                 raise ValueError("Unexpected model export size")
             for name in names:
                 (staging / name).write_bytes(package.read(name))

@@ -101,13 +101,17 @@ export default function OutageTrends({
   const points = data?.points ?? [];
 
   const series = yearlyOutageSeries(points);
+  const blues = resolvedTheme === "dark"
+    ? ["#dbeafe", "#bfdbfe", "#93c5fd", "#60a5fa", "#3b82f6", "#38bdf8", "#0ea5e9", "#2563eb"]
+    : ["#a3c9ed", "#7fb3df", "#559bd3", "#3282bf", "#1769aa", "#0c5594", "#08437c", "#062e60"];
+  const yearColor = (name: string) => blues[((Number(name) - 2019) % blues.length + blues.length) % blues.length];
   const hasVisibleYears = year !== "all" || series.some(item => !hiddenYears[item.name]);
 
   // ECharts configuration.
   const option = {
     backgroundColor: "transparent",
 
-    color: colors?.chart.series,
+    color: blues,
     aria: { enabled: true },
 
     tooltip: {
@@ -169,9 +173,9 @@ export default function OutageTrends({
         lineStyle: {
           width: 2,
           type: index < 5 ? "solid" : "dashed",
-          color: colors?.chart.series[index % colors.chart.series.length],
+          color: yearColor(item.name),
         },
-        itemStyle: { color: colors?.chart.series[index % colors.chart.series.length] },
+        itemStyle: { color: yearColor(item.name) },
         emphasis: { focus: "series" },
       })).filter(item => year !== "all" || !hiddenYears[item.name]),
   };
@@ -197,7 +201,7 @@ export default function OutageTrends({
           onClick={() => setHiddenYears(previous => ({ ...previous, [item.name]: !previous[item.name] }))}
           className={`inline-flex min-h-11 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${hiddenYears[item.name] ? "border-transparent text-muted-foreground hover:bg-muted" : "border-primary/25 bg-primary/10 text-primary hover:bg-primary/15"}`}
         >
-          <span aria-hidden="true" className="w-3 border-t-2" style={{ borderColor: colors?.chart.series[index % colors.chart.series.length], borderStyle: index < 5 ? "solid" : "dashed", opacity: hiddenYears[item.name] ? .35 : 1 }} />
+          <span aria-hidden="true" className="w-3 border-t-2" style={{ borderColor: yearColor(item.name), borderStyle: index < 5 ? "solid" : "dashed", opacity: hiddenYears[item.name] ? .35 : 1 }} />
           {item.name}
         </button>)}
         <button type="button" className="min-h-11 rounded-md px-2 text-xs text-primary hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring" aria-label="Show all years" onClick={() => setHiddenYears({})}>All</button>

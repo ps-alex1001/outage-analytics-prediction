@@ -17,7 +17,7 @@ const API = "http://127.0.0.1:8000";
 const CHART_HEIGHT = 340;
 const GRID_TOP = 22;
 const GRID_BOTTOM = 34;
-const HEATMAP_LEFT = 39; // Percent of the ECharts canvas width.
+const HEATMAP_LEFT = 10; // Percent of the ECharts canvas width.
 const HEATMAP_RIGHT = 3;
 const HEATMAP_WIDTH = 100 - HEATMAP_LEFT - HEATMAP_RIGHT;
 const HEATMAP_HEIGHT = CHART_HEIGHT - GRID_TOP - GRID_BOTTOM;
@@ -316,8 +316,10 @@ export default function OutageTiming({ year, selectedCause }: Props) {
     ],
   };
 
+  const heatmapOption: EChartsOption = { ...option, grid: [{left: `${HEATMAP_LEFT}%`,right: `${HEATMAP_RIGHT}%`,top:GRID_TOP,bottom:GRID_BOTTOM}], xAxis: [{...(option.xAxis as object[])[1],gridIndex:0}], yAxis:[{...(option.yAxis as object[])[1],gridIndex:0}], visualMap:{...(option.visualMap as object),seriesIndex:0},series:[{...(option.series as object[])[1],xAxisIndex:0,yAxisIndex:0}],tooltip:{trigger:"item",formatter:(item:unknown)=>{const v=(item as {value:[string,string,number]}).value;return `${v[1]}, ${v[0]}:00 · ${v[2]} outage starts`;}} };
+  const dailyOption: EChartsOption = { animation: !reduceMotion, tooltip:{trigger:"axis"},grid:{left:50,right:20,top:30,bottom:40},xAxis:{type:"category",data:weekdays.map(day=>day.slice(0,3)),axisLabel:{color:visual?.chart.text}},yAxis:{type:"value",axisLabel:{color:visual?.chart.text}},series:[{type:"bar",data:dayCounts,itemStyle:{color:visual?.map.medium},label:{show:true,position:"top",color:visual?.chart.text}}] };
   return (
-    <section aria-busy={loading || !visual} className="min-w-0 rounded-xl border bg-card p-4">
+    <div className="grid min-w-0 gap-4 xl:grid-cols-[1fr_2fr]"><section className="min-w-0 rounded-xl border bg-card p-4"><h2 className="font-semibold">Outages by weekday</h2>{!data || !visual ? <TimingSkeleton /> : <ReactECharts option={dailyOption} notMerge style={{height:360}} />}</section><section aria-busy={loading || !visual} className="min-w-0 rounded-xl border bg-card p-4">
       <div className="mb-2">
         <h2 className="font-semibold">Outage Timing Patterns</h2>
       </div>
@@ -332,7 +334,7 @@ export default function OutageTiming({ year, selectedCause }: Props) {
         ) : (
           <div className="relative min-w-180" style={{ height: CHART_HEIGHT }}>
             <ReactECharts
-              option={option}
+              option={heatmapOption}
               notMerge
               style={{ height: CHART_HEIGHT, width: "100%" }}
             />
@@ -401,6 +403,6 @@ export default function OutageTiming({ year, selectedCause }: Props) {
           }
         }
       `}</style>
-    </section>
+    </section></div>
   );
 }

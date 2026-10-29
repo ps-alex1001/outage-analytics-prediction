@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import * as maplibregl from "maplibre-gl";
 import { useTheme } from "next-themes";
 import { getVisualizationColors } from "@/lib/visualization-theme";
 import { loadRasterBlob, type Environment, type RasterKind } from "@/lib/environment";
 
-export default function EnvironmentalRasterMap({ profile, profileError, retryProfile, kind, api }: {
+export default function EnvironmentalRasterMap({ profile, profileError, retryProfile, kind, api, controls, legend, area }: {
   profile?: Environment; profileError?: string; retryProfile: () => void; kind: RasterKind; api: string;
+  controls?: ReactNode; legend?: ReactNode; area?: string;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const viewer = useRef<maplibregl.Map | null>(null);
@@ -123,10 +124,18 @@ export default function EnvironmentalRasterMap({ profile, profileError, retryPro
     const [west, south, east, north] = profile.bounds_wgs84;
     viewer.current?.fitBounds([[west, south], [east, north]], { padding: 28, maxZoom: 16, duration: 0 });
   }
-  return <div className="relative min-h-80 flex-1 overflow-hidden rounded border" aria-busy={loading && !error}>
+  return <div className="flex flex-1 flex-col gap-3">
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <h2 className="font-semibold">{area ?? profile?.area ?? "Bataan"}</h2>
+      <button type="button" disabled={loading || !!error} onClick={fit} className="ml-auto min-h-9 rounded-md border bg-background px-3 text-xs hover:bg-muted focus-visible:outline-2 disabled:opacity-50">Fit area</button>
+    </div>
+    <div className="relative min-h-[380px] flex-1 overflow-hidden rounded border" aria-busy={loading && !error}>
     <div className="absolute inset-0"><div ref={container} className="h-full w-full" /></div>
-    <button type="button" disabled={loading || !!error} onClick={fit} className="absolute left-2 top-2 z-10 min-h-11 rounded-md border bg-background px-3 text-xs shadow-sm hover:bg-muted focus-visible:outline-2 disabled:opacity-50">Fit area</button>
-    <span className="pointer-events-none absolute bottom-2 right-2 rounded bg-background/90 px-2 text-xs">N ↑</span>
+    <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-4rem)] flex-col items-start gap-2">
+      {controls}
+    </div>
+    <span className="pointer-events-none absolute right-2 top-24 rounded bg-background/90 px-2 text-xs">N ↑</span>
+    {legend && <div className="absolute bottom-3 right-3 z-10 max-w-[calc(100%-6rem)] rounded-md border bg-background/95 p-3 shadow-sm">{legend}</div>}
     {(loading || error) && <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-card/95 p-6 text-center text-sm" role={error ? "alert" : "status"}>
       <p>{error || (profile ? `Loading ${kind === "ndvi" ? "NDVI" : kind} for ${profile.area}…` : "Loading environmental profile…")}</p>
       {error && <button type="button" className="min-h-11 rounded border px-3 hover:bg-muted focus-visible:outline-2" onClick={() => {
@@ -135,5 +144,6 @@ export default function EnvironmentalRasterMap({ profile, profileError, retryPro
         else { setResult(null); setRetry(n => n+1); }
       }}>Retry map</button>}
     </div>}
+    </div>
   </div>;
 }

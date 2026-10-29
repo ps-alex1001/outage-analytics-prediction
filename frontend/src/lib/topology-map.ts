@@ -86,13 +86,12 @@ export class TopologyMap {
       center: [120.47, 14.67], zoom: 9, minZoom: 7, maxZoom: 19,
       attributionControl: false, renderWorldCopies: false,
     });
-    this.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), this.impactMode ? "top-right" : "bottom-right");
-    if (this.impactMode) this.map.addControl(new maplibregl.FullscreenControl(), "top-right");
+    this.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     this.map.addControl(new maplibregl.ScaleControl(), "bottom-left");
     this.map.addControl(new maplibregl.AttributionControl({ compact: false,
       customAttribution: 'Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>' }), "bottom-right");
     this.map.getCanvas().setAttribute("aria-label", this.impactMode
-      ? "Modeled electrical network map. Use arrow keys to pan and plus or minus to zoom. Asset inspection is also available in the component search."
+      ? "Modeled electrical network map. Use arrow keys to pan and plus or minus to zoom."
       : "Modeled electrical network map. Use arrow keys to pan and plus or minus to zoom. Select a substation with the floating controls to inspect its assets.");
     this.resize = new ResizeObserver(() => this.map.resize());
     this.resize.observe(container);
@@ -628,13 +627,16 @@ export class TopologyMap {
     if (bounds.isEmpty()) return;
     const sw = this.map.project(bounds.getSouthWest()), ne = this.map.project(bounds.getNorthEast());
     const container = this.map.getContainer();
-    const fits = sw.x >= 55 && ne.x <= container.clientWidth - 55 && ne.y >= 55 && sw.y <= container.clientHeight - 55;
+    const padding = { top: this.fitPadding.top ?? 45, bottom: this.fitPadding.bottom ?? 45,
+      left: this.fitPadding.left ?? 45, right: this.fitPadding.right ?? 45 };
+    const fits = sw.x >= padding.left && ne.x <= container.clientWidth - padding.right
+      && ne.y >= padding.top && sw.y <= container.clientHeight - padding.bottom;
     if (automatic && this.impactShown && fits) return;
-    const camera = this.map.cameraForBounds(bounds, { padding: 45, maxZoom: 17 });
+    const camera = this.map.cameraForBounds(bounds, { padding, maxZoom: 17 });
     const far = this.map.getCenter().distanceTo(bounds.getCenter()) > this.map.getBounds().getSouthWest().distanceTo(this.map.getBounds().getNorthEast())
       || Math.abs((camera?.zoom ?? this.map.getZoom()) - this.map.getZoom()) > 2;
     this.map.stop();
-    this.map.fitBounds(bounds, { padding: 45, maxZoom: 17, linear: true,
+    this.map.fitBounds(bounds, { padding, maxZoom: 17, linear: true,
       duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : far ? 1100 : 800,
       easing: t => t * t * (3 - 2 * t) });
     this.impactShown = true;
