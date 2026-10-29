@@ -282,7 +282,7 @@ export default function SelectedLocation({
                                     cy="80"
                                     r="66"
                                     fill="none"
-                                    stroke={colors.selected}
+                                    stroke="var(--primary)"
                                     strokeWidth="16"
                                     strokeLinecap="round"
                                     pathLength="100"
@@ -313,7 +313,7 @@ export default function SelectedLocation({
                     <p className="text-sm text-muted-foreground">
                         Outages
                     </p>
-                    <p className="mt-1 whitespace-nowrap text-[clamp(1.5rem,11cqi,3rem)] leading-none font-bold tracking-tight tabular-nums">
+                    <p className="mt-1 whitespace-nowrap text-[clamp(1.5rem,11cqi,3rem)] leading-none font-bold tracking-tight text-primary tabular-nums">
                         {outages.toLocaleString()}
                     </p>
                 </div>
@@ -323,7 +323,7 @@ export default function SelectedLocation({
                 <p className="text-xs text-muted-foreground">
                     Average event duration
                 </p>
-                <p className="mt-1 text-lg font-semibold tabular-nums">
+                <p className="mt-1 text-2xl leading-8 font-semibold tabular-nums">
                     {averageMinutes === null
                         ? "—"
                         : `${averageMinutes.toFixed(1)} min`}
@@ -334,7 +334,7 @@ export default function SelectedLocation({
             {selectedCause ? (
                 <div className="border-t pt-3">
                     <p className="text-xs text-muted-foreground">Active cause filter</p>
-                    <p className="mt-1 truncate text-sm font-medium" title={selectedCause}>
+                    <p className="mt-1 truncate text-xl leading-7 font-semibold" title={selectedCause}>
                         {selectedCause}
                     </p>
                 </div>
@@ -345,7 +345,7 @@ export default function SelectedLocation({
                     </p>
 
                     <p
-                        className="truncate text-sm font-medium"
+                        className="truncate text-xl leading-7 font-semibold"
                         title={`${leadingCause.name}: ${leadingCause.count} events (${leadingCause.percentage.toFixed(1)}%)`}
                     >
                         {leadingCause.name}

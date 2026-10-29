@@ -5,17 +5,13 @@ import { useTheme } from "next-themes";
 import type { Environment, RasterKind } from "@/lib/environment";
 import { getVisualizationColors } from "@/lib/visualization-theme";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { causeColors, groupOutageCauses } from "@/lib/outage-cause-palette";
 import { Info } from "lucide-react";
 const EnvironmentalRasterMap = dynamic(() => import("@/components/spatial/environmental-raster-map"), { ssr: false, loading: () => <div className="min-h-80 flex-1" role="status">Loading map…</div> });
 const Chart = dynamic(() => import("echarts-for-react"), { ssr: false });
 const API = (process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 type Filters = { year: string; municipality_psgc: string; barangay_psgc: string; cause_category: string };
 type Causes = { total_events: number; causes: { name: string; value: number }[] };
-// Keep each cause consistent across selections, with six distinct categorical colors.
-const causeColors: Record<string, string> = {
-  Weather: "#0072b2", "Equipment Failure": "#d55e00", "Tree contact": "#009e73",
-  Supply: "#cc79a7", Other: "#797037", Animal: "#56b4e9",
-};
 function CombinedLegend({ palette }: { palette: string[][] }) {
   const vegetation = ["Low vegetation", "Moderate vegetation", "High vegetation"];
   const ndviRanges = ["NDVI below 0.3", "NDVI 0.3 to below 0.6", "NDVI 0.6 or higher"];
@@ -73,7 +69,7 @@ export default function EnvironmentalProfile({ filters, area, onCauseChange }: {
     return <div className="w-44 max-w-full"><p className="text-xs">{name === "ndvi" ? `NDVI ${environment.data?.ndvi_year} (unitless)` : "Slope (degrees)"}</p><div className="my-1 h-2 rounded" style={{ background: `linear-gradient(90deg, ${stops.map(([v, c]) => `${c} ${(v-low)/(high-low)*100}%`).join(",")})` }} /><p className="flex justify-between text-xs"><span>{low}</span><span>{high}{name === "slope" ? "°+" : ""}</span></p></div>;
   };
   const total = causes.data?.total_events ?? 0;
-  const slices = (causes.data?.causes ?? []).map(cause => ({ ...cause,
+  const slices = groupOutageCauses(causes.data?.causes ?? []).map(cause => ({ ...cause,
     itemStyle: { color: causeColors[cause.name] ?? "#737373", opacity: filters.cause_category && filters.cause_category !== cause.name ? 0.25 : 1 } }));
   const formatStat = (key: string, digits = 1, unit = "") => {
     const value = environment.data?.statistics[key];

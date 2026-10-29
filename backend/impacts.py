@@ -83,7 +83,8 @@ def list_events(q: str = '', year: int | None = None, municipality_psgc: str | N
         frame = frame.loc[frame.start_time.str.startswith(str(year) + '-')]
     for column, value in [('municipality_psgc', municipality_psgc), ('barangay_psgc', barangay_psgc), ('cause_category', cause_category), ('resolution_status', status)]:
         if value:
-            frame = frame.loc[frame[column].eq(value)]
+            values = ['Other', 'Animal'] if column == 'cause_category' and value == 'Other' else [value]
+            frame = frame.loc[frame[column].isin(values)]
     if q.strip():
         text = frame[['outage_id', 'municipality', 'barangay', 'cause_category']].astype(str).agg(' '.join, axis=1)
         frame = frame.loc[text.str.contains(q.strip(), case=False, regex=False)]

@@ -1,3 +1,4 @@
+import { causeColors, groupOutageCauses } from "@/lib/outage-cause-palette";
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
@@ -17,6 +18,7 @@ type Cause = {
 };
 
 type Colors = ReturnType<typeof getVisualizationColors>;
+
 
 type CauseDistributionProps = {
   year: string;
@@ -86,7 +88,7 @@ useEffect(() => {
         const result = await response.json();
 
         if (!controller.signal.aborted) {
-          setCauses(result.causes);
+          setCauses(groupOutageCauses(result.causes));
         }
       } catch {
         if (!controller.signal.aborted) {
@@ -107,7 +109,7 @@ useEffect(() => {
     causes.find((cause) => cause.name === selectedCause) ?? causes[0];
 
   const options: EChartsOption = {
-    color: colors?.chart.series,
+    color: Object.values(causeColors),
     tooltip: {
       trigger: "item",
       formatter: "{b}: {c} events ({d}%)",
@@ -151,6 +153,7 @@ useEffect(() => {
           name: cause.name,
           value: cause.value,
           itemStyle: {
+            color: causeColors[cause.name] ?? "#858fa1",
             opacity:
                 selectedCause && selectedCause !== cause.name
                     ? 0.25

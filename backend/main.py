@@ -80,7 +80,8 @@ def filter_outages(
         df = df[df["barangay_psgc"] == barangay_psgc]
 
     if cause_category:
-        df = df[df["cause_category"] == cause_category]
+        categories = ["Other", "Animal"] if cause_category == "Other" else [cause_category]
+        df = df[df["cause_category"].isin(categories)]
 
     return df
 
@@ -224,7 +225,7 @@ def get_overview_kpis(
 
         if cause_category:
             previous = previous[
-                previous["cause_category"] == cause_category
+                previous["cause_category"].isin(["Other", "Animal"] if cause_category == "Other" else [cause_category])
                 ]
 
         previous_durations = pd.to_numeric(
